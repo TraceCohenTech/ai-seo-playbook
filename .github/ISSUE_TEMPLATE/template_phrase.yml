@@ -1,0 +1,33 @@
+name: New Template Phrase
+description: Submit an AI template phrase pattern for the blocklist
+labels: ["template-phrase"]
+body:
+  - type: input
+    id: phrase
+    attributes:
+      label: Template phrase
+      placeholder: "In the ever-evolving landscape of..."
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - hedging
+        - templateOpeners
+        - templateClosers
+        - filler
+        - metaCommentary
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples in the wild
+      description: Where have you seen this phrase? Paste 2-3 examples from real AI-generated content.
+  - type: textarea
+    id: false-positives
+    attributes:
+      label: Possible false positives?
+      description: Is there any context where a human would legitimately write this phrase?

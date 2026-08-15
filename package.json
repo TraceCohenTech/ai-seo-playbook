@@ -1,7 +1,7 @@
 {
   "name": "ai-seo-playbook",
   "version": "1.0.0",
-  "description": "The open-source SEO toolkit behind a 2M-impression/month content engine. Scripts for GSC analysis, content auditing, cannibalization detection, and quality gates.",
+  "description": "The open-source SEO toolkit behind a 4.6M-impression content engine. Scripts for GSC analysis, content auditing, cannibalization detection, and quality gates.",
   "author": "Trace Cohen <t@nyvp.com>",
   "license": "MIT",
   "type": "module",
@@ -14,7 +14,9 @@
     "template-scan": "node scripts/template-detector.mjs",
     "weekly-report": "node scripts/weekly-report.mjs",
     "find-orphans": "node scripts/orphan-finder.mjs",
-    "find-cannibals": "node scripts/cannibalization-detector.mjs"
+    "find-cannibals": "node scripts/cannibalization-detector.mjs",
+    "check-redirects": "node scripts/redirect-checker.mjs",
+    "refresh-tracker": "node scripts/refresh-tracker.mjs"
   },
   "dependencies": {
     "googleapis": "^144.0.0"

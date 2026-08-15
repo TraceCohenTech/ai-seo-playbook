@@ -1,0 +1,21 @@
+name: Feature Request
+description: Suggest a new script, config option, or improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: What SEO task are you trying to accomplish that the current scripts don't handle?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like it to work? Include example command and expected output if possible.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: How are you solving this today?
+      description: What's your current workaround?

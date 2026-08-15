@@ -1,0 +1,42 @@
+name: Bug Report
+description: Report a problem with one of the scripts
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: script
+    attributes:
+      label: Which script?
+      options:
+        - gsc-rewrite-candidates.mjs
+        - template-detector.mjs
+        - cannibalization-detector.mjs
+        - weekly-report.mjs
+        - orphan-finder.mjs
+        - content-audit.mjs
+        - redirect-checker.mjs
+        - refresh-tracker.mjs
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug. Include the command you ran and the error output.
+      placeholder: |
+        Command: npm run weekly-report -- --site sc-domain:example.com
+        Error: ...
+    validations:
+      required: true
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js version
+      placeholder: "22.0.0"
+  - type: dropdown
+    id: auth-method
+    attributes:
+      label: Authentication method
+      options:
+        - Application Default Credentials (gcloud auth)
+        - Service Account JSON
+        - Other

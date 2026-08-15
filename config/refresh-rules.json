@@ -1,0 +1,53 @@
+{
+  "_comment": "Rules for the refresh drip strategy. Pages that match these criteria should be updated with fresh data rather than left to go stale.",
+  "staleDays": {
+    "default": 30,
+    "newsContent": 7,
+    "evergreenGuides": 60,
+    "dataPages": 14,
+    "companyProfiles": 30
+  },
+  "refreshTriggers": [
+    {
+      "trigger": "dataChanged",
+      "description": "The underlying data has changed (new funding round, valuation update, earnings report)",
+      "action": "Update the page with new data, update lastmod, add a 'Last updated' line"
+    },
+    {
+      "trigger": "positionDrop",
+      "description": "Page dropped from position ≤10 to position >10 in the last 7 days",
+      "action": "Refresh content, add new sections, update title if CTR also dropped"
+    },
+    {
+      "trigger": "competitorPublished",
+      "description": "A competitor published newer content on the same topic",
+      "action": "Update with fresher data and deeper analysis to reclaim freshness signal"
+    },
+    {
+      "trigger": "queryShift",
+      "description": "New queries are appearing for this page that the content doesn't address",
+      "action": "Add sections that directly answer the new queries"
+    },
+    {
+      "trigger": "staleDateReference",
+      "description": "Content references a specific date or time period that is now past",
+      "action": "Update date references, add current data, note what changed"
+    }
+  ],
+  "refreshChecklist": [
+    "Update any stale data points or statistics",
+    "Add new developments since last update",
+    "Check that all external links still work",
+    "Update the FAQ section with new questions from GSC query data",
+    "Update the lastmod/lastUpdated field in frontmatter",
+    "Add internal links to any new related content published since last update",
+    "Verify structured data is still valid",
+    "Re-check title against current top queries — rewrite if intent shifted"
+  ],
+  "doNotRefresh": [
+    "Pages in the KILL bucket — delete instead",
+    "Pages scheduled for MERGE — consolidate first",
+    "Pages with <50 impressions in 28 days — not worth the effort",
+    "Pages where the topic is fully dead (seasonal, one-time event that passed)"
+  ]
+}
