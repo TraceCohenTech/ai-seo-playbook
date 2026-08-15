@@ -1,0 +1,98 @@
+name: Weekly SEO Report
+
+on:
+  schedule:
+    # Every Sunday at 9:30 AM ET (13:30 UTC)
+    - cron: '30 13 * * 0'
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm ci
+
+      # Authenticate with Google Cloud
+      # Store your service account JSON as a GitHub secret named GSC_CREDENTIALS
+      - name: Set up Google credentials
+        run: |
+          echo '${{ secrets.GSC_CREDENTIALS }}' > /tmp/gsc-credentials.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gsc-credentials.json" >> $GITHUB_ENV
+
+      # Generate the weekly report
+      - name: Run weekly SEO report
+        run: |
+          node scripts/weekly-report.mjs \
+            --site "${{ vars.GSC_SITE }}" \
+            --output weekly-seo-report.json
+
+      # Run cannibalization check
+      - name: Check for cannibalization
+        run: |
+          node scripts/cannibalization-detector.mjs \
+            --site "${{ vars.GSC_SITE }}" \
+            --output cannibal-clusters.json
+
+      # Run content audit
+      - name: Content audit
+        run: |
+          node scripts/content-audit.mjs \
+            --site "${{ vars.GSC_SITE }}" \
+            --dir "${{ vars.CONTENT_DIR || './content' }}" \
+            --output content-audit.json
+
+      # Commit reports
+      - name: Commit reports
+        run: |
+          git config user.name "SEO Bot"
+          git config user.email "seo@users.noreply.github.com"
+          git add weekly-seo-report.json cannibal-clusters.json content-audit.json
+          git diff --cached --quiet || git commit -m "Weekly SEO report — $(date +%Y-%m-%d)"
+          git push
+
+      # Optional: create a GitHub issue with the summary
+      - name: Create summary issue
+        if: vars.CREATE_ISSUES == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('weekly-seo-report.json', 'utf-8'));
+            const s = report.summary;
+
+            const body = [
+              `## Weekly SEO Report — ${report.period.startDate} → ${report.period.endDate}`,
+              '',
+              `| Metric | This Week | Change |`,
+              `|--------|-----------|--------|`,
+              `| Clicks | ${s.thisWeek.clicks.toLocaleString()} | ${s.changes.clicks >= 0 ? '+' : ''}${s.changes.clicks}% |`,
+              `| Impressions | ${s.thisWeek.impressions.toLocaleString()} | ${s.changes.impressions >= 0 ? '+' : ''}${s.changes.impressions}% |`,
+              `| CTR | ${s.thisWeek.ctr}% | ${s.changes.ctr >= 0 ? '+' : ''}${s.changes.ctr}% |`,
+              `| Avg Position | ${s.thisWeek.position} | — |`,
+              '',
+              `### Title Rewrite Candidates`,
+              ...report.ctrTriage.slice(0, 5).map(c =>
+                `- \`${c.page}\` — ${c.impressions.toLocaleString()} impr, ${c.ctr}% CTR, pos ${c.position}`
+              ),
+              '',
+              `### Trending Queries`,
+              ...report.trending.slice(0, 5).map(t =>
+                `- "${t.query}" — ${t.impressions} impr this week`
+              ),
+              '',
+              `Full reports committed to repo.`,
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `SEO Report: ${report.period.startDate}`,
+              body,
+              labels: ['seo-report'],
+            });

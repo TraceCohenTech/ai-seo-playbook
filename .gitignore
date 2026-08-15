@@ -1,0 +1,8 @@
+node_modules/
+*.json
+!package.json
+!package-lock.json
+!config/*.json
+!schemas/*.json
+.env
+.DS_Store

@@ -1,0 +1,31 @@
+{
+  "_comment": "FAQPage schema — add to every blog post for FAQ rich result eligibility.",
+  "example": {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the best cap table management tool for startups?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Carta is the most widely used cap table platform, managing equity for over 40,000 companies. However, Pulley and AngelList offer more affordable alternatives for early-stage startups."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much does cap table software cost?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Pricing ranges from free (Pulley's starter tier) to $1,000+/month (Carta's enterprise plans). Most Series A startups pay $200-400/month."
+        }
+      }
+    ]
+  },
+  "notes": [
+    "Use real questions from GSC query data, not made-up FAQs",
+    "Answers should be concise (2-3 sentences) — Google truncates long answers",
+    "3-5 FAQs per post is optimal; more than 8 rarely all display",
+    "Each FAQ should target a distinct query, not rephrase the same question"
+  ]
+}

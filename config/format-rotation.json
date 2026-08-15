@@ -1,0 +1,76 @@
+{
+  "_comment": "Content format rotation system. Each format has distinct constraints that prevent structural uniformity — the fingerprint that signals AI-generated content at scale.",
+  "formats": [
+    {
+      "id": "deep-explainer",
+      "name": "Deep Data Explainer",
+      "description": "Long-form synthesis of complex topics. High impressions, lower CTR — SERP often answers the query.",
+      "wordRange": [1200, 1700],
+      "charts": { "min": 2, "required": true },
+      "table": "required",
+      "faqs": { "min": 5, "max": 8 },
+      "heroImage": "optional",
+      "weight": 1,
+      "bestFor": "Topical authority, informational queries, entity association"
+    },
+    {
+      "id": "news-analysis",
+      "name": "News Analysis",
+      "description": "Event-driven analysis tied to a specific trigger (IPO, earnings, funding round). Time-sensitive.",
+      "wordRange": [900, 1200],
+      "charts": { "min": 0, "required": false },
+      "table": "optional",
+      "faqs": { "min": 3, "max": 5 },
+      "heroImage": "optional",
+      "sourceUrl": "required",
+      "weight": 2,
+      "bestFor": "Breaking query capture, freshness signals, news waves"
+    },
+    {
+      "id": "ranked-list",
+      "name": "Ranked List",
+      "description": "'Best X for Y' or 'Top 10 Z' with a real methodology. Highest CTR format. Sponsors want placement here.",
+      "wordRange": [850, 1200],
+      "charts": { "min": 0, "required": false },
+      "table": "required",
+      "faqs": { "min": 3, "max": 5 },
+      "heroImage": "optional",
+      "schema": "ItemList",
+      "weight": 3,
+      "bestFor": "Comparison/buying intent queries, sponsor inventory, high CTR"
+    },
+    {
+      "id": "question-led",
+      "name": "Question-Led",
+      "description": "Opens with a real GSC query. First sentence answers it; rest of post earns the click. Featured snippet magnet.",
+      "wordRange": [850, 1100],
+      "charts": { "min": 0, "required": false },
+      "table": "optional",
+      "faqs": { "min": 3, "max": 5 },
+      "heroImage": "optional",
+      "weight": 3,
+      "bestFor": "Featured snippets, direct-answer queries, high CTR"
+    },
+    {
+      "id": "contrarian-take",
+      "name": "Contrarian Take",
+      "description": "Pushes back against consensus. Requires a genuine position. High social sharing, inconsistent search.",
+      "wordRange": [900, 1400],
+      "charts": { "min": 1, "required": false },
+      "table": "optional",
+      "faqs": { "min": 3, "max": 5 },
+      "heroImage": "optional",
+      "weight": 1,
+      "bestFor": "Social distribution, brand voice, 'is X overvalued' queries"
+    }
+  ],
+  "rules": {
+    "neverSameFormatConsecutively": true,
+    "weeklyMinimum": {
+      "ranked-list": 2,
+      "question-led": 2,
+      "deep-explainer": 1
+    },
+    "formatWeightsExplained": "Weights control selection probability. Higher weight = more frequent. Adjust based on your GSC CTR data."
+  }
+}

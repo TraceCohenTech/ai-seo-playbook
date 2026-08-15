@@ -1,0 +1,39 @@
+{
+  "_comment": "ItemList schema for ranking/comparison pages — the format sponsors want to pay for placement on.",
+  "example": {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Best Cap Table Management Tools — Ranked for 2026",
+    "description": "Data-driven ranking of cap table platforms based on features, pricing, company stage fit, and user reviews.",
+    "numberOfItems": 6,
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Carta",
+        "url": "https://example.com/tools/carta",
+        "description": "The industry standard for cap table management. Best for Series A+ companies."
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Pulley",
+        "url": "https://example.com/tools/pulley",
+        "description": "Modern alternative with a generous free tier. Best for pre-seed to seed stage."
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "AngelList Stack",
+        "url": "https://example.com/tools/angellist",
+        "description": "Full-stack fund and cap table management. Best for fund managers."
+      }
+    ]
+  },
+  "notes": [
+    "Rankings must reflect genuine editorial judgment — never sell position",
+    "Include a visible methodology section explaining the ranking criteria",
+    "Sponsored placements should be labeled and unnumbered (e.g., 'Featured' slot)",
+    "Google surfaces ItemList as rich results with numbered positions — high visibility"
+  ]
+}

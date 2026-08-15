@@ -1,0 +1,88 @@
+{
+  "_comment": "Anti-AI writing rules. These phrases and patterns are enforced as blocklists in the content pipeline.",
+  "blockedPhrases": {
+    "hedging": [
+      "it's worth noting",
+      "it's worth mentioning",
+      "it's important to note",
+      "it's crucial to understand",
+      "it remains to be seen",
+      "only time will tell",
+      "there's no denying",
+      "while it's too early to say",
+      "whether this will succeed remains unclear"
+    ],
+    "templateOpeners": [
+      "the short answer is",
+      "the quick answer is",
+      "that's the short answer",
+      "the longer answer is more interesting",
+      "let's dive in",
+      "let's dig in",
+      "let's unpack this",
+      "let's break this down",
+      "in this article, we'll explore",
+      "in today's post",
+      "if you've been following"
+    ],
+    "templateClosers": [
+      "what to watch:",
+      "the bottom line:",
+      "the takeaway here is",
+      "looking ahead,",
+      "looking forward,"
+    ],
+    "filler": [
+      "in an era of",
+      "in a world where",
+      "in today's landscape",
+      "the rapidly evolving landscape",
+      "the shifting landscape",
+      "at the intersection of",
+      "at the crossroads of",
+      "represents a significant shift",
+      "marks a pivotal moment",
+      "signals a major milestone"
+    ],
+    "metaCommentary": [
+      "in this article",
+      "in this post",
+      "in this piece",
+      "we'll explore",
+      "we'll examine",
+      "we'll look at",
+      "as we discussed",
+      "as mentioned earlier"
+    ]
+  },
+  "styleRules": [
+    {
+      "rule": "No rhetorical questions as transitions",
+      "bad": "But what does this mean for investors?",
+      "good": "This changes the calculus for every LP in the market."
+    },
+    {
+      "rule": "Specific numbers over round estimates",
+      "bad": "The company raised billions of dollars",
+      "good": "The company raised $6.6 billion at a $157 billion valuation"
+    },
+    {
+      "rule": "Assertions over observations",
+      "bad": "It's interesting to note that revenue grew",
+      "good": "Revenue grew 40% — the fastest quarter since IPO"
+    },
+    {
+      "rule": "No meta-commentary about the article itself",
+      "bad": "In this post, we'll explore the implications of...",
+      "good": "The implications are straightforward: [state them]"
+    },
+    {
+      "rule": "Closers must be unique",
+      "bad": "What to watch: [same structure as the last 50 posts]",
+      "good": "Vary the closing — sometimes a prediction, sometimes a question for the reader, sometimes a callback to the opening"
+    }
+  ],
+  "sharedCloserThreshold": 0.4,
+  "sharedCloserLookback": 20,
+  "note": "The goal isn't to hide that AI was involved. The goal is to ensure every piece sounds like a specific person with expertise wrote it, not like a prompt template with different nouns."
+}

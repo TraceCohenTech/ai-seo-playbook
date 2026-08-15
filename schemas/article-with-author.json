@@ -1,0 +1,42 @@
+{
+  "_comment": "Article schema with real author entity — the foundation of E-E-A-T for AI-assisted content.",
+  "example": {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Best Cap Table Management Tools — Ranked for 2026",
+    "description": "A data-driven ranking of the top cap table platforms for startups, with methodology, pricing, and real-world comparison.",
+    "datePublished": "2026-08-15",
+    "dateModified": "2026-08-15",
+    "author": {
+      "@type": "Person",
+      "name": "Your Name",
+      "url": "https://example.com/about",
+      "sameAs": [
+        "https://x.com/yourhandle",
+        "https://linkedin.com/in/yourhandle"
+      ],
+      "jobTitle": "Founder & CEO",
+      "description": "3x founder, 65+ investments. Building at the intersection of finance and technology."
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Your Site Name",
+      "url": "https://example.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://example.com/logo.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://example.com/blog/best-cap-table-tools"
+    },
+    "image": "https://example.com/og/best-cap-table-tools.png"
+  },
+  "notes": [
+    "ALWAYS use a real Person as author, never a fake name",
+    "The sameAs array lets Google verify the author exists across the web",
+    "dateModified should update whenever content is refreshed — this signals freshness",
+    "The author URL should point to a real page with bio, credentials, and links to published work"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "_comment": "NewsArticle schema for real-time news content. Submit these via a news sitemap with a 48h rolling window.",
+  "example": {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": "Anthropic Raises $2B Series E at $60B Valuation",
+    "description": "Anthropic closes its largest funding round to date, valuing the Claude maker at $60 billion — a 3x increase from its previous round.",
+    "datePublished": "2026-08-15T09:30:00-04:00",
+    "dateModified": "2026-08-15T14:15:00-04:00",
+    "author": {
+      "@type": "Person",
+      "name": "Your Name",
+      "url": "https://example.com/about"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Your Site Name",
+      "url": "https://example.com"
+    },
+    "mainEntityOfPage": "https://example.com/news/anthropic-series-e-60b",
+    "image": "https://example.com/og/anthropic-series-e.png",
+    "keywords": ["anthropic", "funding", "AI", "series E", "valuation"],
+    "articleSection": "AI & Infrastructure"
+  },
+  "newsSitemapExample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\n        xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\">\n  <url>\n    <loc>https://example.com/news/anthropic-series-e-60b</loc>\n    <news:news>\n      <news:publication>\n        <news:name>Your Site Name</news:name>\n        <news:language>en</news:language>\n      </news:publication>\n      <news:publication_date>2026-08-15T09:30:00-04:00</news:publication_date>\n      <news:title>Anthropic Raises $2B Series E at $60B Valuation</news:title>\n      <news:keywords>anthropic, funding, AI</news:keywords>\n    </news:news>\n  </url>\n</urlset>",
+  "notes": [
+    "News sitemaps should only contain articles from the last 48 hours",
+    "Submit news sitemap separately from your main sitemap in GSC",
+    "Use ISO 8601 timestamps with timezone — Google needs the exact publication time",
+    "Ping Google's WebSub hub after every publish: POST to https://pubsubhubbub.appspot.com",
+    "The seoTitle (used in <title> tag) should be query-shaped; the headline can be punchy"
+  ]
+}

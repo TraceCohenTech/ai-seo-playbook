@@ -1,0 +1,87 @@
+{
+  "_comment": "Publish quality gate configuration. Every automated post must pass ALL gates before shipping.",
+  "gates": [
+    {
+      "id": "cannibalization",
+      "name": "Duplicate Topic Check",
+      "description": "Reject if the target query already has a ranking page. Update the existing page instead.",
+      "action": "reject",
+      "severity": "critical"
+    },
+    {
+      "id": "source-verification",
+      "name": "Source URL Verification",
+      "description": "HEAD-request every cited source URL. Reject if any return 404/5xx or if the source name doesn't match the domain.",
+      "action": "reject",
+      "severity": "critical",
+      "checks": [
+        "URL resolves (HTTP 200/301/302)",
+        "Source name matches domain (e.g., 'Bloomberg' must link to bloomberg.com, not yahoo.com)",
+        "URL is not a paywall-only page with no preview content"
+      ]
+    },
+    {
+      "id": "template-phrases",
+      "name": "Template Phrase Detection",
+      "description": "Scan for known AI template fingerprints. Reject if any are found.",
+      "action": "reject",
+      "severity": "high",
+      "patterns": [
+        "the longer answer is more interesting",
+        "that's the short answer",
+        "let's dive in",
+        "it's worth noting",
+        "only time will tell",
+        "it remains to be seen",
+        "in this article, we'll explore"
+      ]
+    },
+    {
+      "id": "shared-closer",
+      "name": "Shared Closer Detection",
+      "description": "Compare the closing section against recent posts. Reject if >40% of recent posts share the same closing structure.",
+      "action": "reject",
+      "severity": "high",
+      "threshold": 0.4,
+      "lookback": 20
+    },
+    {
+      "id": "word-count",
+      "name": "Minimum Word Count",
+      "description": "Enforce format-specific word count minimums from format-rotation.json.",
+      "action": "reject",
+      "severity": "medium"
+    },
+    {
+      "id": "typecheck",
+      "name": "TypeScript Compilation",
+      "description": "Run tsc on the post file. If it doesn't compile, it doesn't ship.",
+      "action": "reject",
+      "severity": "critical",
+      "command": "npx tsc --noEmit"
+    },
+    {
+      "id": "internal-links",
+      "name": "Internal Link Check",
+      "description": "Warn if the post doesn't link to any existing content. Posts should be nodes in a graph, not orphans.",
+      "action": "warn",
+      "severity": "low",
+      "minimumLinks": 2
+    },
+    {
+      "id": "schema-markup",
+      "name": "Schema Markup Present",
+      "description": "Warn if the post is missing Article schema, FAQ schema, or author entity.",
+      "action": "warn",
+      "severity": "medium"
+    },
+    {
+      "id": "fact-consistency",
+      "name": "Fact Consistency",
+      "description": "Check that key numbers (valuations, funding amounts, dates) don't contradict existing published content.",
+      "action": "warn",
+      "severity": "high",
+      "note": "Contradicted facts across posts tank E-E-A-T. If your site says $800B and $2.6T for the same company, Google trusts neither."
+    }
+  ]
+}
