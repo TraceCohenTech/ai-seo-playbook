@@ -7,7 +7,7 @@
 
 **The open-source toolkit behind a 4.6M-impression content engine.**
 
-8 diagnostic scripts, quality gate configs, structured data schemas, and CI automation for running an AI-powered content engine that actually ranks — built and proven on [ValueAddVC.com](https://valueaddvc.com).
+13 diagnostic scripts, quality gate configs, structured data schemas, and CI automation for running an AI-powered content engine that actually ranks — built and proven on [ValueAddVC.com](https://valueaddvc.com).
 
 Built by [Trace Cohen](https://x.com/Trace_Cohen) at [ValueAddVC.com](https://valueaddvc.com).
 
@@ -57,6 +57,11 @@ The feedback loop: GSC data feeds diagnostic scripts, which surface what needs f
 | `content-audit.mjs` | Scores every page into KILL / MERGE / UPDATE / PROMOTE / KEEP buckets based on GSC data + content quality |
 | `redirect-checker.mjs` | Finds URLs in your sitemap that return 301/302/308 instead of 200 — these break GSC validation and waste crawl budget |
 | `refresh-tracker.mjs` | Identifies high-traffic pages that haven't been updated recently — candidates for the "refresh drip" strategy |
+| `query-gap-miner.mjs` | The retroactive keyword discovery engine — finds queries with real demand where you have no dedicated page. Google is telling you what to write. |
+| `striking-distance.mjs` | Finds pages ranking position 5-20 with real impressions — the cheapest wins in SEO. Estimates click gain if improved. |
+| `rewrite-measurer.mjs` | Before/after tracking for title rewrites. Take a baseline, make changes, measure impact 2-4 weeks later. |
+| `websub-ping.mjs` | Notifies Google's hub that your feeds changed — triggers immediate crawl instead of waiting hours. Run after every publish. |
+| `indexing-submitter.mjs` | Submits URLs to Google's Indexing API for near-instant crawling. 200 URLs/day quota. |
 
 ### Configuration (`/config`)
 
@@ -66,6 +71,7 @@ The feedback loop: GSC data feeds diagnostic scripts, which surface what needs f
 | `quality-gates.json` | Publish gate rules: cannibalization check, source URL verification, template phrase detection, shared closer detection, typecheck |
 | `anti-ai-rules.json` | The complete blocklist of AI template phrases + style rules for making AI content sound human |
 | `refresh-rules.json` | Rules for the refresh drip strategy — staleness thresholds by content type, refresh triggers, and a refresh checklist |
+| `keyword-anticipation.json` | Event calendar methodology — publish content before IPOs, earnings, funding rounds, regulations so you're ranked when demand spikes |
 
 ### Schema Examples (`/schemas`)
 
@@ -81,6 +87,7 @@ The feedback loop: GSC data feeds diagnostic scripts, which surface what needs f
 - `sitemap.ts` — Next.js dynamic sitemap with honest lastmod dates
 - `news-sitemap.ts` — 48-hour rolling news sitemap for Google News/Discover
 - `internal-link-component.tsx` — React component for related posts + a build-time internal link inserter
+- `vercel-ignore.sh` — Build skip logic for Vercel: [nobuild] tags, content-only detection, deploy-tick pattern (saves $$$)
 
 ### Sample Output (`/samples`)
 
@@ -136,11 +143,20 @@ npm run find-orphans -- --dir ./your-content-directory
 # Generate weekly report
 npm run weekly-report -- --site sc-domain:yoursite.com
 
-# Check for redirect problems in your sitemap
-npm run check-redirects -- --site sc-domain:yoursite.com --sitemap https://yoursite.com/sitemap.xml
+# Discover keywords you're already ranking for but have no page targeting
+npm run query-gaps -- --site sc-domain:yoursite.com --dir ./your-content-directory
+
+# Find "almost page 1" pages where a small nudge = big click gains
+npm run striking-distance -- --site sc-domain:yoursite.com
 
 # Find stale pages that need refreshing
 npm run refresh-tracker -- --site sc-domain:yoursite.com --dir ./your-content-directory
+
+# Check for redirect problems in your sitemap
+npm run check-redirects -- --site sc-domain:yoursite.com --sitemap https://yoursite.com/sitemap.xml
+
+# Ping Google to crawl your updated feeds immediately
+npm run websub-ping -- --feeds https://yoursite.com/sitemap.xml,https://yoursite.com/feed.xml
 ```
 
 > **New to the GSC API?** See [`docs/setup-gsc.md`](docs/setup-gsc.md) for a step-by-step setup guide.
@@ -212,15 +228,20 @@ The scripts are standalone Node.js — run them anywhere you can install `google
 
 ```
 ai-seo-playbook/
-├── scripts/              # 8 diagnostic & tracking scripts
-│   ├── gsc-rewrite-candidates.mjs
-│   ├── template-detector.mjs
-│   ├── cannibalization-detector.mjs
-│   ├── weekly-report.mjs
-│   ├── orphan-finder.mjs
-│   ├── content-audit.mjs
-│   ├── redirect-checker.mjs
-│   └── refresh-tracker.mjs
+├── scripts/              # 13 diagnostic & tracking scripts
+│   ├── gsc-rewrite-candidates.mjs   # Find title rewrite opportunities
+│   ├── template-detector.mjs        # Scan for AI template phrases
+│   ├── cannibalization-detector.mjs  # Find competing pages
+│   ├── weekly-report.mjs            # Weekly GSC performance report
+│   ├── orphan-finder.mjs            # Find unlinked pages
+│   ├── content-audit.mjs            # KILL/MERGE/UPDATE/PROMOTE scoring
+│   ├── redirect-checker.mjs         # Sitemap redirect problems
+│   ├── refresh-tracker.mjs          # Stale page detection
+│   ├── query-gap-miner.mjs          # Retroactive keyword discovery
+│   ├── striking-distance.mjs        # Position 5-20 opportunities
+│   ├── rewrite-measurer.mjs         # Before/after title rewrite tracking
+│   ├── websub-ping.mjs              # Notify Google of feed changes
+│   └── indexing-submitter.mjs       # Google Indexing API submissions
 ├── config/               # Quality gates, format system, anti-AI rules
 ├── schemas/              # JSON-LD structured data examples
 ├── examples/             # Next.js sitemaps + React components

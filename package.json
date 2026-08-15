@@ -16,7 +16,12 @@
     "find-orphans": "node scripts/orphan-finder.mjs",
     "find-cannibals": "node scripts/cannibalization-detector.mjs",
     "check-redirects": "node scripts/redirect-checker.mjs",
-    "refresh-tracker": "node scripts/refresh-tracker.mjs"
+    "refresh-tracker": "node scripts/refresh-tracker.mjs",
+    "query-gaps": "node scripts/query-gap-miner.mjs",
+    "striking-distance": "node scripts/striking-distance.mjs",
+    "measure-rewrites": "node scripts/rewrite-measurer.mjs",
+    "websub-ping": "node scripts/websub-ping.mjs",
+    "submit-urls": "node scripts/indexing-submitter.mjs"
   },
   "dependencies": {
     "googleapis": "^144.0.0"

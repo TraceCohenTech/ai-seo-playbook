@@ -1,0 +1,73 @@
+{
+  "_comment": "Keyword anticipation calendar — events where search volume will spike. Publish content BEFORE the event so you're already ranked when demand arrives. This is how you beat competitors who only react to news.",
+  "categories": {
+    "ipos": {
+      "description": "Upcoming IPOs and direct listings. Publish valuation analysis 2-4 weeks before the expected date.",
+      "queryPatterns": [
+        "{company} IPO",
+        "{company} IPO valuation",
+        "{company} IPO date {year}",
+        "{company} stock price prediction",
+        "should I invest in {company} IPO"
+      ],
+      "contentFormat": "Deep Explainer",
+      "refreshTrigger": "Any new filing, pricing, or date update"
+    },
+    "earnings": {
+      "description": "Quarterly earnings for major companies. Publish preview 1 week before, update with results same day.",
+      "queryPatterns": [
+        "{company} earnings {quarter} {year}",
+        "{company} revenue {year}",
+        "{company} earnings date",
+        "{company} earnings results"
+      ],
+      "contentFormat": "News Analysis",
+      "refreshTrigger": "Earnings release"
+    },
+    "fundingRounds": {
+      "description": "Anticipated funding rounds for hot startups. Publish valuation estimates before the round closes.",
+      "queryPatterns": [
+        "{company} valuation {year}",
+        "{company} series {letter} funding",
+        "{company} funding round",
+        "{company} investors"
+      ],
+      "contentFormat": "Deep Explainer",
+      "refreshTrigger": "Round announcement"
+    },
+    "annualReports": {
+      "description": "Year-end and annual publications. Publish 'best of' and 'trends' content in December for January search volume.",
+      "queryPatterns": [
+        "best {category} {year}",
+        "top {category} {year}",
+        "{category} trends {year}",
+        "{category} predictions {year}"
+      ],
+      "contentFormat": "Ranked List",
+      "refreshTrigger": "Year change, new data"
+    },
+    "regulations": {
+      "description": "Regulatory decisions, policy changes, legislation. Publish explainers before the decision date.",
+      "queryPatterns": [
+        "{regulation} explained",
+        "{regulation} impact on {industry}",
+        "{regulation} {year}",
+        "what does {regulation} mean for"
+      ],
+      "contentFormat": "Question-Led",
+      "refreshTrigger": "Decision announcement"
+    }
+  },
+  "timing": {
+    "publishBeforeEvent": "2-4 weeks for anticipated events",
+    "updateOnEvent": "Same day, within hours",
+    "refreshAfterEvent": "1 week post-event with actual results vs. predictions"
+  },
+  "contentStrategy": [
+    "Start with a prediction/analysis piece before the event",
+    "Update the same URL on the event day (don't create a new page — you'll cannibalize yourself)",
+    "Refresh again 1 week later with actual results and what they mean",
+    "Each update triggers a lastmod signal that tells Google the page is current",
+    "Link to your prediction from your news wire / real-time content to build authority fast"
+  ]
+}
