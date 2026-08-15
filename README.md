@@ -1,6 +1,6 @@
 # AI SEO Playbook
 
-**The open-source toolkit behind a 2M-impression/month content engine.**
+**The open-source toolkit behind a 4.6M-impression content engine.**
 
 This repo contains the diagnostic scripts, configuration files, schema examples, and automation templates described in [The AI SEO Playbook](https://valueaddvc.com/seo-playbook) — a comprehensive guide to building an AI-powered content engine that actually ranks.
 
@@ -101,20 +101,22 @@ The guide covers:
 
 ## Results
 
-These tools were built and refined on [ValueAddVC.com](https://valueaddvc.com) over 10 weeks:
+These tools were built and refined on [ValueAddVC.com](https://valueaddvc.com) over 3 months:
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Monthly Impressions | 604K | 1.87M |
-| Monthly Clicks | ~5.6K | 8.3K |
-| CTR | 0.93% | 0.44%* |
+| Metric | Week 1 (May '26) | Now (Aug '26) |
+|--------|-------------------|---------------|
+| 3-Month Impressions | — | 4.62M |
+| 3-Month Clicks | — | 17.3K |
+| Daily Clicks (peak) | ~50 | 854 |
+| Average Position | 12+ | 7.5 |
+| CTR | 0.93% | 0.4% |
 | Posts Audited | 480 | 960+ |
 | Title Rewrites | 0 | 92 |
 | Cannibalization Clusters Fixed | 0 | 21 |
 | Template Phrases Purged | 500+ | 0 |
 | Orphan Pages Linked | 0 | 191 |
 
-*\*CTR decreased in absolute terms because impressions grew 3x — largely from AI-overview citations (GEO traffic) that don't produce clicks by nature. Human-intent CTR improved: ranked lists hit 6.8%, question-led posts hit 3.2%.*
+*\*CTR is 0.4% because impressions grew ~8x — largely from AI-overview citations (GEO traffic) that don't produce clicks by nature. Human-intent CTR improved: ranked lists hit 6.8%, question-led posts hit 3.2%. The growth curve is near-vertical: Aug 13 alone hit 127K impressions and 854 clicks.*
 
 ---
 
