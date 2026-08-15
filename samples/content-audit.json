@@ -1,0 +1,71 @@
+{
+  "generated": "2026-08-10T13:30:00Z",
+  "site": "sc-domain:example.com",
+  "totalPages": 487,
+  "buckets": {
+    "KILL": 23,
+    "MERGE": 18,
+    "UPDATE": 45,
+    "PROMOTE": 31,
+    "KEEP": 370
+  },
+  "summary": {
+    "pagesWithZeroClicks": 142,
+    "pagesWithTemplateFingerprints": 8,
+    "pagesWithNoSchema": 67,
+    "orphanPages": 12,
+    "averageContentScore": 6.8
+  },
+  "killList": [
+    {
+      "page": "/blog/what-is-venture-capital-explained",
+      "reason": "Zero clicks in 90 days, high template phrase density (14 phrases), no unique data or perspective. Cannibalizes '/blog/venture-capital-101' which ranks better.",
+      "impressions": 320,
+      "clicks": 0,
+      "templatePhraseCount": 14,
+      "contentScore": 2.1
+    },
+    {
+      "page": "/blog/startup-funding-rounds-guide",
+      "reason": "Duplicate topic covered better by '/blog/series-a-vs-series-b'. Template opener detected. No internal links pointing to it.",
+      "impressions": 180,
+      "clicks": 0,
+      "templatePhraseCount": 9,
+      "contentScore": 2.8
+    }
+  ],
+  "mergeList": [
+    {
+      "pages": [
+        "/blog/spacex-valuation-2026",
+        "/blog/spacex-ipo-analysis",
+        "/blog/spacex-ipo-valuation-2026"
+      ],
+      "reason": "Three pages competing for 'spacex ipo valuation' queries. Combined impressions: 48,200. Consolidate into the strongest URL (/blog/spacex-ipo-valuation-2026) and 301 the others.",
+      "combinedImpressions": 48200,
+      "combinedClicks": 412,
+      "recommendedSurvivor": "/blog/spacex-ipo-valuation-2026"
+    }
+  ],
+  "updateList": [
+    {
+      "page": "/blog/anthropic-series-e-valuation",
+      "reason": "Strong performer (287 clicks/wk) but lastmod is 45 days old. Valuation data is stale — update with latest round details to trigger freshness signal.",
+      "impressions": 31200,
+      "clicks": 287,
+      "daysSinceUpdate": 45,
+      "contentScore": 7.4,
+      "updatePriority": "HIGH"
+    }
+  ],
+  "promoteList": [
+    {
+      "page": "/blog/best-ai-tools-for-startups",
+      "reason": "Position 3.8 with 1.3% CTR — this page is winning. Add more internal links pointing to it, update the FAQ section, add ItemList schema for rich results.",
+      "impressions": 18900,
+      "clicks": 245,
+      "position": 3.8,
+      "missingOptimizations": ["ItemList schema", "FAQ expansion", "Internal link equity"]
+    }
+  ]
+}

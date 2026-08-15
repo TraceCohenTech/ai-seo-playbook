@@ -1,0 +1,41 @@
+{
+  "generated": "2026-08-10T13:30:00Z",
+  "directory": "./content",
+  "totalPages": 487,
+  "orphanPages": 12,
+  "lowLinkPages": 34,
+  "deadEndPages": 8,
+  "orphans": [
+    {
+      "page": "content/niche-ai-tools-comparison.mdx",
+      "inboundLinks": 0,
+      "outboundLinks": 3,
+      "impressions": 4200,
+      "note": "Getting impressions from Google but invisible in internal link graph — Google found it via sitemap only"
+    },
+    {
+      "page": "content/seed-stage-metrics.mdx",
+      "inboundLinks": 0,
+      "outboundLinks": 1,
+      "impressions": 1800,
+      "note": "Related to 5 other funding-stage pages that should link to it"
+    }
+  ],
+  "lowLink": [
+    {
+      "page": "content/spacex-ipo-valuation-2026.mdx",
+      "inboundLinks": 1,
+      "outboundLinks": 4,
+      "impressions": 28450,
+      "note": "Top-performing page with only 1 inbound link — deserves 10+ links from related posts"
+    }
+  ],
+  "deadEnds": [
+    {
+      "page": "content/what-is-convertible-note.mdx",
+      "inboundLinks": 6,
+      "outboundLinks": 0,
+      "note": "Gets link equity but doesn't pass it anywhere — add links to related funding content"
+    }
+  ]
+}

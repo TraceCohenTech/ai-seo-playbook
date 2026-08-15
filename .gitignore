@@ -4,5 +4,6 @@ node_modules/
 !package-lock.json
 !config/*.json
 !schemas/*.json
+!samples/*.json
 .env
 .DS_Store

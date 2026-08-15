@@ -1,0 +1,59 @@
+{
+  "generated": "2026-08-10T13:30:00Z",
+  "site": "sc-domain:example.com",
+  "clustersFound": 6,
+  "totalWastedImpressions": 84200,
+  "clusters": [
+    {
+      "query": "spacex ipo valuation",
+      "pages": [
+        {
+          "page": "/blog/spacex-ipo-valuation-2026",
+          "impressions": 28450,
+          "clicks": 312,
+          "ctr": 1.1,
+          "position": 4.2
+        },
+        {
+          "page": "/blog/spacex-valuation-2026",
+          "impressions": 12400,
+          "clicks": 67,
+          "ctr": 0.54,
+          "position": 9.1
+        },
+        {
+          "page": "/blog/spacex-ipo-analysis",
+          "impressions": 7350,
+          "clicks": 33,
+          "ctr": 0.45,
+          "position": 14.8
+        }
+      ],
+      "wastedImpressions": 19750,
+      "recommendation": "301 redirect /spacex-valuation-2026 and /spacex-ipo-analysis to /spacex-ipo-valuation-2026. Merge unique content from the weaker pages first.",
+      "severity": "HIGH"
+    },
+    {
+      "query": "ai startup funding 2026",
+      "pages": [
+        {
+          "page": "/blog/ai-startup-funding-trends-2026",
+          "impressions": 8200,
+          "clicks": 45,
+          "ctr": 0.55,
+          "position": 7.4
+        },
+        {
+          "page": "/blog/top-ai-startups-funding",
+          "impressions": 6100,
+          "clicks": 28,
+          "ctr": 0.46,
+          "position": 11.2
+        }
+      ],
+      "wastedImpressions": 6100,
+      "recommendation": "These serve different intents (trends overview vs. company list). Add canonical cross-references and differentiate titles to reduce overlap.",
+      "severity": "MEDIUM"
+    }
+  ]
+}

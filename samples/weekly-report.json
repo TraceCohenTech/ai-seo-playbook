@@ -1,0 +1,132 @@
+{
+  "period": {
+    "startDate": "2026-08-04",
+    "endDate": "2026-08-10",
+    "previousStartDate": "2026-07-28",
+    "previousEndDate": "2026-08-03"
+  },
+  "summary": {
+    "thisWeek": {
+      "clicks": 4218,
+      "impressions": 412650,
+      "ctr": 1.02,
+      "position": 7.8
+    },
+    "lastWeek": {
+      "clicks": 3841,
+      "impressions": 389200,
+      "ctr": 0.99,
+      "position": 8.1
+    },
+    "changes": {
+      "clicks": 9.8,
+      "impressions": 6.0,
+      "ctr": 3.0,
+      "position": -3.7
+    }
+  },
+  "topPages": [
+    {
+      "page": "/blog/spacex-ipo-valuation-2026",
+      "clicks": 312,
+      "impressions": 28450,
+      "ctr": 1.1,
+      "position": 4.2
+    },
+    {
+      "page": "/blog/anthropic-series-e-valuation",
+      "clicks": 287,
+      "impressions": 31200,
+      "ctr": 0.92,
+      "position": 5.1
+    },
+    {
+      "page": "/blog/best-ai-tools-for-startups",
+      "clicks": 245,
+      "impressions": 18900,
+      "ctr": 1.3,
+      "position": 3.8
+    },
+    {
+      "page": "/blog/openai-revenue-2026",
+      "clicks": 198,
+      "impressions": 42100,
+      "ctr": 0.47,
+      "position": 6.3
+    },
+    {
+      "page": "/blog/top-vc-firms-2026",
+      "clicks": 176,
+      "impressions": 14200,
+      "ctr": 1.24,
+      "position": 5.7
+    }
+  ],
+  "trending": [
+    {
+      "query": "anthropic valuation 2026",
+      "impressions": 8420,
+      "clicks": 94,
+      "growthVs3WeekAvg": 312,
+      "currentPosition": 3.1
+    },
+    {
+      "query": "spacex ipo date",
+      "impressions": 6150,
+      "clicks": 78,
+      "growthVs3WeekAvg": 185,
+      "currentPosition": 4.8
+    },
+    {
+      "query": "ai startup funding 2026",
+      "impressions": 4800,
+      "clicks": 52,
+      "growthVs3WeekAvg": 142,
+      "currentPosition": 6.2
+    }
+  ],
+  "dropping": [
+    {
+      "page": "/blog/tiger-global-portfolio-2026",
+      "clicksThisWeek": 12,
+      "clicksLastWeek": 45,
+      "changePercent": -73.3,
+      "possibleCause": "Position dropped from 5.2 to 11.8 — likely displaced by fresher competitor content"
+    },
+    {
+      "page": "/blog/venture-capital-trends-q2",
+      "clicksThisWeek": 8,
+      "clicksLastWeek": 22,
+      "changePercent": -63.6,
+      "possibleCause": "Seasonal query — Q2 interest fading as Q3 begins"
+    }
+  ],
+  "ctrTriage": [
+    {
+      "page": "/blog/openai-revenue-2026",
+      "impressions": 42100,
+      "clicks": 198,
+      "ctr": 0.47,
+      "position": 6.3,
+      "diagnosis": "High impressions, low CTR at good position — title likely doesn't match search intent. Current title is informational but queries are comparison-seeking."
+    },
+    {
+      "page": "/blog/ai-chip-market-nvidia-amd",
+      "impressions": 35600,
+      "clicks": 89,
+      "ctr": 0.25,
+      "position": 8.9,
+      "diagnosis": "Position 8-9 means page 1 bottom or page 2 top. Title rewrite alone won't fix — needs content depth + internal links to improve position first."
+    }
+  ],
+  "queryMonopolies": [
+    {
+      "query": "spacex ipo valuation",
+      "page": "/blog/spacex-ipo-valuation-2026",
+      "impressions": 12400,
+      "clicks": 156,
+      "shareOfTotal": 94.2,
+      "note": "This page owns this query cluster — protect it"
+    }
+  ]
+}

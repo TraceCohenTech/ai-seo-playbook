@@ -1,0 +1,74 @@
+{
+  "generated": "2026-08-10T13:30:00Z",
+  "site": "sc-domain:example.com",
+  "totalPagesAnalyzed": 487,
+  "candidatesFound": 14,
+  "candidates": [
+    {
+      "page": "/blog/openai-revenue-2026",
+      "currentTitle": "OpenAI Revenue Growth and Financial Performance in 2026",
+      "impressions": 42100,
+      "clicks": 198,
+      "ctr": 0.47,
+      "position": 6.3,
+      "rewriteScore": 94,
+      "topQueries": [
+        { "query": "openai revenue 2026", "impressions": 8200, "clicks": 41, "position": 5.1 },
+        { "query": "how much money does openai make", "impressions": 6100, "clicks": 28, "position": 7.2 },
+        { "query": "openai vs anthropic revenue", "impressions": 4800, "clicks": 12, "position": 8.4 },
+        { "query": "openai annual revenue", "impressions": 3900, "clicks": 18, "position": 6.8 }
+      ],
+      "diagnosis": "Title is generic and informational. Top query is comparison-seeking ('openai vs anthropic'). Rewrite to include the comparison angle and a specific number.",
+      "aiGroundingQueries": {
+        "count": 28,
+        "percentage": 12.4,
+        "examples": [
+          "what is openai's current annual revenue run rate",
+          "compare openai and anthropic financials 2026"
+        ]
+      }
+    },
+    {
+      "page": "/blog/ai-chip-market-nvidia-amd",
+      "currentTitle": "The AI Chip Market: Nvidia, AMD, and the Race for AI Hardware",
+      "impressions": 35600,
+      "clicks": 89,
+      "ctr": 0.25,
+      "position": 8.9,
+      "rewriteScore": 87,
+      "topQueries": [
+        { "query": "nvidia vs amd ai chips", "impressions": 5400, "clicks": 22, "position": 7.1 },
+        { "query": "best ai chips 2026", "impressions": 4200, "clicks": 15, "position": 9.8 },
+        { "query": "ai chip market size", "impressions": 3800, "clicks": 8, "position": 11.2 }
+      ],
+      "diagnosis": "Position 8.9 is borderline page 1/2. Title is descriptive but not click-worthy. The 'race' framing is overused. Lead with the data point or ranking angle.",
+      "aiGroundingQueries": {
+        "count": 142,
+        "percentage": 38.1,
+        "examples": [
+          "which company makes the best ai training chips",
+          "nvidia ai chip market share percentage"
+        ]
+      }
+    },
+    {
+      "page": "/blog/venture-debt-vs-equity",
+      "currentTitle": "Venture Debt vs Equity: A Comprehensive Guide for Startups",
+      "impressions": 18200,
+      "clicks": 54,
+      "ctr": 0.3,
+      "position": 12.4,
+      "rewriteScore": 72,
+      "topQueries": [
+        { "query": "venture debt vs equity", "impressions": 3200, "clicks": 18, "position": 8.1 },
+        { "query": "should startups take venture debt", "impressions": 2100, "clicks": 8, "position": 14.2 }
+      ],
+      "diagnosis": "Title includes 'Comprehensive Guide' — a template phrase that signals AI content. Remove it. The question-led query ('should startups take') suggests a contrarian angle would perform better.",
+      "aiGroundingQueries": {
+        "count": 3,
+        "percentage": 1.8,
+        "examples": []
+      }
+    }
+  ]
+}

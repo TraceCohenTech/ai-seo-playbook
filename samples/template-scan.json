@@ -1,0 +1,52 @@
+{
+  "generated": "2026-08-10T13:30:00Z",
+  "directory": "./content",
+  "filesScanned": 487,
+  "filesWithFingerprints": 8,
+  "totalPhrasesFound": 34,
+  "byCategoryCount": {
+    "hedging": 12,
+    "templateOpeners": 8,
+    "templateClosers": 6,
+    "filler": 5,
+    "metaCommentary": 3
+  },
+  "flaggedFiles": [
+    {
+      "file": "content/venture-debt-vs-equity.mdx",
+      "phraseCount": 14,
+      "phrases": [
+        { "phrase": "It's worth noting that", "category": "hedging", "line": 23 },
+        { "phrase": "In today's rapidly evolving landscape", "category": "templateOpeners", "line": 1 },
+        { "phrase": "As we look ahead to the future", "category": "templateClosers", "line": 142 },
+        { "phrase": "This comprehensive guide", "category": "filler", "line": 5 },
+        { "phrase": "Let's dive in", "category": "metaCommentary", "line": 8 }
+      ],
+      "severity": "CRITICAL"
+    },
+    {
+      "file": "content/startup-funding-rounds.mdx",
+      "phraseCount": 9,
+      "phrases": [
+        { "phrase": "It's important to note", "category": "hedging", "line": 45 },
+        { "phrase": "In the ever-changing world of", "category": "templateOpeners", "line": 1 },
+        { "phrase": "Only time will tell", "category": "templateClosers", "line": 89 }
+      ],
+      "severity": "HIGH"
+    }
+  ],
+  "ngramAnalysis": {
+    "suspiciousRepeats": [
+      { "ngram": "it's worth noting that", "occurrences": 12, "files": 8 },
+      { "ngram": "in today's rapidly", "occurrences": 8, "files": 7 },
+      { "ngram": "as we look ahead", "occurrences": 6, "files": 5 }
+    ]
+  },
+  "sharedClosers": [
+    {
+      "pattern": "As the [industry] continues to evolve, one thing is clear:",
+      "occurrences": 4,
+      "files": ["ai-tools.mdx", "venture-debt.mdx", "startup-funding.mdx", "vc-trends.mdx"]
+    }
+  ]
+}
