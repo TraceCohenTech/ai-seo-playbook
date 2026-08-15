@@ -1,7 +1,7 @@
 {
   "name": "ai-seo-playbook",
   "version": "1.0.0",
-  "description": "The open-source SEO toolkit behind a 4.6M-impression content engine. Scripts for GSC analysis, content auditing, cannibalization detection, and quality gates.",
+  "description": "The complete AI SEO playbook: methodology, scripts, and safety guards behind a 4.6M-impression content engine. GSC feedback loops, multi-model agent orchestration, quality gates, and build cost control.",
   "author": "Trace Cohen <t@nyvp.com>",
   "license": "MIT",
   "type": "module",

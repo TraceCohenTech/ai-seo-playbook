@@ -5,11 +5,23 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![GitHub stars](https://img.shields.io/github/stars/TraceCohenTech/ai-seo-playbook)](https://github.com/TraceCohenTech/ai-seo-playbook/stargazers)
 
-**The open-source toolkit behind a 4.6M-impression content engine.**
+**The complete playbook for building an AI-powered content engine that actually ranks — from zero to 4.6M impressions in 3 months.**
 
-14 diagnostic scripts, safety guards, agent orchestration rules, structured data schemas, and CI automation for running an AI-powered content engine that actually ranks — built and proven on [ValueAddVC.com](https://valueaddvc.com).
+This is the methodology, the toolkit, and the hard-won lessons from building a content engine on [ValueAddVC.com](https://valueaddvc.com) using AI agents, GSC feedback loops, and automated quality gates. 14 diagnostic scripts, 9 battle-tested configs (safety guards, agent orchestration, quality gates, anti-AI detection), structured data schemas, and CI automation — everything you need to replicate the system.
+
+Not theory. Not prompts. The actual operating system behind a site that went from 604K to 4.62M monthly impressions.
 
 Built by [Trace Cohen](https://x.com/Trace_Cohen) at [ValueAddVC.com](https://valueaddvc.com).
+
+---
+
+## What This Playbook Covers
+
+1. **The Content Engine** — AI agent orchestration (multi-model pipelines: Opus/Fable for planning, Sonnet for writing, Haiku for grunt work), 5-format content rotation, voice training, anti-AI fingerprint detection
+2. **The GSC Feedback Loop** — Weekly automated reports, title rewrite candidates, cannibalization detection, query gap mining, striking distance optimization
+3. **The Quality System** — 9 publish gates, template phrase blocklists, source verification, fact-checking, structured data validation
+4. **The Safety Layer** — Repo locks, rebase guards, build cost control ([nobuild] tags, deploy-tick), self-healing heartbeats, content writer isolation from git
+5. **The Growth Loop** — Keyword anticipation (publish before demand spikes), living page refreshes, internal link graph optimization, news sitemap + WebSub for instant crawling
 
 ---
 
@@ -39,7 +51,7 @@ flowchart LR
     style Kill fill:#b91c1c,color:#fff
 ```
 
-The feedback loop: GSC data feeds diagnostic scripts, which surface what needs fixing, which improves rankings, which produces better GSC data. Every week the system gets smarter.
+The feedback loop: GSC data feeds diagnostic scripts → scripts surface what needs fixing → AI agents make the fixes through quality gates → improved rankings produce better GSC data → repeat. Every week the system gets smarter.
 
 ---
 
