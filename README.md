@@ -7,7 +7,7 @@
 
 **The open-source toolkit behind a 4.6M-impression content engine.**
 
-13 diagnostic scripts, quality gate configs, structured data schemas, and CI automation for running an AI-powered content engine that actually ranks — built and proven on [ValueAddVC.com](https://valueaddvc.com).
+14 diagnostic scripts, safety guards, agent orchestration rules, structured data schemas, and CI automation for running an AI-powered content engine that actually ranks — built and proven on [ValueAddVC.com](https://valueaddvc.com).
 
 Built by [Trace Cohen](https://x.com/Trace_Cohen) at [ValueAddVC.com](https://valueaddvc.com).
 
@@ -62,6 +62,7 @@ The feedback loop: GSC data feeds diagnostic scripts, which surface what needs f
 | `rewrite-measurer.mjs` | Before/after tracking for title rewrites. Take a baseline, make changes, measure impact 2-4 weeks later. |
 | `websub-ping.mjs` | Notifies Google's hub that your feeds changed — triggers immediate crawl instead of waiting hours. Run after every publish. |
 | `indexing-submitter.mjs` | Submits URLs to Google's Indexing API for near-instant crawling. 200 URLs/day quota. |
+| `broken-link-checker.mjs` | Scans all content for outbound links and checks for 404s, timeouts, and redirect chains. Exits non-zero for CI. |
 
 ### Configuration (`/config`)
 
@@ -72,6 +73,9 @@ The feedback loop: GSC data feeds diagnostic scripts, which surface what needs f
 | `anti-ai-rules.json` | The complete blocklist of AI template phrases + style rules for making AI content sound human |
 | `refresh-rules.json` | Rules for the refresh drip strategy — staleness thresholds by content type, refresh triggers, and a refresh checklist |
 | `keyword-anticipation.json` | Event calendar methodology — publish content before IPOs, earnings, funding rounds, regulations so you're ranked when demand spikes |
+| `health-checks.json` | Live-site health checks: leaked template variables, broken OG images, injected ad links, thin content, dead pages |
+| `content-pipeline-guards.json` | Safety guards: repo locks, rebase guards, cannibalization checks, build cost control, self-healing heartbeats |
+| `agent-orchestration.json` | Multi-model AI pipeline rules: Opus/Fable for planning, Sonnet for writing, Haiku for mechanical tasks. Max 3 concurrent agents. |
 
 ### Schema Examples (`/schemas`)
 
@@ -228,18 +232,19 @@ The scripts are standalone Node.js — run them anywhere you can install `google
 
 ```
 ai-seo-playbook/
-├── scripts/              # 13 diagnostic & tracking scripts
-│   ├── gsc-rewrite-candidates.mjs   # Find title rewrite opportunities
-│   ├── template-detector.mjs        # Scan for AI template phrases
-│   ├── cannibalization-detector.mjs  # Find competing pages
+├── scripts/              # 14 diagnostic & tracking scripts
 │   ├── weekly-report.mjs            # Weekly GSC performance report
-│   ├── orphan-finder.mjs            # Find unlinked pages
-│   ├── content-audit.mjs            # KILL/MERGE/UPDATE/PROMOTE scoring
-│   ├── redirect-checker.mjs         # Sitemap redirect problems
-│   ├── refresh-tracker.mjs          # Stale page detection
+│   ├── gsc-rewrite-candidates.mjs   # Find title rewrite opportunities
+│   ├── rewrite-measurer.mjs         # Before/after rewrite tracking
 │   ├── query-gap-miner.mjs          # Retroactive keyword discovery
 │   ├── striking-distance.mjs        # Position 5-20 opportunities
-│   ├── rewrite-measurer.mjs         # Before/after title rewrite tracking
+│   ├── template-detector.mjs        # Scan for AI template phrases
+│   ├── cannibalization-detector.mjs  # Find competing pages
+│   ├── content-audit.mjs            # KILL/MERGE/UPDATE/PROMOTE scoring
+│   ├── orphan-finder.mjs            # Find unlinked pages
+│   ├── refresh-tracker.mjs          # Stale page detection
+│   ├── redirect-checker.mjs         # Sitemap redirect problems
+│   ├── broken-link-checker.mjs      # 404s and dead outbound links
 │   ├── websub-ping.mjs              # Notify Google of feed changes
 │   └── indexing-submitter.mjs       # Google Indexing API submissions
 ├── config/               # Quality gates, format system, anti-AI rules

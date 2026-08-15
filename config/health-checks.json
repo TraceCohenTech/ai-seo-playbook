@@ -1,0 +1,68 @@
+{
+  "_comment": "Health check configuration for a content pipeline. These checks catch problems before they embarrass you — leaked template variables, broken OG images, dead links, thin content. Run on a schedule (2x/day recommended) and on every deploy.",
+  "checks": [
+    {
+      "name": "template-variable-leak",
+      "description": "Unrendered template literals like ${firstName} or [object Object] visible on the live page",
+      "severity": "FAIL",
+      "patterns": ["\\$\\{[A-Za-z_]+\\}", "\\[object Object\\]"],
+      "checkAgainst": "visible text (tags stripped)",
+      "notes": "Common when newsletter content leaks into blog posts. Check against rendered text, not raw HTML, to avoid false positives on code examples."
+    },
+    {
+      "name": "broken-og-image",
+      "description": "OG image URL returns non-200 status",
+      "severity": "FAIL",
+      "notes": "Google and social platforms cache OG images aggressively. A broken OG image persists for days even after you fix it. Check every page's og:image URL returns 200 with content-type image/*."
+    },
+    {
+      "name": "injected-ad-link",
+      "description": "Tracking links or sponsor ad links that leaked from newsletter content into blog posts",
+      "severity": "FAIL",
+      "patterns": ["_bhiiv=", "_bhlid=", "bhcl_id=", "ref.getviktor", "advertising.roku"],
+      "notes": "If you repurpose newsletter content to blog posts, email tracking parameters and sponsor links can survive the conversion."
+    },
+    {
+      "name": "thin-content",
+      "description": "Published page with less than 300 words of visible text",
+      "severity": "WARN",
+      "threshold": 300,
+      "notes": "Thin pages dilute your site's quality signal. Either add depth or noindex them."
+    },
+    {
+      "name": "dead-page",
+      "description": "Page in sitemap returns 404 or 5xx",
+      "severity": "FAIL",
+      "notes": "Run against every URL in your sitemap. Dead pages in the sitemap cause GSC validation failures and waste crawl budget."
+    },
+    {
+      "name": "empty-paragraph",
+      "description": "Empty <p></p> or double-wrapped <p><p> tags in rendered HTML",
+      "severity": "WARN",
+      "notes": "Usually indicates a markdown rendering bug or content generation error."
+    },
+    {
+      "name": "missing-schema",
+      "description": "Blog post without Article or NewsArticle structured data",
+      "severity": "WARN",
+      "notes": "Schema markup is the foundation of rich results. Every post should have at minimum Article + author Person entity."
+    },
+    {
+      "name": "stale-news-sitemap",
+      "description": "News sitemap contains entries older than 48 hours",
+      "severity": "WARN",
+      "notes": "Google ignores news sitemap entries older than 48h. Stale entries signal a broken pipeline."
+    }
+  ],
+  "schedule": {
+    "recommended": "Every 12 hours via GitHub Actions or cron",
+    "onDeploy": true,
+    "alertMethod": "GitHub issue or Slack webhook"
+  },
+  "implementation": {
+    "approach": "Fetch each URL from your sitemap, parse the HTML, run each check against the rendered content. Use a real HTTP client with a browser-like User-Agent to avoid bot-challenge false positives.",
+    "concurrency": "10 concurrent fetches max (don't hammer your own site)",
+    "timeout": "20 seconds per page",
+    "exitCode": "Non-zero if any FAIL-level issue found (CI-friendly)"
+  }
+}

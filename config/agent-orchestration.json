@@ -1,0 +1,82 @@
+{
+  "_comment": "Agent orchestration rules for AI-powered content pipelines. How to use multiple AI models efficiently without burning tokens or producing garbage.",
+  "modelTiers": {
+    "planning": {
+      "models": ["claude-opus-4", "claude-fable-5"],
+      "use": "Topic selection, content strategy, query analysis, growth review synthesis",
+      "why": "These decisions shape everything downstream. A bad topic choice wastes all downstream tokens. Use the best model for decisions that compound."
+    },
+    "execution": {
+      "models": ["claude-sonnet-5", "claude-haiku-4-5"],
+      "use": "Content writing, title generation, FAQ expansion, internal link insertion, data refreshes",
+      "why": "Writing quality from Sonnet is near-Opus at a fraction of the cost. Haiku handles mechanical tasks (reformatting, link checking, data extraction) at the lowest cost tier."
+    },
+    "validation": {
+      "models": ["claude-sonnet-5"],
+      "use": "Quality gate evaluation, template phrase detection, fact-checking against source URLs",
+      "why": "Validation needs good judgment but not maximum capability. Sonnet catches the same issues Opus would at lower cost."
+    }
+  },
+  "orchestrationRules": {
+    "maxConcurrentAgents": 3,
+    "noNestedSpawning": "Never let an agent spawn sub-agents. The orchestrator controls all agent lifecycle.",
+    "failFast": "If any quality gate fails, discard the entire piece. Don't spend tokens trying to fix content that failed basic checks — regenerate from scratch.",
+    "tokenBudgets": {
+      "topicSelection": "~2K tokens (fast, decisive)",
+      "contentWriting": "~8K tokens per post (includes research + writing)",
+      "qualityGate": "~1K tokens (binary pass/fail)",
+      "titleRewrite": "~500 tokens per title"
+    }
+  },
+  "pipelineStages": [
+    {
+      "stage": 1,
+      "name": "Topic Selection",
+      "model": "opus/fable",
+      "input": "GSC query gap data + existing content inventory + keyword anticipation calendar",
+      "output": "Ranked topic list with target queries and content format",
+      "guard": "Cannibalization check against existing content BEFORE writing"
+    },
+    {
+      "stage": 2,
+      "name": "Research",
+      "model": "sonnet",
+      "input": "Topic + target query + existing page (if refresh)",
+      "output": "Key data points, sources, current figures",
+      "guard": "Source URLs must be verified (HTTP 200, content matches claim)"
+    },
+    {
+      "stage": 3,
+      "name": "Writing",
+      "model": "sonnet",
+      "input": "Research output + voice/style rules + anti-AI rules",
+      "output": "Complete post with structured data, FAQ, charts",
+      "guard": "Template phrase scan + word count check"
+    },
+    {
+      "stage": 4,
+      "name": "Quality Gate",
+      "model": "sonnet",
+      "input": "Written post",
+      "output": "Pass/fail with reasons",
+      "guard": "All 9 quality gates from quality-gates.json",
+      "onFail": "Discard and regenerate (don't patch — patches accumulate AI artifacts)"
+    },
+    {
+      "stage": 5,
+      "name": "Publish",
+      "model": "none (deterministic)",
+      "input": "Validated post",
+      "output": "Git commit + WebSub ping + indexing API submission",
+      "guard": "Repo lock acquired, rebase guard passed, [nobuild] tag applied"
+    }
+  ],
+  "antiPatterns": [
+    "Never let the writing model choose its own topic — that's how you get content cannibalization",
+    "Never let a content agent commit directly to git — always go through the pipeline with gates",
+    "Never retry a failed quality gate by tweaking the same output — regenerate fresh",
+    "Never run more than 3 agents concurrently — token waste from context switching outweighs parallelism gains",
+    "Never use Opus/Fable for mechanical tasks (formatting, link insertion) — that's Haiku's job",
+    "Never skip the cannibalization check to save time — a duplicate page is worse than no page"
+  ]
+}

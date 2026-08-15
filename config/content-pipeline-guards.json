@@ -1,0 +1,75 @@
+{
+  "_comment": "Safety guards for automated content pipelines. These prevent your pipeline from going rogue — publishing duplicates, breaking the repo, blowing your hosting bill, or damaging SEO.",
+  "repoSafety": {
+    "repoLock": {
+      "description": "Mutex lock preventing concurrent git operations. If two scripts try to commit simultaneously, one corrupts the other's state.",
+      "implementation": "mkdir-based lock at /tmp/your-repo.lock with PID file. Stale locks (dead PID) are auto-stolen. Every script that touches git must acquire the lock first.",
+      "timeout": "300 seconds default, configurable per script"
+    },
+    "rebaseGuard": {
+      "description": "Check for .git/rebase-merge, .git/rebase-apply, or .git/MERGE_HEAD before any git operation. A stuck rebase kills all automation.",
+      "action": "Abort with a logged error. Never try to auto-resolve a rebase — alert a human."
+    },
+    "preCommitHook": {
+      "description": "Block the content writer from committing directly. All commits go through a pipeline script that validates first.",
+      "checks": ["typecheck passes", "no template phrases in new content", "no purple/pink/magenta colors", "structured data is valid JSON-LD"]
+    }
+  },
+  "contentSafety": {
+    "cannibalizationCheck": {
+      "description": "Before creating a new page, grep existing content for the same entity + metric. If a page already covers 'Anthropic revenue', UPDATE it instead of creating a duplicate.",
+      "implementation": "Entity extraction from the topic, then grep across all content files. Match on entity + intent (revenue vs valuation vs IPO)."
+    },
+    "categoryRegistry": {
+      "description": "For ranking/comparison pages, maintain a registry mapping category → canonical URL. Only one 'best data rooms' page should exist.",
+      "implementation": "JSON map of category → slug. Check before creating any ranking-type content."
+    },
+    "timestampJitter": {
+      "description": "Batch-published content gets timestamps on exact 15-minute marks (09:30:00, 10:00:00) which reads as machine-generated. Hash the slug to shift timestamps backward by 1-14 minutes.",
+      "implementation": "SHA1(slug) mod 14 + 1 = minutes to subtract. Deterministic (same result on re-runs), always backward (never future), organic-looking seconds."
+    }
+  },
+  "buildCostSafety": {
+    "nobuildTag": {
+      "description": "Automation commits append [nobuild] to skip their own Vercel build. Content rides the next scheduled build window.",
+      "implementation": "vercel-ignore.sh checks commit message for [nobuild] and exits 0 (skip)"
+    },
+    "deployTick": {
+      "description": "Daily safety net (e.g., 4:45pm) that checks if user-visible content is stranded (committed but never deployed). If so, pushes one empty commit to force exactly one build.",
+      "implementation": "Compare production's deployed SHA (from /version.json) against the latest remote SHA. Only tick if the diff includes user-visible files."
+    },
+    "contentOnlySkip": {
+      "description": "Commits that only change markdown/JSON files skip the build — ISR handles them without a full redeploy.",
+      "implementation": "git diff against previous SHA, check if any non-content file changed"
+    },
+    "buildBudget": {
+      "description": "Target 4-6 builds per day max. More than that and you're burning hosting credits on redundant rebuilds.",
+      "monitoring": "Track build count in deploy logs, alert if >8 builds in a day"
+    }
+  },
+  "selfHealingSafety": {
+    "heartbeat": {
+      "description": "Runs every 2 hours. If the scheduled daily publish never fired (Mac was asleep, CI failed), re-triggers it. Prevents content going stale because of infrastructure issues.",
+      "cooldown": "90 minutes between catch-up attempts (don't hammer on repeated failures)",
+      "alertThreshold": "20 hours without a publish — notify human"
+    },
+    "recoveryJob": {
+      "description": "If the pipeline discovers missed publishes (e.g., blog was dead for 2 days), it queues makeup posts at a throttled rate rather than dumping them all at once.",
+      "throttle": "Max 2 recovery posts per hour"
+    }
+  },
+  "seoSafety": {
+    "redirectCollisionGuard": {
+      "description": "Before creating a new page, check that the slug doesn't collide with an existing redirect. A page and a 301 redirect at the same path = unpredictable behavior.",
+      "implementation": "Check your redirect config and existing pages before committing new content"
+    },
+    "sitemapIntegrity": {
+      "description": "Every URL in the sitemap must return 200. Submit redirects, 404s, or 5xx and GSC validation fails.",
+      "implementation": "Run redirect-checker.mjs weekly"
+    },
+    "newsSitemapWindow": {
+      "description": "News sitemap only contains entries from the last 48 hours. Stale entries are worse than missing ones.",
+      "implementation": "Filter by publishedAt timestamp, not by a fixed list"
+    }
+  }
+}

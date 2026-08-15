@@ -21,7 +21,8 @@
     "striking-distance": "node scripts/striking-distance.mjs",
     "measure-rewrites": "node scripts/rewrite-measurer.mjs",
     "websub-ping": "node scripts/websub-ping.mjs",
-    "submit-urls": "node scripts/indexing-submitter.mjs"
+    "submit-urls": "node scripts/indexing-submitter.mjs",
+    "check-links": "node scripts/broken-link-checker.mjs"
   },
   "dependencies": {
     "googleapis": "^144.0.0"
