@@ -35,7 +35,7 @@ brew install google-cloud-sdk  # macOS
 
 # Log in and set up credentials
 gcloud auth application-default login \
-  --scopes=https://www.googleapis.com/auth/webmasters.readonly
+  --scopes="https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/webmasters.readonly"
 
 # This creates a credentials file at:
 # ~/.config/gcloud/application_default_credentials.json
