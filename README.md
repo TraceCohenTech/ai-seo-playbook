@@ -7,7 +7,7 @@
 
 **The complete playbook for building an AI-powered content engine that actually ranks — from zero to 4.6M impressions in 3 months.**
 
-This is the methodology, the toolkit, and the hard-won lessons from building a content engine on [ValueAddVC.com](https://valueaddvc.com) using AI agents, GSC feedback loops, and automated quality gates. 14 diagnostic scripts, 8 battle-tested configs (safety guards, agent orchestration, quality gates, anti-AI detection), structured data schemas, and CI automation — everything you need to replicate the system.
+This is the methodology, the toolkit, and the hard-won lessons from building a content engine on [ValueAddVC.com](https://valueaddvc.com) using AI agents, GSC feedback loops, and automated quality gates. 17 diagnostic scripts, 11 battle-tested configs (safety guards, agent orchestration, quality gates, anti-AI detection, AEO rules, schema validation, title engineering), structured data schemas, a prompt library, and CI automation — everything you need to replicate the system.
 
 Not theory. Not prompts. The actual operating system behind a site that went from 604K to 4.62M monthly impressions.
 
@@ -75,6 +75,9 @@ The feedback loop: GSC data feeds diagnostic scripts → scripts surface what ne
 | `websub-ping.mjs` | Notifies Google's hub that your feeds changed — triggers immediate crawl instead of waiting hours. Run after every publish. |
 | `indexing-submitter.mjs` | Submits URLs to Google's Indexing API for near-instant crawling. 200 URLs/day quota. |
 | `broken-link-checker.mjs` | Scans all content for outbound links and checks for 404s, timeouts, and redirect chains. Exits non-zero for CI. |
+| `schema-validator.mjs` | Validates JSON-LD structured data across your site — catches duplicate FAQPage schemas (triggers Google penalty), missing required fields, and wrong schema types for page types |
+| `factual-density-scorer.mjs` | Scores content by factual density — the ratio of specific data points (numbers, $, %, dates) to word count. AI engines cite high-density pages 3-5x more often. |
+| `ai-citation-tracker.mjs` | Checks whether your pages are being cited by AI search engines (Perplexity). The newest, hardest-to-track SEO metric. |
 
 ### Configuration (`/config`)
 
@@ -88,6 +91,9 @@ The feedback loop: GSC data feeds diagnostic scripts → scripts surface what ne
 | `health-checks.json` | Live-site health checks: leaked template variables, broken OG images, injected ad links, thin content, dead pages |
 | `content-pipeline-guards.json` | Safety guards: repo locks, rebase guards, cannibalization checks, build cost control, self-healing heartbeats |
 | `agent-orchestration.json` | Multi-model AI pipeline rules: Opus/Fable for planning, Sonnet for writing, Haiku for mechanical tasks. Max 3 concurrent agents. |
+| `aeo-rules.json` | AI Engine Optimization rules: quick-answer block requirements, factual density minimums, entity clarity, schema requirements for AI citation |
+| `schema-rules.json` | Schema deployment map: which of the 7 JSON-LD types goes where, per-type placement rules, duplicate detection, required fields |
+| `title-engineering.json` | Numbers-first title rewrite formula: format rules, banned words, rewrite workflow, CTR benchmarks by title type, before/after examples |
 
 ### Schema Examples (`/schemas`)
 
@@ -120,6 +126,7 @@ Every script has a sample output file so you can see what to expect before runni
 ### Documentation (`/docs`)
 
 - [`setup-gsc.md`](docs/setup-gsc.md) — Step-by-step Google Search Console API setup (local auth + service account for CI)
+- [`prompt-library.md`](docs/prompt-library.md) — 10 production-tested prompts: title rewrites, schema generation, AEO optimization, content auditing, internal linking, competitive gap analysis, and more
 
 ### Automation (`.github/workflows`)
 
@@ -174,6 +181,15 @@ npm run check-redirects -- --site sc-domain:yoursite.com --sitemap https://yours
 
 # Ping Google to crawl your updated feeds immediately
 npm run websub-ping -- --feeds https://yoursite.com/sitemap.xml,https://yoursite.com/feed.xml
+
+# Validate JSON-LD schemas across your content
+npm run validate-schemas -- --dir ./your-content-directory
+
+# Score content by factual density (AEO optimization)
+npm run density-score -- --dir ./your-content-directory
+
+# Track AI citations (requires queries file or GSC access)
+npm run ai-citations -- --domain yoursite.com --site sc-domain:yoursite.com
 ```
 
 > **New to the GSC API?** See [`docs/setup-gsc.md`](docs/setup-gsc.md) for a step-by-step setup guide.
@@ -245,7 +261,7 @@ The scripts are standalone Node.js — run them anywhere you can install `google
 
 ```
 ai-seo-playbook/
-├── scripts/              # 14 diagnostic & tracking scripts
+├── scripts/              # 17 diagnostic & tracking scripts
 │   ├── weekly-report.mjs            # Weekly GSC performance report
 │   ├── gsc-rewrite-candidates.mjs   # Find title rewrite opportunities
 │   ├── rewrite-measurer.mjs         # Before/after rewrite tracking
@@ -259,12 +275,15 @@ ai-seo-playbook/
 │   ├── redirect-checker.mjs         # Sitemap redirect problems
 │   ├── broken-link-checker.mjs      # 404s and dead outbound links
 │   ├── websub-ping.mjs              # Notify Google of feed changes
-│   └── indexing-submitter.mjs       # Google Indexing API submissions
-├── config/               # Quality gates, format system, anti-AI rules
+│   ├── indexing-submitter.mjs       # Google Indexing API submissions
+│   ├── schema-validator.mjs         # JSON-LD schema validation
+│   ├── factual-density-scorer.mjs   # AEO factual density scoring
+│   └── ai-citation-tracker.mjs      # AI search citation tracking
+├── config/               # Quality gates, format system, anti-AI rules, AEO, schemas, title engineering
 ├── schemas/              # JSON-LD structured data examples
 ├── examples/             # Next.js sitemaps + React components
 ├── samples/              # Example output from every script
-├── docs/                 # Setup guides
+├── docs/                 # Setup guides + prompt library
 └── .github/workflows/    # Weekly automated report CI
 ```
 

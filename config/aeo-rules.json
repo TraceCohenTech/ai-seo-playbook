@@ -1,0 +1,70 @@
+{
+  "_comment": "AI Engine Optimization rules. AEO is distinct from SEO — optimizing for citation by Perplexity, ChatGPT, Claude, and Gemini, not just Google ranking.",
+  "quickAnswer": {
+    "required": true,
+    "position": "top of page, before any other content",
+    "format": "2-3 sentences. Answer (with number) → Context → Implication.",
+    "rules": [
+      "Must lead with a specific number ($, %, x, or count)",
+      "Must be self-contained — an AI engine should be able to cite just this block",
+      "No hedging (avoid: 'it remains to be seen', 'only time will tell')",
+      "Must answer the query directly, not introduce the article"
+    ],
+    "example": "$347B in exits in Q1 alone — more than all of the previous year combined. The exit window is wider than it has been since 2021, and late-stage companies are rushing to capitalize before rates shift again."
+  },
+  "factualDensity": {
+    "minimum": 3,
+    "unit": "verifiable data points per 1,000 words",
+    "dataPointTypes": [
+      "Dollar amounts ($6.6B, $157B valuation)",
+      "Percentages (42%, grew 40%)",
+      "Multipliers (302,667x return)",
+      "Specific counts (14 tools, 960 pages)",
+      "Named dates (Q1 2026, January 15)",
+      "Named entities (company, person, organization)"
+    ],
+    "note": "A paragraph with 5 data points gets cited 3-5x more often than one with 5 opinions."
+  },
+  "entityClarity": {
+    "required": true,
+    "rules": [
+      "Every claim must be attributable to a specific source, person, or organization",
+      "At least one named entity per section",
+      "No anonymous claims ('experts say', 'some believe', 'industry insiders')",
+      "Link entities to their canonical identifiers when possible (sameAs URLs)"
+    ]
+  },
+  "structureForExtraction": {
+    "rules": [
+      "Break into clear H2/H3 sections — each section answers one specific question",
+      "Use descriptive headings (questions work well for AEO)",
+      "Add 'Key Takeaways' bullet list (3-5 items, each starting with a number)",
+      "Tables and lists are more extractable than prose paragraphs"
+    ]
+  },
+  "schemaRequirements": {
+    "minimum": ["Article", "FAQPage", "BreadcrumbList"],
+    "recommended": ["Dataset", "Organization"],
+    "note": "Dataset schema surfaces pages in Google Dataset Search — an underused traffic channel that 95% of competitors ignore."
+  },
+  "measurementMetrics": [
+    {
+      "metric": "Citation Rate",
+      "description": "Percentage of your top queries where your domain appears in AI search results",
+      "target": ">30%",
+      "cadence": "Weekly"
+    },
+    {
+      "metric": "Factual Density Score",
+      "description": "Average data points per 1K words across site content",
+      "target": "≥3.0",
+      "cadence": "Monthly"
+    },
+    {
+      "metric": "Quick Answer Coverage",
+      "description": "Percentage of content pages with a quick-answer block at top",
+      "target": "100% of top 50 pages",
+      "cadence": "Monthly"
+    }
+  ]
+}

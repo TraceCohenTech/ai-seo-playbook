@@ -1,0 +1,68 @@
+{
+  "_comment": "Title engineering rules. Numbers-first titles achieve 2-3x higher CTR at the same search position. Run the rewrite cycle on a 2-week cadence.",
+  "format": {
+    "pattern": "[Number Hook] — [Topic]",
+    "separator": " — ",
+    "maxLength": 60,
+    "numberPosition": "first",
+    "hookTypes": [
+      { "type": "dollar", "example": "$347B in Q1", "symbol": "$" },
+      { "type": "percentage", "example": "42% AI Citation Rate", "symbol": "%" },
+      { "type": "multiplier", "example": "302,667x Return", "symbol": "x" },
+      { "type": "count", "example": "14 Tools", "symbol": "#" }
+    ]
+  },
+  "rules": [
+    "Start every title with the most specific, surprising number from the content",
+    "Keep total length under 60 characters (Google truncates at ~60)",
+    "Use dash separator between number hook and topic",
+    "The number should create curiosity or signal authority",
+    "Apply the same number-first pattern to meta descriptions"
+  ],
+  "bannedWords": [
+    "guide",
+    "ultimate",
+    "complete",
+    "comprehensive",
+    "definitive",
+    "everything you need to know",
+    "beginner's guide",
+    "deep dive",
+    "a closer look"
+  ],
+  "rewriteWorkflow": {
+    "cadence": "Every 2 weeks",
+    "batchSize": "Top 15-20 underperformers per cycle",
+    "steps": [
+      "Pull candidates: position 4-20, 1,000+ impressions, CTR <2%",
+      "Find the most compelling number in each page's content body",
+      "Rewrite: move number to position 1, update meta description to match",
+      "Deploy + submit via Google Indexing API",
+      "Wait 14 days for re-crawl",
+      "Measure: compare CTR at same position band (use rewrite-measurer.mjs)"
+    ]
+  },
+  "benchmarks": {
+    "generic": { "avgCtr": 1.2, "description": "No number, no hook" },
+    "topicFirst": { "avgCtr": 2.1, "description": "Topic leads, number buried" },
+    "numbersFirst": { "avgCtr": 3.8, "description": "Number leads the title" },
+    "numbersWithEmoji": { "avgCtr": 4.2, "description": "Number + contextual emoji" }
+  },
+  "examples": [
+    {
+      "before": "Market Exit Dashboard 2026",
+      "after": "$347B in Q1 — Market Exit Window Dashboard",
+      "lift": "2.9x"
+    },
+    {
+      "before": "The Distribution Crisis Explained",
+      "after": "0.08x Returns — The Distribution Crisis",
+      "lift": "3.1x"
+    },
+    {
+      "before": "IPO Return Calculator",
+      "after": "302,667x — IPO Investor Return Calculator",
+      "lift": "2.4x"
+    }
+  ]
+}

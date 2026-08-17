@@ -1,0 +1,97 @@
+{
+  "_comment": "Schema deployment rules. 7 JSON-LD schema types across the site, with per-type placement and validation rules.",
+  "schemaTypes": [
+    {
+      "type": "FAQPage",
+      "priority": "P0",
+      "where": "Top 20-50 pages by traffic",
+      "benefit": "Featured snippets + AI citations",
+      "rules": [
+        "3-5 questions per page maximum (more gets ignored by parser)",
+        "Questions must match real Google autocomplete suggestions",
+        "Every answer must start with a number",
+        "Answers: 50-90 words with at least one concrete data point",
+        "One FAQPage schema per page — duplicates trigger suppression of ALL rich results"
+      ],
+      "critical": "Never stack CMS-injected FAQPage on top of manual one. Duplicate FAQPage schemas trigger Google penalty."
+    },
+    {
+      "type": "Dataset",
+      "priority": "P0",
+      "where": "Data tools, dashboards, interactive pages",
+      "benefit": "Google Dataset Search traffic — an underused channel",
+      "rules": [
+        "Include temporalCoverage (e.g. '2020/2026')",
+        "Include variableMeasured (what data the page contains)",
+        "Include name and description",
+        "Apply to every data-heavy page, tool, or dashboard"
+      ]
+    },
+    {
+      "type": "Article",
+      "priority": "P0",
+      "where": "All blog posts and editorial content",
+      "benefit": "E-E-A-T + rich results",
+      "rules": [
+        "Include author as Person entity with sameAs links (Twitter, LinkedIn)",
+        "Include datePublished and dateModified",
+        "Headline under 110 characters (Google truncates after that)",
+        "Include publisher as Organization"
+      ]
+    },
+    {
+      "type": "Organization",
+      "priority": "P1",
+      "where": "Root layout (site-wide, once)",
+      "benefit": "Knowledge Graph entity recognition",
+      "rules": [
+        "Include name, url, logo, sameAs (all social profiles)",
+        "Only one per site — place in root layout"
+      ]
+    },
+    {
+      "type": "WebSite",
+      "priority": "P1",
+      "where": "Root layout (site-wide, once)",
+      "benefit": "Sitelinks search box in SERPs",
+      "rules": [
+        "Include name, url, potentialAction (SearchAction)",
+        "Only one per site — place in root layout"
+      ]
+    },
+    {
+      "type": "BreadcrumbList",
+      "priority": "P1",
+      "where": "All content pages with hierarchy",
+      "benefit": "Breadcrumb rich results in SERPs",
+      "rules": [
+        "Match actual site navigation hierarchy",
+        "Include itemListElement with position, name, and item (URL)"
+      ]
+    },
+    {
+      "type": "CollectionPage",
+      "priority": "P2",
+      "where": "Category pages, archive pages, tag pages",
+      "benefit": "Hierarchy signals to Google",
+      "rules": [
+        "Include name and description",
+        "Link to contained items via hasPart or mainEntity"
+      ]
+    }
+  ],
+  "validation": {
+    "duplicateDetection": {
+      "enabled": true,
+      "critical": ["FAQPage"],
+      "note": "FAQPage duplicates = penalty. Other type duplicates = warning."
+    },
+    "requiredFields": {
+      "Article": ["headline", "author", "datePublished"],
+      "FAQPage": ["mainEntity"],
+      "Dataset": ["name", "description", "temporalCoverage"],
+      "Organization": ["name", "url"],
+      "BreadcrumbList": ["itemListElement"]
+    }
+  }
+}
