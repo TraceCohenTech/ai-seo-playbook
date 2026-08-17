@@ -23,7 +23,7 @@ import { join, extname } from 'node:path';
 const { values: args } = parseArgs({
   options: {
     dir: { type: 'string' },
-    'base-url': { type: 'string', default: 'https://example.com' },
+    'base-url': { type: 'string' },
     'external-only': { type: 'boolean', default: false },
     'internal-only': { type: 'boolean', default: false },
     'concurrency': { type: 'string', default: '10' },
@@ -116,6 +116,10 @@ async function main() {
   if (args['external-only']) {
     urlsToCheck = urlsToCheck.filter(u => u.startsWith('http'));
   } else if (args['internal-only']) {
+    if (!args['base-url']) {
+      console.error('--base-url is required when using --internal-only (e.g. --base-url https://yoursite.com)');
+      process.exit(1);
+    }
     urlsToCheck = urlsToCheck.filter(u => !u.startsWith('http') || u.startsWith(args['base-url']));
   }
 

@@ -7,7 +7,7 @@
 
 **The complete playbook for building an AI-powered content engine that actually ranks — from zero to 4.6M impressions in 3 months.**
 
-This is the methodology, the toolkit, and the hard-won lessons from building a content engine on [ValueAddVC.com](https://valueaddvc.com) using AI agents, GSC feedback loops, and automated quality gates. 14 diagnostic scripts, 9 battle-tested configs (safety guards, agent orchestration, quality gates, anti-AI detection), structured data schemas, and CI automation — everything you need to replicate the system.
+This is the methodology, the toolkit, and the hard-won lessons from building a content engine on [ValueAddVC.com](https://valueaddvc.com) using AI agents, GSC feedback loops, and automated quality gates. 14 diagnostic scripts, 8 battle-tested configs (safety guards, agent orchestration, quality gates, anti-AI detection), structured data schemas, and CI automation — everything you need to replicate the system.
 
 Not theory. Not prompts. The actual operating system behind a site that went from 604K to 4.62M monthly impressions.
 
@@ -115,6 +115,7 @@ Every script has a sample output file so you can see what to expect before runni
 - `cannibal-clusters.json` — Cannibalization clusters with wasted impression estimates
 - `template-scan.json` — AI fingerprint scan with per-file phrase locations
 - `orphan-pages.json` — Orphan, low-link, and dead-end page reports
+- `growth-review.md` — Sample growth review narrative with key metrics and trends
 
 ### Documentation (`/docs`)
 
