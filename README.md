@@ -139,7 +139,7 @@ npm install
 # Set up Google Search Console API access
 # (requires a Google Cloud project with Search Console API enabled)
 gcloud auth application-default login \
-  --scopes=https://www.googleapis.com/auth/webmasters.readonly
+  --scopes=https://www.googleapis.com/auth/webmasters.readonly,https://www.googleapis.com/auth/cloud-platform
 
 # Find title rewrite opportunities
 npm run rewrite-candidates -- --site sc-domain:yoursite.com
