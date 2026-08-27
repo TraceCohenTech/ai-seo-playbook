@@ -58,7 +58,7 @@ async function getAuth() {
 }
 
 async function getQueryData(auth, site) {
-  const webmasters = google.webmasters({ version: 'v3', auth });
+  const searchconsole = google.searchconsole({ version: 'v1', auth });
   const endDate = new Date();
   endDate.setDate(endDate.getDate() - 1);
   const startDate = new Date();
@@ -69,7 +69,7 @@ async function getQueryData(auth, site) {
   const BATCH = 5000;
 
   while (true) {
-    const res = await webmasters.searchanalytics.query({
+    const res = await searchconsole.searchanalytics.query({
       siteUrl: site,
       requestBody: {
         startDate: startDate.toISOString().split('T')[0],

@@ -13,7 +13,7 @@
  * Prerequisites:
  *   - Google Cloud project with Search Console API enabled
  *   - Application Default Credentials configured:
- *     gcloud auth application-default login --scopes=https://www.googleapis.com/auth/webmasters.readonly
+ *     gcloud auth application-default login --scopes=https://www.googleapis.com/auth/webmasters.readonly,https://www.googleapis.com/auth/cloud-platform
  *
  * Output:
  *   Ranked list of rewrite candidates with their top queries,
@@ -21,7 +21,7 @@
  */
 
 import { google } from 'googleapis';
-import { readFileSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 
 const DEFAULTS = {
   site: null,

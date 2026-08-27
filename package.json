@@ -22,7 +22,10 @@
     "measure-rewrites": "node scripts/rewrite-measurer.mjs",
     "websub-ping": "node scripts/websub-ping.mjs",
     "submit-urls": "node scripts/indexing-submitter.mjs",
-    "check-links": "node scripts/broken-link-checker.mjs"
+    "check-links": "node scripts/broken-link-checker.mjs",
+    "validate-schemas": "node scripts/schema-validator.mjs",
+    "density-score": "node scripts/factual-density-scorer.mjs",
+    "ai-citations": "node scripts/ai-citation-tracker.mjs"
   },
   "dependencies": {
     "googleapis": "^144.0.0"

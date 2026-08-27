@@ -14,7 +14,7 @@
  * identical transitional phrases across hundreds of posts.
  */
 
-import { readdirSync, readFileSync, statSync } from 'fs';
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { join, extname } from 'path';
 
 const DEFAULTS = {
@@ -246,6 +246,28 @@ function main() {
     console.log('  ⚠ WARNING: Over 20% of content has template fingerprints.');
     console.log('  This is a scaled-content-abuse risk. Prioritize purging');
     console.log('  top-traffic files first, then batch the rest.\n');
+  }
+
+  if (config.output) {
+    const report = {
+      generated: new Date().toISOString(),
+      filesScanned: files.length,
+      filesWithHits: totalPatternFiles,
+      pctAffected,
+      knownPatterns: sortedPatterns.map(([pattern, hits]) => ({
+        pattern,
+        matches: hits.length,
+        files: [...new Set(hits.map(h => h.file))],
+        example: hits[0].match,
+      })),
+      repeatedPhrases: repeatedNgrams,
+      sharedClosers: sharedClosers.map(([closer, matchFiles]) => ({
+        closer,
+        count: matchFiles.length,
+      })),
+    };
+    writeFileSync(config.output, JSON.stringify(report, null, 2));
+    console.log(`\nReport saved to ${config.output}`);
   }
 }
 

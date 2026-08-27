@@ -48,12 +48,13 @@ async function getAuth() {
 }
 
 async function getGscData(auth, site) {
-  const webmasters = google.webmasters({ version: 'v3', auth });
+  const searchconsole = google.searchconsole({ version: 'v1', auth });
   const endDate = new Date();
+  endDate.setDate(endDate.getDate() - 1);
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 28);
 
-  const res = await webmasters.searchanalytics.query({
+  const res = await searchconsole.searchanalytics.query({
     siteUrl: site,
     requestBody: {
       startDate: startDate.toISOString().split('T')[0],

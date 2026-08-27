@@ -23,7 +23,7 @@ const { values: args } = parseArgs({
     site: { type: 'string' },
     sitemap: { type: 'string' },
     dir: { type: 'string' },
-    'base-url': { type: 'string', default: 'https://example.com' },
+    'base-url': { type: 'string' },
     output: { type: 'string' },
   },
 });
@@ -88,19 +88,6 @@ async function checkUrlStatus(url) {
   }
 }
 
-async function getGscIndexStatus(auth, site) {
-  const searchconsole = google.searchconsole({ version: 'v1', auth });
-
-  try {
-    const res = await searchconsole.urlInspection.index.inspect({
-      requestBody: { inspectionUrl: site, siteUrl: site },
-    });
-    return res.data;
-  } catch {
-    return null;
-  }
-}
-
 async function main() {
   let urls = [];
 
@@ -108,6 +95,10 @@ async function main() {
     console.log(`Fetching URLs from sitemap: ${args.sitemap}`);
     urls = await getUrlsFromSitemap(args.sitemap);
   } else if (args.dir) {
+    if (!args['base-url']) {
+      console.error('--base-url is required when using --dir (e.g. --base-url https://yoursite.com)');
+      process.exit(1);
+    }
     console.log(`Scanning directory: ${args.dir}`);
     urls = await getUrlsFromDir(args.dir, args['base-url']);
   } else {

@@ -2,8 +2,8 @@ name: Weekly SEO Report
 
 on:
   schedule:
-    # Every Sunday at 9:30 AM ET (13:30 UTC)
-    - cron: '30 13 * * 0'
+    # Every Sunday at 9:30 AM EST / 10:30 AM EDT (14:30 UTC)
+    - cron: '30 14 * * 0'
   workflow_dispatch: # Manual trigger
 
 jobs:
