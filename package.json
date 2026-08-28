@@ -1,7 +1,7 @@
 {
   "name": "ai-seo-playbook",
   "version": "1.0.0",
-  "description": "The complete AI SEO playbook: methodology, scripts, and safety guards behind a 4.6M-impression content engine. GSC feedback loops, multi-model agent orchestration, quality gates, and build cost control.",
+  "description": "The complete AI SEO playbook: methodology, scripts, and safety guards behind a 5.6M-impression content engine. GSC feedback loops, multi-model agent orchestration, quality gates, and build cost control.",
   "author": "Trace Cohen <t@nyvp.com>",
   "license": "MIT",
   "type": "module",
@@ -25,7 +25,10 @@
     "check-links": "node scripts/broken-link-checker.mjs",
     "validate-schemas": "node scripts/schema-validator.mjs",
     "density-score": "node scripts/factual-density-scorer.mjs",
-    "ai-citations": "node scripts/ai-citation-tracker.mjs"
+    "ai-citations": "node scripts/ai-citation-tracker.mjs",
+    "ctr-audit": "node scripts/ctr-audit.mjs",
+    "check-meta": "node scripts/meta-length-checker.mjs",
+    "thin-content": "node scripts/thin-content-detector.mjs"
   },
   "dependencies": {
     "googleapis": "^144.0.0"

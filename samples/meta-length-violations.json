@@ -1,0 +1,45 @@
+[
+  {
+    "file": "src/app/blog/spacex-ipo-timeline-valuation-investors/page.tsx",
+    "issues": [
+      {
+        "field": "title",
+        "value": "SpaceX IPO Timeline, Valuation, and Everything Investors Need to Know in 2026",
+        "length": 76,
+        "limit": 60,
+        "over": 16
+      },
+      {
+        "field": "description",
+        "value": "Complete guide to the SpaceX IPO timeline including current valuation of $350 billion, major institutional investors, Starlink revenue breakdown, and what analysts predict for the public offering date and expected market cap at listing",
+        "length": 228,
+        "limit": 160,
+        "over": 68
+      }
+    ]
+  },
+  {
+    "file": "src/app/tools/startup-valuation-calculator/page.tsx",
+    "issues": [
+      {
+        "field": "description",
+        "value": "Free startup valuation calculator using revenue multiples, comparable company analysis, and DCF models. Covers pre-seed through Series C with industry-specific benchmarks and real funding data from 2024-2026.",
+        "length": 203,
+        "limit": 160,
+        "over": 43
+      }
+    ]
+  },
+  {
+    "file": "src/app/blog/best-cap-table-management-tools/page.tsx",
+    "issues": [
+      {
+        "field": "title",
+        "value": "12 Best Cap Table Management Tools for Startups and Investors Compared",
+        "length": 69,
+        "limit": 60,
+        "over": 9
+      }
+    ]
+  }
+]

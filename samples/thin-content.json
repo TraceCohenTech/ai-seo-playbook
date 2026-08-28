@@ -1,0 +1,54 @@
+[
+  {
+    "file": "src/app/pulse/stories/tech-news-roundup-aug-15/page.tsx",
+    "wordCount": 78,
+    "linkCount": 2,
+    "boilerplateRatio": 0.72,
+    "issues": [
+      {
+        "type": "thin",
+        "detail": "78 words (minimum: 300)",
+        "severity": "critical"
+      },
+      {
+        "type": "boilerplate",
+        "detail": "72% boilerplate code, 78 words of content",
+        "severity": "warning"
+      }
+    ],
+    "recommendation": "NOINDEX"
+  },
+  {
+    "file": "src/app/companies/acme-corp/page.tsx",
+    "wordCount": 142,
+    "linkCount": 14,
+    "boilerplateRatio": 0.55,
+    "issues": [
+      {
+        "type": "thin",
+        "detail": "142 words (minimum: 300)",
+        "severity": "critical"
+      },
+      {
+        "type": "hub_thin",
+        "detail": "Hub page with 14 links but only 142 words of prose",
+        "severity": "warning"
+      }
+    ],
+    "recommendation": "NOINDEX"
+  },
+  {
+    "file": "src/app/tools/roi-calculator/page.tsx",
+    "wordCount": 210,
+    "linkCount": 3,
+    "boilerplateRatio": 0.48,
+    "issues": [
+      {
+        "type": "thin",
+        "detail": "210 words (minimum: 300)",
+        "severity": "warning"
+      }
+    ],
+    "recommendation": "REVIEW"
+  }
+]

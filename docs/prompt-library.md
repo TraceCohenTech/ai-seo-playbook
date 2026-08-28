@@ -221,6 +221,93 @@ Use `cannibalization-detector.mjs` to find the clusters first.
 
 ---
 
+## CTR Rescue Batch Rewriter
+
+The highest-ROI SEO intervention: no new content needed, just better packaging. Use `ctr-audit.mjs` to identify the 20-50 pages with the most wasted impressions, then batch-rewrite them in a single day.
+
+```
+I'll give you a list of pages with their current title, meta description,
+impressions, clicks, CTR, and position from Google Search Console.
+
+For each page, rewrite BOTH the title and meta description:
+
+Title rules:
+1. Lead with the most specific number from the content ($, %, x, count)
+2. Under 60 characters — Google truncates at 60
+3. Use question format for informational queries ("How Does X Make Money?")
+4. For comparison queries, use "X vs Y" or "Best X" format
+5. TEASE, don't tell — if the title answers the full query, there's no reason to click
+
+Description rules:
+1. Lead with the most surprising stat from the content
+2. 150-155 characters max
+3. Include a value proposition (what the reader gets)
+4. End with implicit CTA ("see the data", "explore the breakdown")
+
+For each page output:
+| Original Title | New Title | Chars | Original Desc | New Desc | Chars |
+
+Sort by impressions descending (highest-impact rewrites first).
+```
+
+Run on your HIGH-tier pages from `ctr-audit.mjs` first. Measure impact after 2-4 weeks with `rewrite-measurer.mjs`.
+
+---
+
+## Vertical Expansion Audit
+
+Run this BEFORE building content in a new topic area. It prevents you from creating pages that cannibalize your existing content.
+
+```
+I want to expand my site's coverage into [VERTICAL]. Here is my complete
+list of existing content:
+[PASTE: list of all page URLs + titles]
+
+And here are the topics/entities I'm considering for the new vertical:
+[PASTE: list of planned topics]
+
+For each planned topic:
+1. CHECK if any existing page already covers this entity or topic
+2. If YES: recommend UPDATE (add to existing page) vs NEW PAGE (different angle)
+3. If NO: confirm it's a genuine gap
+4. FLAG any planned topics that would cannibalize each other
+
+Output:
+| Planned Topic | Existing Coverage? | Existing URL | Recommendation | Reason |
+
+Summary:
+- How many are genuine gaps (new pages)
+- How many are hygiene fixes (update existing pages)
+- How many should be skipped (would cannibalize)
+```
+
+---
+
+## Noindex Triage
+
+Use after running `thin-content-detector.mjs` to decide which thin pages to noindex vs. improve.
+
+```
+Here are pages flagged as thin content with their word counts and GSC metrics:
+[PASTE: thin content report with GSC data]
+
+For each page, recommend one action:
+1. NOINDEX — too thin to be worth improving, remove from Google's index
+2. EXPAND — has ranking potential, worth adding 300+ words of real content
+3. MERGE — thin but the topic matters, consolidate into a stronger existing page
+4. KEEP — short but high-value (calculator, tool, reference table)
+
+Decision criteria:
+- >100 clicks/month → never noindex, always expand or keep
+- 10-100 clicks + position <15 → expand (it's already ranking, just needs more content)
+- 0 clicks + <100 impressions + <200 words → noindex
+- 0 clicks but >1000 impressions → title rewrite first, then decide
+
+Output: | URL | Words | Clicks | Impressions | Position | Action | Reason |
+```
+
+---
+
 ## GSC Performance Analyzer
 
 ```

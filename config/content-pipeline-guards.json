@@ -58,6 +58,26 @@
       "throttle": "Max 2 recovery posts per hour"
     }
   },
+  "metaLengthEnforcement": {
+    "description": "Titles >60 chars and descriptions >160 chars get truncated by Google, hurting CTR. We fixed 230 descriptions and 69 titles in one sweep — zero violations should be the steady state.",
+    "limits": {
+      "titleMax": 60,
+      "descriptionMax": 160
+    },
+    "implementation": "Run meta-length-checker.mjs in CI. Exit non-zero blocks the deploy.",
+    "dynamicTitleTrap": "If your title includes a dynamic count (e.g., '142 Tools'), it changes every deploy and Google never stabilizes a snippet. Round to the nearest 10 or use a static qualifier."
+  },
+  "dashboardWiringChecklist": {
+    "description": "Standalone dashboards/tools deployed as separate Vercel projects are invisible to Google unless wired into the main site. We shipped a dashboard Aug 7 that sat orphaned and unindexable until Aug 27 — 20 days of lost indexing.",
+    "steps": [
+      "1. Set basePath in the dashboard's next.config (e.g., basePath: '/startup-exits')",
+      "2. Add rewrite rules in the main site to proxy the dashboard under its path",
+      "3. Add the dashboard's URLs to the main site's sitemap.ts",
+      "4. Add a nav link in the main site's Navigation component",
+      "5. Add a card to the homepage tools grid / data listing"
+    ],
+    "rule": "A dashboard is not shipped until all 5 steps are done. Step 1-2 make it accessible; steps 3-5 make it discoverable."
+  },
   "seoSafety": {
     "redirectCollisionGuard": {
       "description": "Before creating a new page, check that the slug doesn't collide with an existing redirect. A page and a 301 redirect at the same path = unpredictable behavior.",

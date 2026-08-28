@@ -1,0 +1,51 @@
+{
+  "_comment": "Rules for identifying and accounting for bot traffic. If your analytics numbers look too good to be true, they are. Bot traffic inflates vanity metrics and distorts every decision you make about what's working.",
+  "coreRule": "Trust GSC clicks, not GA4/Vercel visitor totals. GSC measures actual search clicks. GA4 and platform analytics count every page load — including bots, scrapers, and AI crawlers.",
+  "botSignals": {
+    "directTrafficDominance": {
+      "signal": "Direct channel is >50% of total sessions",
+      "why": "Real direct traffic (people typing your URL) is typically 15-25% for content sites. If Direct is 60-70%, most of it is bots that don't send referrer headers.",
+      "threshold": "If Direct sessions have <15% engagement rate, it's almost entirely bots"
+    },
+    "inflationRatio": {
+      "signal": "GA4 sessions ÷ GSC clicks > 5x",
+      "why": "For a content site, GA4 sessions should be roughly 2-3x GSC clicks (organic + social + email + real direct). A 10-16x ratio means 80%+ bot traffic.",
+      "example": "We saw 31,143 GA4 sessions vs ~8,900 real traffic — a 3.5x inflation from bots"
+    },
+    "lowEngagement": {
+      "signal": "Engagement rate <20% on high-traffic pages",
+      "why": "Bots don't scroll, click, or stay. If a page gets 10,000 sessions but 12% engagement, ~8,800 of those sessions are bots."
+    }
+  },
+  "aiReferralTracking": {
+    "description": "AI assistants (ChatGPT, Claude, Gemini, Perplexity) that cite your content send real, high-quality traffic. Track this channel separately.",
+    "signals": [
+      "Referrer contains: chatgpt.com, claude.ai, gemini.google.com, perplexity.ai",
+      "GA4 shows these under 'AI Assistant' or 'Organic Social' channels"
+    ],
+    "benchmark": "We see ~450 sessions/month from AI referrals with 171-second average session duration — the longest of any channel. These users read deeply.",
+    "implication": "AEO (AI Engine Optimization) investment pays off in traffic quality, not just citation counts"
+  },
+  "metricsToTrust": {
+    "trust": [
+      "GSC clicks (filtered by human-intent queries)",
+      "GSC impressions (with the caveat that AI Overviews inflate these)",
+      "GA4 engagement rate (bots don't engage)",
+      "GA4 conversions (bots don't sign up)",
+      "Average session duration on engaged sessions only"
+    ],
+    "distrust": [
+      "GA4 total sessions / users (inflated 3-16x by bots)",
+      "Vercel Analytics visitor count (same problem)",
+      "Total pageviews (bots hit every page)",
+      "Bounce rate on non-engaged sessions"
+    ]
+  },
+  "whatToDo": [
+    "Set up GA4 conversion events for real actions (newsletter signup, tool usage, affiliate clicks) — bots don't convert",
+    "Filter GA4 reports by 'Engaged sessions' rather than 'Sessions'",
+    "Use GSC clicks as your north-star traffic metric",
+    "Don't make content decisions based on pageview counts — use engagement rate and conversion rate instead",
+    "Consider bot protection (Vercel BotID, Cloudflare Bot Management) if bot ratio exceeds 80%"
+  ]
+}

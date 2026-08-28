@@ -1,0 +1,61 @@
+{
+  "_comment": "Methodology for expanding into new content verticals without cannibalizing yourself. The biggest risk when scaling content isn't writing bad content — it's writing good content that competes with your own existing good content.",
+  "preBuildAudit": {
+    "description": "Before building any new vertical, audit what you already cover. We evaluated 6 verticals and found 2 were already saturated — building into them would have created cannibalization, not growth.",
+    "steps": [
+      "List every entity/topic the new vertical would cover",
+      "Grep your entire content directory for each entity name",
+      "Check GSC for existing impressions on those entity queries",
+      "If >50% of entities are already covered, this is a hygiene fix (update existing pages), not a new vertical build",
+      "If <50% are covered, proceed with the new vertical — but exclude the already-covered entities"
+    ],
+    "rule": "Always grep-verify before building from a research pass. Research agents suggest topics they think are gaps — but they can't see your content directory."
+  },
+  "pacedDeployment": {
+    "description": "Ship new content in small batches, then wait for GSC confirmation before the next batch. Dumping 20 pages at once makes it impossible to diagnose what worked.",
+    "batchSize": "3-5 pages per batch",
+    "waitPeriod": "7-14 days between batches (GSC needs time to crawl, index, and report)",
+    "confirmationSignals": [
+      "Pages appear in GSC with impressions",
+      "No cannibalization clusters forming (check with cannibalization-detector.mjs)",
+      "Position < 20 on target queries",
+      "No existing pages lost position on related queries"
+    ]
+  },
+  "verticalTypes": {
+    "entityVertical": {
+      "description": "Company profiles, fund profiles, person profiles",
+      "strategy": "One page per entity. Include structured data (Organization/Person schema). Cross-link to related entities.",
+      "saturationCheck": "If you already have a page mentioning this entity with >500 impressions, UPDATE that page instead of creating a new one."
+    },
+    "dataVertical": {
+      "description": "Trackers, dashboards, rankings, comparison tools",
+      "strategy": "Build the tool/dashboard first, then create 2-3 blog posts that cite the dashboard's data. The dashboard is the pillar; the posts are satellites.",
+      "saturationCheck": "Check for existing ranking/comparison content on the same category. Two 'best X tools' pages = instant cannibalization."
+    },
+    "geographicVertical": {
+      "description": "City/region-specific content targeting local search",
+      "strategy": "Build a data spine (directory/tracker with real local data), then layer Wire/news content on top. Local backlinks from the businesses you feature close the loop.",
+      "saturationCheck": "Check if existing national-level content already ranks for '[city] + [topic]' queries. If so, the national page may need geo-segmentation rather than a new local page."
+    }
+  },
+  "cannibalizationPrevention": {
+    "beforePublishing": [
+      "Run cannibalization-detector.mjs with the new page's target queries",
+      "If any existing page targets the same primary query, do NOT publish — update the existing page instead",
+      "If overlap is on secondary queries only, proceed but add cross-links between the pages"
+    ],
+    "afterPublishing": [
+      "Re-run cannibalization-detector.mjs after 2 weeks",
+      "If new cannibalization clusters formed, consolidate immediately — don't wait"
+    ]
+  },
+  "queryTypeInsight": {
+    "description": "Entity-anchored questions massively outperform generic definitions. This determines what to write.",
+    "example": {
+      "works": "'How does [Company] make money' — position 2-4, high CTR",
+      "doesNotWork": "'What is venture capital' — position 65-85, generic query with massive competition"
+    },
+    "rule": "Target '[Entity] + [specific question]' queries, not '[generic term] + definition' queries. The entity gives you natural authority; the generic term puts you against Wikipedia."
+  }
+}

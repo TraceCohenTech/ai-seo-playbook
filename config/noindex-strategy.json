@@ -1,0 +1,39 @@
+{
+  "_comment": "Strategy for noindexing thin content to protect crawl budget and site quality signals. Google has limited crawl budget — every thin page it spends time on is a page it didn't crawl from your good content.",
+  "why": "Sites with hundreds of thin pages see 'crawled — currently not indexed' counts climb in GSC. Noindexing the worst offenders concentrates Google's attention on your strong pages. We saw 1,632 'crawled — currently not indexed' pages trending up before deploying this.",
+  "thinContentThresholds": {
+    "autoNoindex": {
+      "wordCount": 100,
+      "description": "Pages under 100 words are almost certainly thin. Auto-noindex without review."
+    },
+    "reviewForNoindex": {
+      "wordCount": 300,
+      "description": "Pages 100-300 words need manual review — some short pages rank well (tools, calculators)."
+    },
+    "hubPages": {
+      "minChildren": 3,
+      "description": "Hub/category pages with fewer than 3 child items provide no value. Noindex until they accumulate enough content."
+    }
+  },
+  "softFourOhFour": {
+    "problem": "Dynamic route catch-alls (e.g., /blog/[slug]) serve HTTP 200 for nonexistent slugs. Google sees these as thin pages, not 404s. In Next.js with PPR, the status code is committed before the slug check runs in the page component.",
+    "solution": "Call notFound() in generateMetadata() — this injects <meta name='robots' content='noindex'> which is the most-restrictive-wins rule. True 404 status would require dynamicParams=false + full prebuild (expensive) or middleware (paid invocations).",
+    "affectedFrameworks": ["Next.js (App Router with PPR)", "SvelteKit (with prerender)", "Any SSR framework with catch-all routes"]
+  },
+  "sitemapHygiene": {
+    "rule": "Every noindexed page must also be excluded from the sitemap. A URL in the sitemap with a noindex tag sends conflicting signals.",
+    "implementation": "Filter your sitemap generation function by the same logic that determines noindex."
+  },
+  "implementation": {
+    "step1": "Run thin-content-detector.mjs to identify candidates",
+    "step2": "Cross-reference with GSC data — never noindex a page with >100 clicks/month",
+    "step3": "Add noindex via meta tag (not robots.txt — robots.txt blocks crawling, which means Google never sees the noindex and may keep the page indexed from old crawls)",
+    "step4": "Remove from sitemap",
+    "step5": "Monitor GSC 'crawled — currently not indexed' count over 2-4 weeks — it should drop"
+  },
+  "pitfalls": [
+    "Writing the noindex function but never importing it — dead code = dead fix",
+    "Wrapping entire page content in a client-side mount guard (e.g., Recharts 'mounted' check) — makes content invisible to first-pass crawls",
+    "Using robots.txt 'Disallow' instead of meta noindex — blocks crawling but doesn't remove from index"
+  ]
+}

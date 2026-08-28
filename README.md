@@ -5,11 +5,11 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![GitHub stars](https://img.shields.io/github/stars/TraceCohenTech/ai-seo-playbook)](https://github.com/TraceCohenTech/ai-seo-playbook/stargazers)
 
-**The complete playbook for building an AI-powered content engine that actually ranks — from zero to 4.6M impressions in 3 months.**
+**The complete playbook for building an AI-powered content engine that actually ranks — from zero to 5.6M impressions in 4 months.**
 
-This is the methodology, the toolkit, and the hard-won lessons from building a content engine on [ValueAddVC.com](https://valueaddvc.com) using AI agents, GSC feedback loops, and automated quality gates. 17 diagnostic scripts, 11 battle-tested configs (safety guards, agent orchestration, quality gates, anti-AI detection, AEO rules, schema validation, title engineering), structured data schemas, a prompt library, and CI automation — everything you need to replicate the system.
+This is the methodology, the toolkit, and the hard-won lessons from building a content engine on [ValueAddVC.com](https://valueaddvc.com) using AI agents, GSC feedback loops, and automated quality gates. 20 diagnostic scripts, 14 battle-tested configs (safety guards, agent orchestration, quality gates, anti-AI detection, AEO rules, schema validation, title engineering, noindex strategy, bot traffic, vertical expansion), structured data schemas, a prompt library, and CI automation — everything you need to replicate the system.
 
-Not theory. Not prompts. The actual operating system behind a site that went from 604K to 4.62M monthly impressions.
+Not theory. Not prompts. The actual operating system behind a site that went from 604K to 5.63M monthly impressions.
 
 Built by [Trace Cohen](https://x.com/Trace_Cohen) at [ValueAddVC.com](https://valueaddvc.com).
 
@@ -18,10 +18,11 @@ Built by [Trace Cohen](https://x.com/Trace_Cohen) at [ValueAddVC.com](https://va
 ## What This Playbook Covers
 
 1. **The Content Engine** — AI agent orchestration (multi-model pipelines: Opus/Fable for planning, Sonnet for writing, Haiku for grunt work), 5-format content rotation, voice training, anti-AI fingerprint detection
-2. **The GSC Feedback Loop** — Weekly automated reports, title rewrite candidates, cannibalization detection, query gap mining, striking distance optimization
-3. **The Quality System** — 9 publish gates, template phrase blocklists, source verification, fact-checking, structured data validation
-4. **The Safety Layer** — Repo locks, rebase guards, build cost control ([nobuild] tags, deploy-tick), self-healing heartbeats, content writer isolation from git
-5. **The Growth Loop** — Keyword anticipation (publish before demand spikes), living page refreshes, internal link graph optimization, news sitemap + WebSub for instant crawling
+2. **The GSC Feedback Loop** — Weekly automated reports, title rewrite candidates, CTR rescue batches, cannibalization detection, query gap mining, striking distance optimization
+3. **The Quality System** — 9 publish gates, template phrase blocklists, source verification, fact-checking, structured data validation, meta length enforcement
+4. **The Safety Layer** — Repo locks, rebase guards, build cost control ([nobuild] tags, deploy-tick), self-healing heartbeats, content writer isolation from git, data verification on refreshes
+5. **The Growth Loop** — Keyword anticipation (publish before demand spikes), living page refreshes, internal link graph optimization, news sitemap + WebSub for instant crawling, vertical expansion with saturation audits
+6. **The Pruning System** — Thin content detection, noindex strategy, soft-404 fixes, crawl budget optimization, bot traffic identification
 
 ---
 
@@ -78,6 +79,9 @@ The feedback loop: GSC data feeds diagnostic scripts → scripts surface what ne
 | `schema-validator.mjs` | Validates JSON-LD structured data across your site — catches duplicate FAQPage schemas (triggers Google penalty), missing required fields, and wrong schema types for page types |
 | `factual-density-scorer.mjs` | Scores content by factual density — the ratio of specific data points (numbers, $, %, dates) to word count. AI engines cite high-density pages 3-5x more often. |
 | `ai-citation-tracker.mjs` | Checks whether your pages are being cited by AI search engines (Perplexity). The newest, hardest-to-track SEO metric. |
+| `ctr-audit.mjs` | Scores every page by "wasted impressions" — the gap between expected clicks (based on position) and actual clicks. Tiers pages into High/Med/Low priority for title rewrite batches. |
+| `meta-length-checker.mjs` | Finds titles exceeding 60 characters and descriptions exceeding 160 characters. Google truncates both, silently killing your CTR. Exits non-zero for CI. |
+| `thin-content-detector.mjs` | Identifies thin pages (low word count, empty hubs, boilerplate-heavy) that should be noindexed to protect crawl budget and site quality signals. |
 
 ### Configuration (`/config`)
 
@@ -94,6 +98,9 @@ The feedback loop: GSC data feeds diagnostic scripts → scripts surface what ne
 | `aeo-rules.json` | AI Engine Optimization rules: quick-answer block requirements, factual density minimums, entity clarity, schema requirements for AI citation |
 | `schema-rules.json` | Schema deployment map: which of the 7 JSON-LD types goes where, per-type placement rules, duplicate detection, required fields |
 | `title-engineering.json` | Numbers-first title rewrite formula: format rules, banned words, rewrite workflow, CTR benchmarks by title type, before/after examples |
+| `noindex-strategy.json` | Thin content thresholds, soft-404 patterns (Next.js PPR gotcha), crawl budget hygiene, and the step-by-step noindex workflow |
+| `bot-traffic-rules.json` | How to identify bot traffic inflation (GA4 vs GSC ratios), which metrics to trust, AI referral tracking benchmarks |
+| `vertical-expansion.json` | Pre-build saturation audit methodology, paced batch deployment, cannibalization prevention for new content verticals |
 
 ### Schema Examples (`/schemas`)
 
@@ -110,6 +117,7 @@ The feedback loop: GSC data feeds diagnostic scripts → scripts surface what ne
 - `news-sitemap.ts` — 48-hour rolling news sitemap for Google News/Discover
 - `internal-link-component.tsx` — React component for related posts + a build-time internal link inserter
 - `vercel-ignore.sh` — Build skip logic for Vercel: [nobuild] tags, content-only detection, deploy-tick pattern (saves $$$)
+- `conversion-events.ts` — GA4 custom event tracking helpers: newsletter signup, tool completion, and affiliate click tracking with position tagging
 
 ### Sample Output (`/samples`)
 
@@ -126,7 +134,8 @@ Every script has a sample output file so you can see what to expect before runni
 ### Documentation (`/docs`)
 
 - [`setup-gsc.md`](docs/setup-gsc.md) — Step-by-step Google Search Console API setup (local auth + service account for CI)
-- [`prompt-library.md`](docs/prompt-library.md) — 10 production-tested prompts: title rewrites, schema generation, AEO optimization, content auditing, internal linking, competitive gap analysis, and more
+- [`prompt-library.md`](docs/prompt-library.md) — 13 production-tested prompts: title rewrites, CTR rescue batches, schema generation, AEO optimization, content auditing, vertical expansion audits, noindex triage, internal linking, competitive gap analysis, and more
+- [`bot-traffic.md`](docs/bot-traffic.md) — How to identify bot traffic inflation, which metrics to trust (GSC clicks, not GA4 sessions), AI referral benchmarks, and setting up conversion tracking
 
 ### Automation (`.github/workflows`)
 
@@ -190,6 +199,15 @@ npm run density-score -- --dir ./your-content-directory
 
 # Track AI citations (requires queries file or GSC access)
 npm run ai-citations -- --domain yoursite.com --site sc-domain:yoursite.com
+
+# NEW: Score pages by wasted impressions for CTR rescue batches
+npm run ctr-audit -- --site sc-domain:yoursite.com
+
+# NEW: Find titles/descriptions that Google will truncate
+npm run check-meta -- --dir ./your-content-directory
+
+# NEW: Find thin content candidates for noindexing
+npm run thin-content -- --dir ./your-content-directory
 ```
 
 > **New to the GSC API?** See [`docs/setup-gsc.md`](docs/setup-gsc.md) for a step-by-step setup guide.
@@ -200,7 +218,7 @@ npm run ai-citations -- --domain yoursite.com --site sc-domain:yoursite.com
 
 These tools are one half of the system. The methodology — why these specific metrics matter, how to interpret the results, and how to build the feedback loop that makes your content engine self-improving — is in the full guide:
 
-**[The AI SEO Playbook: How I Used AI to Build a Content Engine That Hit 4.6M Impressions in 3 Months](https://valueaddvc.com/seo-playbook)**
+**[The AI SEO Playbook: How I Used AI to Build a Content Engine That Hit 5.6M Impressions in 4 Months](https://valueaddvc.com/seo-playbook)**
 
 The guide covers:
 - Building the content engine (architecture, voice training, format rotation)
@@ -216,18 +234,21 @@ These tools were built and refined on [ValueAddVC.com](https://valueaddvc.com) o
 
 | Metric | Week 1 (May '26) | Now (Aug '26) |
 |--------|-------------------|---------------|
-| 3-Month Impressions | — | 4.62M |
-| 3-Month Clicks | — | 17.3K |
-| Daily Clicks (peak) | ~50 | 854 |
-| Average Position | 12+ | 7.5 |
-| CTR | 0.93% | 0.4% |
+| 3-Month Impressions | — | 5.63M |
+| 3-Month Clicks | — | 22.7K |
+| 28-Day Clicks | — | 12,737 |
+| Daily Clicks (peak) | ~50 | 894 |
+| Average Position | 12+ | 7.9 |
+| CTR | 0.93% | 0.47% |
 | Posts Audited | 480 | 960+ |
-| Title Rewrites | 0 | 92 |
+| Title Rewrites | 0 | 151 |
 | Cannibalization Clusters Fixed | 0 | 21 |
 | Template Phrases Purged | 500+ | 0 |
 | Orphan Pages Linked | 0 | 191 |
+| Thin Pages Noindexed | 0 | 316 |
+| Meta Violations Fixed | 0 | 299 |
 
-*\*CTR is 0.4% because impressions grew ~8x — largely from AI-overview citations (GEO traffic) that don't produce clicks by nature. Human-intent CTR improved: ranked lists hit 6.8%, question-led posts hit 3.2%. The growth curve is near-vertical: Aug 13 alone hit 127K impressions and 854 clicks.*
+*\*CTR is 0.47% because impressions grew ~8x — largely from AI-overview citations (GEO traffic) that don't produce clicks by nature. Human-intent CTR improved: ranked lists hit 6.8%, question-led posts hit 3.2%. Only 6.6% of impressions come from named queries. On named page-1 queries, actual clicks are 31% of what positions should produce — AI Overviews and machine queries inflate impressions ~3x. AI referral traffic (ChatGPT, Claude, Gemini) averages 171-second sessions — the longest of any channel.*
 
 ---
 
@@ -261,7 +282,7 @@ The scripts are standalone Node.js — run them anywhere you can install `google
 
 ```
 ai-seo-playbook/
-├── scripts/              # 17 diagnostic & tracking scripts
+├── scripts/              # 20 diagnostic & tracking scripts
 │   ├── weekly-report.mjs            # Weekly GSC performance report
 │   ├── gsc-rewrite-candidates.mjs   # Find title rewrite opportunities
 │   ├── rewrite-measurer.mjs         # Before/after rewrite tracking
@@ -278,12 +299,15 @@ ai-seo-playbook/
 │   ├── indexing-submitter.mjs       # Google Indexing API submissions
 │   ├── schema-validator.mjs         # JSON-LD schema validation
 │   ├── factual-density-scorer.mjs   # AEO factual density scoring
-│   └── ai-citation-tracker.mjs      # AI search citation tracking
-├── config/               # Quality gates, format system, anti-AI rules, AEO, schemas, title engineering
+│   ├── ai-citation-tracker.mjs      # AI search citation tracking
+│   ├── ctr-audit.mjs               # Wasted impression scorer for CTR rescue
+│   ├── meta-length-checker.mjs     # Title/description length violations
+│   └── thin-content-detector.mjs   # Thin content noindex candidates
+├── config/               # Quality gates, format system, anti-AI rules, AEO, schemas, title engineering, noindex, bot traffic, vertical expansion
 ├── schemas/              # JSON-LD structured data examples
 ├── examples/             # Next.js sitemaps + React components
 ├── samples/              # Example output from every script
-├── docs/                 # Setup guides + prompt library
+├── docs/                 # Setup guides, prompt library, bot traffic guide
 └── .github/workflows/    # Weekly automated report CI
 ```
 
@@ -299,14 +323,16 @@ There's even a dedicated issue template for [submitting new template phrases](ht
 
 ## Built On
 
-This toolkit was built and battle-tested on [ValueAddVC.com](https://valueaddvc.com) — a venture capital content platform that went from 604K monthly impressions to 4.62M in 3 months using these exact scripts and methodology.
+This toolkit was built and battle-tested on [ValueAddVC.com](https://valueaddvc.com) — a venture capital content platform that went from 604K monthly impressions to 5.63M in 4 months using these exact scripts and methodology.
 
 | | May 2026 | August 2026 |
 |---|---|---|
-| **Daily clicks** | ~50 | **854** (peak) |
-| **Position** | 12+ | **7.5** |
+| **Daily clicks** | ~50 | **894** (peak) |
+| **3-month impressions** | 604K | **5.63M** |
+| **Position** | 12+ | **7.9** |
 | **Template phrases** | 500+ | **0** |
 | **Orphan pages** | 191 | **0** |
+| **Thin pages noindexed** | 0 | **316** |
 
 The full methodology is in the companion guide: **[The AI SEO Playbook](https://valueaddvc.com/seo-playbook)**
 

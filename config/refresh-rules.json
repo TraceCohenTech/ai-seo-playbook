@@ -44,6 +44,15 @@
     "Verify structured data is still valid",
     "Re-check title against current top queries — rewrite if intent shifted"
   ],
+  "dataVerification": {
+    "_comment": "Learned the hard way: a refresh agent stamped 'lastUpdated: today' on a page with pre-IPO holdings data, claiming a company was 22% of a fund when it was actually 1.25% post-IPO. The content looked fresh but was factually wrong.",
+    "rules": [
+      "Any named holding/company that has IPO'd or been acquired since the page was written marks the entire data section stale — refresh agents must re-verify, not just re-date",
+      "Any 'X% of the fund is Y' claim requires re-pulling from the issuer's public disclosure, not copying from the cached content",
+      "Financial data tables (holdings, valuations, revenue) must show their source and date in a visible footnote",
+      "A refresh that only updates the lastUpdated timestamp without verifying data claims is worse than no refresh at all — it signals freshness to Google while serving stale facts"
+    ]
+  },
   "doNotRefresh": [
     "Pages in the KILL bucket — delete instead",
     "Pages scheduled for MERGE — consolidate first",

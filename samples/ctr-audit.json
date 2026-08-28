@@ -1,0 +1,72 @@
+{
+  "generatedAt": "2026-08-27T14:00:00.000Z",
+  "site": "sc-domain:example.com",
+  "period": {
+    "startDate": "2026-07-30",
+    "endDate": "2026-08-26"
+  },
+  "summary": {
+    "totalPages": 38,
+    "high": 8,
+    "medium": 14,
+    "low": 16,
+    "totalWastedImpressions": 4271
+  },
+  "pages": [
+    {
+      "url": "https://example.com/blog/spacex-ipo-valuation",
+      "clicks": 12,
+      "impressions": 47200,
+      "ctr": 0.03,
+      "position": 6.2,
+      "expectedCtr": 4.0,
+      "expectedClicks": 1888,
+      "wastedImpressions": 1876,
+      "tier": "HIGH"
+    },
+    {
+      "url": "https://example.com/blog/anthropic-revenue-2026",
+      "clicks": 45,
+      "impressions": 18900,
+      "ctr": 0.24,
+      "position": 4.8,
+      "expectedCtr": 5.0,
+      "expectedClicks": 945,
+      "wastedImpressions": 900,
+      "tier": "HIGH"
+    },
+    {
+      "url": "https://example.com/tools/startup-valuation-calculator",
+      "clicks": 8,
+      "impressions": 6200,
+      "ctr": 0.13,
+      "position": 8.3,
+      "expectedCtr": 2.5,
+      "expectedClicks": 155,
+      "wastedImpressions": 147,
+      "tier": "MEDIUM"
+    },
+    {
+      "url": "https://example.com/blog/best-data-rooms-2026",
+      "clicks": 22,
+      "impressions": 3400,
+      "ctr": 0.65,
+      "position": 5.1,
+      "expectedCtr": 5.0,
+      "expectedClicks": 170,
+      "wastedImpressions": 148,
+      "tier": "MEDIUM"
+    },
+    {
+      "url": "https://example.com/blog/venture-debt-explained",
+      "clicks": 3,
+      "impressions": 1800,
+      "ctr": 0.17,
+      "position": 12.4,
+      "expectedCtr": 0.8,
+      "expectedClicks": 14,
+      "wastedImpressions": 11,
+      "tier": "LOW"
+    }
+  ]
+}
