@@ -33,9 +33,15 @@ content pipeline, who want rankings **and** AI citations without gambling on unm
 
 ## Quick start
 
+**Before you start:** the Search Console scripts need a Google Cloud project with the Search Console API
+enabled and access to your property. **Follow [docs/setup-gsc.md](docs/setup-gsc.md) first** (about 10 minutes).
+
 ```bash
 git clone https://github.com/TraceCohenTech/ai-seo-playbook && cd ai-seo-playbook
 npm ci
+
+# Authenticate with Search Console. Needs a Google Cloud project with the
+# Search Console API enabled; see docs/setup-gsc.md for the step-by-step setup.
 gcloud auth application-default login --scopes=https://www.googleapis.com/auth/webmasters.readonly,https://www.googleapis.com/auth/cloud-platform
 ```
 
@@ -50,7 +56,34 @@ node scripts/traffic-guard.mjs --site sc-domain:yoursite.com --webhook https://n
 node scripts/sitemap-health.mjs --sitemap https://yoursite.com/sitemap.xml
 ```
 
-Every script prints its full documentation with `--help`. Setup details are in [docs/setup-gsc.md](docs/setup-gsc.md).
+Every script prints its full documentation with `--help`.
+
+### What does `--dir` point at?
+
+Some scripts read your site's **source files** instead of (or as well as) Search Console. `--dir` is the folder
+in your website's own code repo that holds the pages, not a cache and not a special export format:
+
+| Your site | Point `--dir` at |
+|---|---|
+| Next.js App Router | `./src/app` or `./app` (`blog/foo/page.tsx` is read as `/blog/foo`) |
+| Next.js Pages Router | `./pages` |
+| Markdown / MDX (Astro, Hugo, Jekyll, Eleventy, Gatsby…) | your content folder, e.g. `./content` or `./src/content/blog` |
+| Static HTML | the built output folder, e.g. `./public` or `./dist` (most `--dir` scripts read `.html`) |
+| WordPress, Webflow, Squarespace (no source files) | skip the `--dir` scripts and use the Search Console and URL-based ones |
+
+Run the scripts from this repo and pass the path to your site's repo, e.g.
+`node scripts/thin-content-detector.mjs --dir ../my-site/src/app`. Use `--ext` to change which file types are read. For
+Markdown, a file's URL is its path inside `--dir`, so if `content/blog/foo.md` is served at `/blog/foo`, add `--url-prefix /blog`
+where the script supports it.
+
+| Needs | Scripts |
+|---|---|
+| Search Console only (`--site`) | human-query-split, weekly-report, striking-distance, ctr-audit, gsc-rewrite-candidates, cannibalization-detector, traffic-guard, matched-control-readout, rewrite-measurer, query-gap-miner (`--dir` optional) |
+| A live URL or sitemap | sitemap-health, schema-validator (`--url`/`--sitemap`), redirect-checker, indexing-submitter |
+| Your source files (`--dir`) | thin-content-detector, template-detector, meta-length-checker, factual-density-scorer, orphan-finder, broken-link-checker |
+| Source files + Search Console | content-audit, refresh-tracker |
+
+Setup details are in [docs/setup-gsc.md](docs/setup-gsc.md).
 
 ## The playbook
 
