@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>FIXTURE_ORIGIN/blog/foo-bar-post</loc></url>
+  <url><loc>FIXTURE_ORIGIN/old-post</loc></url>
+  <url><loc>FIXTURE_ORIGIN/chain</loc></url>
+  <url><loc>FIXTURE_ORIGIN/gone</loc></url>
+  <url><loc>FIXTURE_ORIGIN/error</loc></url>
+</urlset>

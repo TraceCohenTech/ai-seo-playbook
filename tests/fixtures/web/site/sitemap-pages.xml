@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>FIXTURE_ORIGIN/</loc><lastmod>2026-09-01</lastmod></url>
+  <url><loc>FIXTURE_ORIGIN/about</loc></url>
+  <url><loc>FIXTURE_ORIGIN/search?q=acme&amp;page=2</loc></url>
+  <url><loc><![CDATA[FIXTURE_ORIGIN/removed]]></loc></url>
+</urlset>

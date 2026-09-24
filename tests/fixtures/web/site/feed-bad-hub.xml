@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>
+  <title>Acme (bad hub)</title><link>FIXTURE_ORIGIN/</link>
+  <atom:link href="FIXTURE_ORIGIN/hub-broken" rel="hub"/>
+  <item><title>Post</title><link>FIXTURE_ORIGIN/blog/other-post</link></item>
+</channel></rss>
