@@ -1,0 +1,54 @@
+{
+  "generated": "2026-09-21T12:00:00.000Z",
+  "site": "sc-domain:example.com",
+  "period": {
+    "startDate": "2026-07-21",
+    "endDate": "2026-09-18"
+  },
+  "config": {
+    "minImpressions": 500,
+    "minPosition": 15,
+    "matchThreshold": 0.6,
+    "days": 60,
+    "top": 25
+  },
+  "corpus": {
+    "source": "files",
+    "pages": 11
+  },
+  "totalQueries": 140,
+  "eligibleQueries": 3,
+  "coveredCount": 1,
+  "gaps": [
+    {
+      "query": "acme vs globex comparison",
+      "clicks": 6,
+      "impressions": 900,
+      "ctr": 0.67,
+      "position": 18,
+      "type": "COMPARISON",
+      "priority": 50,
+      "closestPage": {
+        "page": "/tools/acme-pricing-calculator",
+        "title": "Acme Pricing Calculator",
+        "score": 0.16,
+        "jaccard": 0.2
+      }
+    },
+    {
+      "query": "widget series portfolio pricing",
+      "clicks": 0,
+      "impressions": 720,
+      "ctr": 0,
+      "position": 21,
+      "type": "INFORMATIONAL",
+      "priority": 34.3,
+      "closestPage": {
+        "page": "/blog/widget-pricing",
+        "title": "Widget Pricing Guide 2026",
+        "score": 0.37,
+        "jaccard": 0.33
+      }
+    }
+  ]
+}

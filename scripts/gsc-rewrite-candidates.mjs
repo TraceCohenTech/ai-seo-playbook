@@ -1,267 +1,176 @@
 #!/usr/bin/env node
-
 /**
  * GSC Title Rewrite Candidate Finder
  *
- * Pulls per-page query data from Google Search Console and identifies
- * pages with high rewrite potential: ranking in position 4–20 with
- * significant impressions but low CTR.
+ * Finds pages with title-rewrite potential: enough impressions, a low CTR, and an average
+ * position where a better title plausibly matters. Every threshold is a flag. For each
+ * candidate it lists the top queries, a rough intent mix, the share of impressions from
+ * machine-shaped queries (lib/query-classifier.mjs), a heuristic score and a diagnosis.
+ *
+ * Machine-shaped queries (AI research agents, scrapers, SEO tools) rarely click, so a page whose
+ * impressions are mostly machine queries is probably not a title problem. --human-only
+ * recomputes each page's clicks/impressions/CTR/position from human-shaped queries only before
+ * applying the thresholds. Note that page+query rows omit anonymised queries, so human-only
+ * totals are lower than the page totals.
  *
  * Usage:
  *   node scripts/gsc-rewrite-candidates.mjs --site sc-domain:example.com
+ *   node scripts/gsc-rewrite-candidates.mjs --site sc-domain:example.com --human-only --min-impressions 500
  *
- * Prerequisites:
- *   - Google Cloud project with Search Console API enabled
- *   - Application Default Credentials configured:
- *     gcloud auth application-default login --scopes=https://www.googleapis.com/auth/webmasters.readonly,https://www.googleapis.com/auth/cloud-platform
+ * Options:
+ *   --site               Search Console property (required)
+ *   --min-impressions    Minimum page impressions (default 1000)
+ *   --max-ctr            Maximum CTR as a fraction (default 0.02 = 2%)
+ *   --min-position       Minimum average position (default 4)
+ *   --max-position       Maximum average position (default 20)
+ *   --machine-threshold  Machine-query impression share above which the diagnosis says a title
+ *                        rewrite is unlikely to help, and the score is reduced (default 0.5)
+ *   --top-queries        Queries listed per candidate (default 10)
+ *   --human-only         Judge pages on human-shaped queries only
+ *   --days               Window, ending on the last final-data date (default 28)
+ *   --output             Output JSON path (default rewrite-candidates.json)
  *
- * Output:
- *   Ranked list of rewrite candidates with their top queries,
- *   current title issues, and estimated opportunity.
+ * Output (JSON): { generated, site, period, config, totalPagesAnalyzed, candidatesFound,
+ *   candidates: [{ page, clicks, impressions, ctr, position, rewriteScore, machineShare,
+ *   topQueries, queryIntents: { counts, impressions }, diagnosis }] }. ctr values are percentages. The score is a
+ *   heuristic for ordering the list; it is not a prediction.
+ *
+ * Exit codes: 0 finished, 1 error.
  */
+import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { cli, fail } from '../lib/cli.mjs';
+import { gscClient, queryAll } from '../lib/gsc.mjs';
+import { lastDataDate, windowEnding, sumByPage, sumByPageQuery, round, pct } from '../lib/gsc-rows.mjs';
+import { isHumanQuery, isZeroClickAgent } from '../lib/query-classifier.mjs';
 
-import { google } from 'googleapis';
-import { writeFileSync } from 'fs';
+export const isMachineQuery = (q) => !isHumanQuery(q.query) || isZeroClickAgent(q);
 
-const DEFAULTS = {
-  site: null,
-  minImpressions: 1000,
-  maxCtr: 0.02,
-  minPosition: 4,
-  maxPosition: 20,
-  days: 28,
-  output: 'rewrite-candidates.json',
-};
-
-function parseArgs() {
-  const args = process.argv.slice(2);
-  const config = { ...DEFAULTS };
-
-  for (let i = 0; i < args.length; i += 2) {
-    const key = args[i]?.replace(/^--/, '');
-    const val = args[i + 1];
-    if (key === 'site') config.site = val;
-    else if (key === 'min-impressions') config.minImpressions = Number(val);
-    else if (key === 'max-ctr') config.maxCtr = Number(val);
-    else if (key === 'min-position') config.minPosition = Number(val);
-    else if (key === 'max-position') config.maxPosition = Number(val);
-    else if (key === 'days') config.days = Number(val);
-    else if (key === 'output') config.output = val;
-  }
-
-  if (!config.site) {
-    console.error('Usage: node gsc-rewrite-candidates.mjs --site sc-domain:example.com');
-    console.error('\nOptions:');
-    console.error('  --site              GSC property (required). e.g. sc-domain:example.com');
-    console.error('  --min-impressions   Minimum impressions to qualify (default: 1000)');
-    console.error('  --max-ctr           Maximum CTR to qualify as rewrite candidate (default: 0.02)');
-    console.error('  --min-position      Minimum avg position (default: 4)');
-    console.error('  --max-position      Maximum avg position (default: 20)');
-    console.error('  --days              Lookback period in days (default: 28)');
-    console.error('  --output            Output file path (default: rewrite-candidates.json)');
-    process.exit(1);
-  }
-
-  return config;
+export function intentOf(q) {
+  const s = q.query.toLowerCase();
+  if (isMachineQuery(q)) return 'machine';
+  if (/\bvs\b|compare|best|top \d|ranked|alternative/.test(s)) return 'comparison';
+  if (/\bbuy\b|pricing|cost|how to get|sign up|free trial/.test(s)) return 'transactional';
+  if (/\b(what|how|why|when|is|are|does)\b/.test(s)) return 'informational';
+  return 'navigational';
 }
 
-function dateStr(daysAgo) {
-  const d = new Date();
-  d.setDate(d.getDate() - daysAgo);
-  return d.toISOString().split('T')[0];
+/** Query counts per intent, and impressions per intent. */
+export function classifyQueries(queries) {
+  const intents = { informational: 0, comparison: 0, transactional: 0, navigational: 0, machine: 0 };
+  const impressions = { ...intents };
+  for (const q of queries) { const i = intentOf(q); intents[i]++; impressions[i] += q.impressions; }
+  return { counts: intents, impressions };
 }
 
-async function main() {
-  const config = parseArgs();
-  const auth = new google.auth.GoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
-  });
-  const searchconsole = google.searchconsole({ version: 'v1', auth });
-
-  const startDate = dateStr(config.days);
-  const endDate = dateStr(1);
-
-  console.log(`\nFetching page-level data for ${config.site}`);
-  console.log(`Period: ${startDate} → ${endDate}\n`);
-
-  // Step 1: Get all pages with their aggregate metrics
-  const pageRes = await searchconsole.searchanalytics.query({
-    siteUrl: config.site,
-    requestBody: {
-      startDate,
-      endDate,
-      dimensions: ['page'],
-      rowLimit: 5000,
-      dataState: 'final',
-    },
-  });
-
-  const pages = (pageRes.data.rows || [])
-    .filter(r =>
-      r.impressions >= config.minImpressions &&
-      r.ctr <= config.maxCtr &&
-      r.position >= config.minPosition &&
-      r.position <= config.maxPosition
-    )
-    .sort((a, b) => b.impressions - a.impressions);
-
-  console.log(`Found ${pages.length} rewrite candidates\n`);
-
-  if (pages.length === 0) {
-    console.log('No candidates found. Try adjusting --min-impressions or --max-ctr.');
-    process.exit(0);
-  }
-
-  // Step 2: For each candidate, pull top queries
-  const candidates = [];
-
-  for (const page of pages) {
-    const url = page.keys[0];
-    console.log(`  Fetching queries for: ${url}`);
-
-    const queryRes = await searchconsole.searchanalytics.query({
-      siteUrl: config.site,
-      requestBody: {
-        startDate,
-        endDate,
-        dimensions: ['query'],
-        dimensionFilterGroups: [{
-          filters: [{ dimension: 'page', expression: url, operator: 'equals' }],
-        }],
-        rowLimit: 20,
-        dataState: 'final',
-      },
-    });
-
-    const queries = (queryRes.data.rows || []).map(r => ({
-      query: r.keys[0],
-      clicks: r.clicks,
-      impressions: r.impressions,
-      ctr: Math.round(r.ctr * 10000) / 100,
-      position: Math.round(r.position * 10) / 10,
-    }));
-
-    // Classify query intent
-    const intents = classifyQueries(queries);
-
-    candidates.push({
-      url,
-      clicks: page.clicks,
-      impressions: page.impressions,
-      ctr: Math.round(page.ctr * 10000) / 100,
-      position: Math.round(page.position * 10) / 10,
-      rewriteScore: scoreRewritePotential(page, queries),
-      topQueries: queries.slice(0, 10),
-      queryIntents: intents,
-      diagnosis: diagnose(page, queries, intents),
-    });
-
-    // Rate limiting: GSC API has quotas
-    await new Promise(r => setTimeout(r, 200));
-  }
-
-  candidates.sort((a, b) => b.rewriteScore - a.rewriteScore);
-
-  // Output
-  writeFileSync(config.output, JSON.stringify(candidates, null, 2));
-  console.log(`\nWrote ${candidates.length} candidates to ${config.output}\n`);
-
-  // Print summary
-  console.log('Top 15 rewrite candidates:\n');
-  console.log('Score  Impr      CTR    Pos   URL');
-  console.log('─'.repeat(80));
-
-  for (const c of candidates.slice(0, 15)) {
-    const score = String(c.rewriteScore).padStart(5);
-    const impr = String(c.impressions.toLocaleString()).padStart(9);
-    const ctr = `${c.ctr}%`.padStart(6);
-    const pos = String(c.position).padStart(5);
-    const url = c.url.replace(/^https?:\/\/[^/]+/, '');
-    console.log(`${score}  ${impr}  ${ctr}  ${pos}   ${url}`);
-    if (c.diagnosis) {
-      console.log(`       → ${c.diagnosis}`);
-    }
-  }
-
-  console.log(`\nFull results: ${config.output}`);
-}
-
-function scoreRewritePotential(page, queries) {
-  let score = 0;
-
-  // High impressions with low CTR = biggest opportunity
-  score += Math.log10(page.impressions) * 20;
-
-  // Position 4-10 has more rewrite potential than 10-20
-  if (page.position <= 10) score += 30;
-  else if (page.position <= 15) score += 15;
-
-  // Very low CTR is a stronger signal
-  if (page.ctr < 0.005) score += 20;
-  else if (page.ctr < 0.01) score += 10;
-
-  // Check for AI-overview dominated queries (machine-phrased)
-  const aiQueries = queries.filter(q => isAiQuery(q.query));
-  const aiRatio = queries.length > 0 ? aiQueries.length / queries.length : 0;
-
-  // If >50% AI queries, rewriting won't help — lower the score
-  if (aiRatio > 0.5) score -= 40;
-
+/** Heuristic ordering score. page: { impressions, ctr (fraction), position }. */
+export function scoreRewritePotential(page, machineShare, { machineThreshold = 0.5 } = {}) {
+  let score = Math.log10(Math.max(1, page.impressions)) * 20;
+  if (page.position <= 10) score += 30; else if (page.position <= 15) score += 15;
+  if (page.ctr < 0.005) score += 20; else if (page.ctr < 0.01) score += 10;
+  if (machineShare > machineThreshold) score -= 40;
   return Math.round(score);
 }
 
-function isAiQuery(query) {
-  // Machine-phrased queries from AI assistants
-  const signals = [
-    /^\w{3,} \d{1,2} \d{4} /,         // Date-prefixed: "july 28 2026 ..."
-    /latest$/i,                         // Ends with "latest"
-    /\b(yes|no|true|false)\b/i,        // Boolean fragments
-    query.split(' ').length > 12,       // Very long natural language
-    /\d{4}.*\d{4}/,                    // Multiple years in one query
-  ];
-  return signals.filter(s => typeof s === 'boolean' ? s : s.test(query)).length >= 2;
-}
-
-function classifyQueries(queries) {
-  const intents = { informational: 0, comparison: 0, transactional: 0, navigational: 0, ai_grounding: 0 };
-
-  for (const q of queries) {
-    const query = q.query.toLowerCase();
-    if (isAiQuery(query)) intents.ai_grounding++;
-    else if (/\bvs\b|compare|best|top \d|ranked|alternative/.test(query)) intents.comparison++;
-    else if (/\bbuy\b|pricing|cost|how to get|sign up|free trial/.test(query)) intents.transactional++;
-    else if (/\b(what|how|why|when|is |are |does )\b/.test(query)) intents.informational++;
-    else intents.navigational++;
+export function diagnose(page, intents, machineShare, { machineThreshold = 0.5 } = {}) {
+  if (machineShare > machineThreshold) {
+    return `${Math.round(machineShare * 100)}% of query impressions look machine-generated (AI agents, scrapers); a title rewrite is unlikely to change clicks.`;
   }
-
-  return intents;
-}
-
-function diagnose(page, queries, intents) {
-  const total = Object.values(intents).reduce((a, b) => a + b, 0);
-  if (total === 0) return null;
-
-  const aiRatio = intents.ai_grounding / total;
-  if (aiRatio > 0.5) {
-    return `⚠ ${Math.round(aiRatio * 100)}% AI-grounding queries — title rewrite unlikely to help. This is GEO traffic.`;
-  }
-
-  if (intents.comparison > intents.informational) {
-    return 'Comparison intent dominant — consider adding "[X] vs [Y]" or "Best [X]" to the title.';
-  }
-
-  if (page.ctr === 0 && page.impressions > 50000) {
-    return 'Zero clicks at 50K+ impressions — likely AI Overview or featured snippet fully answering the query.';
-  }
-
-  if (page.position <= 5 && page.ctr < 0.01) {
-    return 'Top-5 position but <1% CTR — title may be answering the query. Tease, don\'t tell.';
-  }
-
+  const humanImpr = Object.entries(intents.impressions).filter(([k]) => k !== 'machine').reduce((t, [, v]) => t + v, 0);
+  if (humanImpr > 0 && intents.impressions.comparison / humanImpr > 0.5) return 'Most human query impressions have comparison intent: check whether the title signals a comparison or ranking.';
+  if (page.clicks === 0 && page.impressions > 50000) return 'Zero clicks at 50K+ impressions: check the live SERP (AI Overview, featured snippet, or a query mismatch) before rewriting.';
+  if (page.position <= 5 && page.ctr < 0.01) return 'Top-5 position with under 1% CTR: check whether the title or snippet already answers the query in full (heuristic).';
   return null;
 }
 
-main().catch(err => {
-  console.error('Error:', err.message);
-  process.exit(1);
-});
+/**
+ * pages: Map from sumByPage; pageQueries: Map from sumByPageQuery.
+ * Returns { candidates, analyzed }.
+ */
+export function findCandidates(pages, pageQueries, {
+  minImpressions = 1000, maxCtr = 0.02, minPosition = 4, maxPosition = 20,
+  machineThreshold = 0.5, topQueries = 10, humanOnly = false,
+} = {}) {
+  const qByPage = new Map();
+  for (const q of pageQueries.values()) (qByPage.get(q.page) || qByPage.set(q.page, []).get(q.page)).push(q);
+
+  const candidates = [];
+  let analyzed = 0;
+  for (const p of pages.values()) {
+    analyzed++;
+    const qs = (qByPage.get(p.page) || []).sort((a, b) => b.impressions - a.impressions || a.query.localeCompare(b.query));
+    const machineImpr = qs.filter(isMachineQuery).reduce((s, q) => s + q.impressions, 0);
+    const qImpr = qs.reduce((s, q) => s + q.impressions, 0);
+    const machineShare = qImpr > 0 ? machineImpr / qImpr : 0;
+    let m = p;
+    if (humanOnly) {
+      const human = qs.filter((q) => !isMachineQuery(q));
+      const impressions = human.reduce((s, q) => s + q.impressions, 0);
+      const clicks = human.reduce((s, q) => s + q.clicks, 0);
+      const pw = human.reduce((s, q) => s + q.position * q.impressions, 0);
+      m = { page: p.page, clicks, impressions, ctr: impressions ? clicks / impressions : 0, position: impressions ? pw / impressions : 0 };
+    }
+    if (!(m.impressions >= minImpressions && m.ctr <= maxCtr && m.position >= minPosition && m.position <= maxPosition)) continue;
+    const listed = (humanOnly ? qs.filter((q) => !isMachineQuery(q)) : qs);
+    const intents = classifyQueries(listed);
+    candidates.push({
+      page: p.page, clicks: m.clicks, impressions: m.impressions, ctr: pct(m.ctr), position: round(m.position, 1),
+      rewriteScore: scoreRewritePotential(m, machineShare, { machineThreshold }),
+      machineShare: round(machineShare, 2),
+      topQueries: listed.slice(0, topQueries).map((q) => ({ query: q.query, clicks: q.clicks, impressions: q.impressions, ctr: pct(q.ctr), position: round(q.position, 1), machine: isMachineQuery(q) })),
+      queryIntents: intents,
+      diagnosis: diagnose(m, intents, machineShare, { machineThreshold }),
+    });
+  }
+  candidates.sort((a, b) => b.rewriteScore - a.rewriteScore || b.impressions - a.impressions);
+  return { candidates, analyzed };
+}
+
+export async function buildReport(sc, opts) {
+  const { site, days = 28, today = new Date(), now = new Date() } = opts;
+  const end = await lastDataDate(sc, site, { dataState: 'final', today });
+  const period = windowEnding(end, days);
+  const pages = sumByPage(await queryAll(sc, site, { ...period, dimensions: ['page'], dataState: 'final' }));
+  const pageQueries = sumByPageQuery(await queryAll(sc, site, { ...period, dimensions: ['page', 'query'], dataState: 'final' }));
+  const config = {
+    minImpressions: opts.minImpressions ?? 1000, maxCtr: opts.maxCtr ?? 0.02, minPosition: opts.minPosition ?? 4,
+    maxPosition: opts.maxPosition ?? 20, machineThreshold: opts.machineThreshold ?? 0.5, topQueries: opts.topQueries ?? 10,
+    humanOnly: !!opts.humanOnly, days,
+  };
+  const { candidates, analyzed } = findCandidates(pages, pageQueries, config);
+  return { generated: now.toISOString(), site, period, config, totalPagesAnalyzed: analyzed, candidatesFound: candidates.length, candidates };
+}
+
+async function main() {
+  const a = cli(import.meta.url, {
+    site: { type: 'string', required: true },
+    'min-impressions': { type: 'string', default: '1000' },
+    'max-ctr': { type: 'string', default: '0.02' },
+    'min-position': { type: 'string', default: '4' },
+    'max-position': { type: 'string', default: '20' },
+    'machine-threshold': { type: 'string', default: '0.5' },
+    'top-queries': { type: 'string', default: '10' },
+    'human-only': { type: 'boolean', default: false },
+    days: { type: 'string', default: '28' },
+    output: { type: 'string', default: 'rewrite-candidates.json' },
+  });
+  const sc = await gscClient();
+  const r = await buildReport(sc, {
+    site: a.site, days: Number(a.days), minImpressions: Number(a['min-impressions']), maxCtr: Number(a['max-ctr']),
+    minPosition: Number(a['min-position']), maxPosition: Number(a['max-position']),
+    machineThreshold: Number(a['machine-threshold']), topQueries: Number(a['top-queries']), humanOnly: a['human-only'],
+  });
+  writeFileSync(a.output, JSON.stringify(r, null, 2));
+  console.log(`\nRewrite candidates for ${a.site}, ${r.period.startDate} -> ${r.period.endDate}${r.config.humanOnly ? ' (human-shaped queries only)' : ''}`);
+  console.log(`${r.candidatesFound} of ${r.totalPagesAnalyzed} pages qualify.\n`);
+  if (!r.candidatesFound) console.log('No candidates. Adjust --min-impressions, --max-ctr or the position range.');
+  console.log('Score  Impr       CTR    Pos   Machine  Page');
+  for (const c of r.candidates.slice(0, 15)) {
+    console.log(`${String(c.rewriteScore).padStart(5)}  ${c.impressions.toLocaleString().padStart(9)}  ${`${c.ctr}%`.padStart(6)}  ${String(c.position).padStart(5)}  ${`${Math.round(c.machineShare * 100)}%`.padStart(7)}  ${c.page}`);
+    if (c.diagnosis) console.log(`       -> ${c.diagnosis}`);
+  }
+  console.log(`\nFull results: ${a.output}`);
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(fail);
