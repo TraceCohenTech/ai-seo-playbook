@@ -1,44 +1,66 @@
 [
   {
-    "file": "src/app/blog/spacex-ipo-timeline-valuation-investors/page.tsx",
+    "file": "tests/fixtures/content/posts/crlf-post.md",
     "issues": [
       {
         "field": "title",
-        "value": "SpaceX IPO Timeline, Valuation, and Everything Investors Need to Know in 2026",
-        "length": 76,
+        "value": "Founder's Guide to Cap Tables: Every Line Item Explained With Worked Examples | Example Site",
+        "length": 92,
         "limit": 60,
-        "over": 16
+        "over": 32,
+        "suffixApplied": " | Example Site"
       },
       {
         "field": "description",
-        "value": "Complete guide to the SpaceX IPO timeline including current valuation of $350 billion, major institutional investors, Starlink revenue breakdown, and what analysts predict for the public offering date and expected market cap at listing",
-        "length": 228,
+        "value": "It's the plain-English walkthrough of a cap table that we wanted when we raised: common, preferred, options, SAFEs and notes, with a worked Acme example for every line item.",
+        "length": 173,
         "limit": 160,
-        "over": 68
+        "over": 13
       }
     ]
   },
   {
-    "file": "src/app/tools/startup-valuation-calculator/page.tsx",
-    "issues": [
-      {
-        "field": "description",
-        "value": "Free startup valuation calculator using revenue multiples, comparable company analysis, and DCF models. Covers pre-seed through Series C with industry-specific benchmarks and real funding data from 2024-2026.",
-        "length": 203,
-        "limit": 160,
-        "over": 43
-      }
-    ]
-  },
-  {
-    "file": "src/app/blog/best-cap-table-management-tools/page.tsx",
+    "file": "tests/fixtures/content/app/blog/why-vcs-dont-return-calls/page.tsx",
     "issues": [
       {
         "field": "title",
-        "value": "12 Best Cap Table Management Tools for Startups and Investors Compared",
-        "length": 69,
+        "value": "Why VCs Don't Return Calls: What Founders Get Wrong About Outreach | Example Site",
+        "length": 81,
         "limit": 60,
-        "over": 9
+        "over": 21,
+        "suffixApplied": " | Example Site"
+      }
+    ]
+  },
+  {
+    "file": "tests/fixtures/content/posts/landing.html",
+    "issues": [
+      {
+        "field": "title",
+        "value": "Acme & Example Capital: The Complete Guide to Raising a Seed Round in One Place",
+        "length": 79,
+        "limit": 60,
+        "over": 19
+      },
+      {
+        "field": "description",
+        "value": "Everything founders need before a seed round: how to size the round, pick investors, run the process and close. It's written for first-time founders who raise alone.",
+        "length": 165,
+        "limit": 160,
+        "over": 5
+      }
+    ]
+  },
+  {
+    "file": "tests/fixtures/content/app/tools/pricing/page.tsx",
+    "issues": [
+      {
+        "field": "title",
+        "value": "Startup Valuation Calculator for Seed-Stage Teams | Example Site",
+        "length": 64,
+        "limit": 60,
+        "over": 4,
+        "suffixApplied": " | Example Site"
       }
     ]
   }
