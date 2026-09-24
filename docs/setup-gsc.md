@@ -111,6 +111,9 @@ node scripts/weekly-report.mjs --site sc-domain:yoursite.com
 - Run `gcloud auth application-default login` again
 - Or set `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json`
 
+**"...requires a quota project" / 403 with user credentials**
+- User credentials from `gcloud auth application-default login` need a Google Cloud project to bill API quota to. Run `gcloud auth application-default set-quota-project YOUR_PROJECT_ID`, or set `GOOGLE_CLOUD_QUOTA_PROJECT=YOUR_PROJECT_ID`.
+
 **"Quota exceeded"**
 - The Search Analytics API allows 1,200 queries per **minute** per site and per user, with much higher project limits. Very large pulls should page through results (the scripts do this via `lib/gsc.mjs`) and retry after a short pause if you hit the per-minute limit.
 
