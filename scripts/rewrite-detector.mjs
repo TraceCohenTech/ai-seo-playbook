@@ -16,12 +16,11 @@
  * Usage: node scripts/rewrite-detector.mjs --input stories.json [--window-days 7] [--output clusters.json]
  *   stories.json: [{ "slug": "encore-ai-30-million-series-a-2026", "timestamp": "2026-07-29T12:00:00Z", "amount": "$30M Series A" }, …]
  */
-import { parseArgs } from 'node:util';
+import { cli } from '../lib/cli.mjs';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { sameRoundRewrite } from '../lib/rewrite-rules.mjs';
 
-const { values: a } = parseArgs({ options: { input: { type: 'string' }, 'window-days': { type: 'string', default: '7' }, output: { type: 'string' } } });
-if (!a.input) { console.error('Usage: node scripts/rewrite-detector.mjs --input stories.json'); process.exit(1); }
+const a = cli(import.meta.url, { input: { type: 'string', required: true }, 'window-days': { type: 'string', default: '7' }, output: { type: 'string' } });
 const stories = JSON.parse(readFileSync(a.input, 'utf8')).filter((s) => s.slug);
 const amt = (s) => (String(s || '').match(/\$[\d,.]+\s*[BMKbmk]/) || [''])[0].toUpperCase().replace(/\s+/g, '');
 const groups = new Map();

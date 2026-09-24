@@ -12,16 +12,15 @@
  * Usage:
  *   node scripts/human-query-split.mjs --site sc-domain:example.com [--days 28] [--min-human-impr 300] [--output out.json]
  */
-import { parseArgs } from 'node:util';
+import { cli } from '../lib/cli.mjs';
 import { writeFileSync } from 'node:fs';
 import { gscClient, queryAll, isoDay, daysAgo } from '../lib/gsc.mjs';
 import { splitQueries } from '../lib/query-classifier.mjs';
 
-const { values: a } = parseArgs({ options: {
-  site: { type: 'string' }, days: { type: 'string', default: '28' },
+const a = cli(import.meta.url, {
+  site: { type: 'string', required: true }, days: { type: 'string', default: '28' },
   'min-human-impr': { type: 'string', default: '300' }, 'path-contains': { type: 'string' }, output: { type: 'string' },
-} });
-if (!a.site) { console.error('Usage: node scripts/human-query-split.mjs --site sc-domain:example.com'); process.exit(1); }
+});
 
 const sc = await gscClient();
 const endDate = isoDay(daysAgo(3)), startDate = isoDay(daysAgo(3 + Number(a.days)));

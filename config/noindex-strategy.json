@@ -1,10 +1,10 @@
 {
-  "_comment": "Strategy for noindexing thin content to protect crawl budget and site quality signals. Google has limited crawl budget — every thin page it spends time on is a page it didn't crawl from your good content.",
+  "_comment": "Strategy for noindexing thin content to protect site-quality signals. (Crawl budget itself only matters for very large sites, roughly 1M+ pages or 10K+ changing daily, per Google. For most sites the real problem is thin pages dragging on quality and piling up as 'Crawled – currently not indexed'.)",
   "why": "Sites with hundreds of thin pages see 'crawled — currently not indexed' counts climb in GSC. Noindexing the worst offenders concentrates Google's attention on your strong pages. We saw 1,632 'crawled — currently not indexed' pages trending up before deploying this.",
   "thinContentThresholds": {
     "autoNoindex": {
       "wordCount": 100,
-      "description": "Pages under 100 words are almost certainly thin. Auto-noindex without review."
+      "description": "Pages under 100 words are usually thin, but short tools, calculators and data pages can rank. Flag for review; noindex after a human check and only if they get no search traffic."
     },
     "reviewForNoindex": {
       "wordCount": 300,
@@ -18,7 +18,11 @@
   "softFourOhFour": {
     "problem": "Dynamic route catch-alls (e.g., /blog/[slug]) serve HTTP 200 for nonexistent slugs. Google sees these as thin pages, not 404s. In Next.js with PPR, the status code is committed before the slug check runs in the page component.",
     "solution": "Call notFound() in generateMetadata() — this injects <meta name='robots' content='noindex'> which is the most-restrictive-wins rule. True 404 status would require dynamicParams=false + full prebuild (expensive) or middleware (paid invocations).",
-    "affectedFrameworks": ["Next.js (App Router with PPR)", "SvelteKit (with prerender)", "Any SSR framework with catch-all routes"]
+    "affectedFrameworks": [
+      "Next.js (App Router with PPR)",
+      "SvelteKit (with prerender)",
+      "Any SSR framework with catch-all routes"
+    ]
   },
   "sitemapHygiene": {
     "rule": "Every noindexed page must also be excluded from the sitemap. A URL in the sitemap with a noindex tag sends conflicting signals.",

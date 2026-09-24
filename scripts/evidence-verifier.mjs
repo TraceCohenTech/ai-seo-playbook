@@ -17,11 +17,10 @@
  * Usage: node scripts/evidence-verifier.mjs --input evidence.json [--output report.json]
  *   evidence.json: [{ "id": "acme.valuation", "value": "$1.2B", "url": "https://…", "quote": "…valued at $1.2 billion…" }, …]
  */
-import { parseArgs } from 'node:util';
+import { cli } from '../lib/cli.mjs';
 import { readFileSync, writeFileSync } from 'node:fs';
 
-const { values: a } = parseArgs({ options: { input: { type: 'string' }, output: { type: 'string' }, blocklist: { type: 'string', default: 'pitchbook|crunchbase|tracxn|cbinsights|linkedin\\.com' } } });
-if (!a.input) { console.error('Usage: node scripts/evidence-verifier.mjs --input evidence.json'); process.exit(1); }
+const a = cli(import.meta.url, { input: { type: 'string', required: true }, output: { type: 'string' }, blocklist: { type: 'string', default: 'pitchbook|crunchbase|tracxn|cbinsights|linkedin\\.com' } });
 const BLOCKED = new RegExp(a.blocklist, 'i');
 const norm = (s) => String(s).normalize('NFKC').replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ')
   .replace(/&nbsp;|&#160;/g, ' ').replace(/&amp;/g, '&').replace(/&#39;|&rsquo;|&lsquo;|[‘’]/g, "'").replace(/&quot;|&ldquo;|&rdquo;|[“”]/g, '"')

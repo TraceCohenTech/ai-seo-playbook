@@ -14,12 +14,11 @@
  *
  * Usage: node scripts/sitemap-health.mjs --sitemap https://example.com/sitemap.xml [--sitemap …] [--sample 15] [--delay-ms 1000]
  */
-import { parseArgs } from 'node:util';
+import { cli } from '../lib/cli.mjs';
 
-const { values: a } = parseArgs({ options: {
-  sitemap: { type: 'string', multiple: true }, sample: { type: 'string', default: '15' }, 'delay-ms': { type: 'string', default: '1000' },
-} });
-if (!a.sitemap?.length) { console.error('Usage: node scripts/sitemap-health.mjs --sitemap https://example.com/sitemap.xml'); process.exit(1); }
+const a = cli(import.meta.url, {
+  sitemap: { type: 'string', multiple: true, required: true }, sample: { type: 'string', default: '15' }, 'delay-ms': { type: 'string', default: '1000' },
+});
 const UA = 'Mozilla/5.0 (compatible; sitemap-health/1.0; +https://github.com/TraceCohenTech/ai-seo-playbook)';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const locs = (xml) => [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)].map((m) => m[1].replace(/&amp;/g, '&'));

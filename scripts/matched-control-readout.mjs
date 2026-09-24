@@ -15,15 +15,14 @@
  *   node scripts/matched-control-readout.mjs --site sc-domain:example.com --changes changes.json [--window 21] [--min-impr 300] [--path-contains /blog/]
  *   changes.json: [{ "page": "https://example.com/blog/x" | "/blog/x", "changedAt": "2026-08-20", "cohort": "retitle" }, ...]
  */
-import { parseArgs } from 'node:util';
+import { cli } from '../lib/cli.mjs';
 import { readFileSync } from 'node:fs';
 import { gscClient, queryAll, isoDay } from '../lib/gsc.mjs';
 
-const { values: a } = parseArgs({ options: {
-  site: { type: 'string' }, changes: { type: 'string' }, window: { type: 'string', default: '21' },
+const a = cli(import.meta.url, {
+  site: { type: 'string', required: true }, changes: { type: 'string', required: true }, window: { type: 'string', default: '21' },
   'min-impr': { type: 'string', default: '300' }, 'path-contains': { type: 'string' },
-} });
-if (!a.site || !a.changes) { console.error('Usage: node scripts/matched-control-readout.mjs --site sc-domain:example.com --changes changes.json'); process.exit(1); }
+});
 
 const W = Number(a.window), minImpr = Number(a['min-impr']);
 const changes = JSON.parse(readFileSync(a.changes, 'utf8'));

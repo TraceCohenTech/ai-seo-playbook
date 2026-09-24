@@ -16,14 +16,13 @@
  *
  * Usage: node scripts/traffic-guard.mjs --site sc-domain:example.com [--day YYYY-MM-DD] [--webhook https://ntfy.sh/your-topic]
  */
-import { parseArgs } from 'node:util';
+import { cli } from '../lib/cli.mjs';
 import { gscClient, queryAll, isoDay, daysAgo } from '../lib/gsc.mjs';
 
-const { values: a } = parseArgs({ options: {
-  site: { type: 'string' }, day: { type: 'string' }, threshold: { type: 'string', default: '0.75' },
+const a = cli(import.meta.url, {
+  site: { type: 'string', required: true }, day: { type: 'string' }, threshold: { type: 'string', default: '0.75' },
   'long-threshold': { type: 'string', default: '0.70' }, webhook: { type: 'string' },
-} });
-if (!a.site) { console.error('Usage: node scripts/traffic-guard.mjs --site sc-domain:example.com'); process.exit(1); }
+});
 
 const D = a.day ? new Date(a.day + 'T00:00:00Z') : daysAgo(3);
 const back = (n) => { const x = new Date(D); x.setUTCDate(x.getUTCDate() - n); return isoDay(x); };

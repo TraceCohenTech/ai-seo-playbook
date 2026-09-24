@@ -1,7 +1,7 @@
 {
   "name": "ai-seo-playbook",
-  "version": "1.0.0",
-  "description": "The complete AI SEO playbook: methodology, scripts, and safety guards behind a 5.6M-impression content engine. GSC feedback loops, multi-model agent orchestration, quality gates, and build cost control.",
+  "version": "2.0.0",
+  "description": "The open-source SEO + GEO/AEO playbook: tested scripts, guardrails and methodology behind a site that reached 11.08M impressions / 44.8K clicks in 90 days. Human-vs-AI-agent query analysis, matched-control measurement, entity pages, evidence-verified facts.",
   "author": "Trace Cohen <t@nyvp.com>",
   "license": "MIT",
   "type": "module",
@@ -28,9 +28,34 @@
     "ai-citations": "node scripts/ai-citation-tracker.mjs",
     "ctr-audit": "node scripts/ctr-audit.mjs",
     "check-meta": "node scripts/meta-length-checker.mjs",
-    "thin-content": "node scripts/thin-content-detector.mjs"
+    "thin-content": "node scripts/thin-content-detector.mjs",
+    "human-query-split": "node scripts/human-query-split.mjs",
+    "matched-control": "node scripts/matched-control-readout.mjs",
+    "traffic-guard": "node scripts/traffic-guard.mjs",
+    "sitemap-health": "node scripts/sitemap-health.mjs",
+    "verify-evidence": "node scripts/evidence-verifier.mjs",
+    "rewrite-detector": "node scripts/rewrite-detector.mjs",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "googleapis": "^144.0.0"
-  }
+  },
+  "keywords": [
+    "seo",
+    "geo",
+    "aeo",
+    "generative-engine-optimization",
+    "answer-engine-optimization",
+    "ai-seo",
+    "google-search-console",
+    "llms-txt",
+    "structured-data",
+    "nextjs",
+    "technical-seo"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TraceCohenTech/ai-seo-playbook.git"
+  },
+  "homepage": "https://github.com/TraceCohenTech/ai-seo-playbook"
 }

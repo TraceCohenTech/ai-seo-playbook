@@ -23,7 +23,7 @@
       "Named dates (Q1 2026, January 15)",
       "Named entities (company, person, organization)"
     ],
-    "note": "A paragraph with 5 data points gets cited 3-5x more often than one with 5 opinions."
+    "note": "Heuristic, not a measurement: specific, dated, sourced data points are easier for answer engines to extract and quote than opinion."
   },
   "entityClarity": {
     "required": true,
@@ -43,9 +43,15 @@
     ]
   },
   "schemaRequirements": {
-    "minimum": ["Article", "FAQPage", "BreadcrumbList"],
-    "recommended": ["Dataset", "Organization"],
-    "note": "Dataset schema surfaces pages in Google Dataset Search — an underused traffic channel that 95% of competitors ignore."
+    "minimum": [
+      "Article",
+      "BreadcrumbList"
+    ],
+    "recommended": [
+      "Dataset",
+      "Organization"
+    ],
+    "note": "Dataset schema makes data pages eligible for Google Dataset Search, an often-overlooked channel. Only use it on real datasets, with a real dateModified."
   },
   "measurementMetrics": [
     {
@@ -66,5 +72,6 @@
       "target": "100% of top 50 pages",
       "cadence": "Monthly"
     }
-  ]
+  ],
+  "_note_faq": "FAQPage markup is optional: since Aug 2023 Google shows FAQ rich results only for authoritative government/health sites. Visible on-page Q&A still helps answer engines extract answers."
 }

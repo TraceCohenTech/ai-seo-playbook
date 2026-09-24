@@ -47,5 +47,6 @@
     "Use GSC clicks as your north-star traffic metric",
     "Don't make content decisions based on pageview counts — use engagement rate and conversion rate instead",
     "Consider bot protection (Vercel BotID, Cloudflare Bot Management) if bot ratio exceeds 80%"
-  ]
+  ],
+  "_note": "The ratios below are heuristics from our own analytics, not industry standards. Low engagement does not by itself mean a bot, and GA4 already filters known bots. Use them to decide what to investigate, not as proof."
 }

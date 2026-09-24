@@ -20,7 +20,7 @@ This guide walks you through creating API credentials to use with the scripts in
 2. Search for "Google Search Console API"
 3. Click **Enable**
 
-Also enable the **Web Search Indexing API** if you want URL inspection features.
+URL Inspection is part of the Search Console API you just enabled; nothing else is needed. (The separate *Indexing API* is only for pages with JobPosting or BroadcastEvent structured data. Don't use it for articles or product pages.)
 
 ## Step 3: Set Up Authentication
 
@@ -54,6 +54,8 @@ Use this for GitHub Actions, cron jobs, or any automated workflow.
 6. Click **Done**
 7. Click on the new service account → **Keys** → **Add Key** → **Create New Key**
 8. Choose **JSON** → **Download**
+
+> For GitHub Actions, prefer keyless auth with Workload Identity Federation (`google-github-actions/auth`). A downloaded JSON key is the fallback: store it as a secret, never commit it, and rotate it.
 
 Now add the service account to Search Console:
 
@@ -110,7 +112,7 @@ node scripts/weekly-report.mjs --site sc-domain:yoursite.com
 - Or set `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json`
 
 **"Quota exceeded"**
-- The free tier allows 1,200 queries per day. The scripts in this repo are well within that limit for most sites. If you have thousands of pages, the weekly report may need to be batched.
+- The Search Analytics API allows 1,200 queries per **minute** per site and per user, with much higher project limits. Very large pulls should page through results (the scripts do this via `lib/gsc.mjs`) and retry after a short pause if you hit the per-minute limit.
 
 ## Data Freshness
 

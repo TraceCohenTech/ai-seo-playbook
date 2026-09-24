@@ -1,4 +1,9 @@
 name: Weekly SEO Report
+# TEMPLATE: copy to .github/workflows/ in YOUR site's repo, then set:
+#   repository variable GSC_SITE      (e.g. sc-domain:example.com)
+#   repository variable CONTENT_DIR   (e.g. ./src/app/blog)
+#   secret GSC_CREDENTIALS            (service-account JSON; Workload Identity Federation via
+#                                      google-github-actions/auth is preferred when you can)
 
 on:
   schedule:
@@ -6,17 +11,23 @@ on:
     - cron: '30 14 * * 0'
   workflow_dispatch: # Manual trigger
 
+permissions:
+  contents: write   # commit the reports
+  issues: write     # optional summary issue
+
 jobs:
   report:
+    if: vars.GSC_SITE != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
 
       - run: npm ci
+      - run: mkdir -p reports
 
       # Authenticate with Google Cloud
       # Store your service account JSON as a GitHub secret named GSC_CREDENTIALS
@@ -30,14 +41,14 @@ jobs:
         run: |
           node scripts/weekly-report.mjs \
             --site "${{ vars.GSC_SITE }}" \
-            --output weekly-seo-report.json
+            --output reports/weekly-seo-report.json
 
       # Run cannibalization check
       - name: Check for cannibalization
         run: |
           node scripts/cannibalization-detector.mjs \
             --site "${{ vars.GSC_SITE }}" \
-            --output cannibal-clusters.json
+            --output reports/cannibal-clusters.json
 
       # Run content audit
       - name: Content audit
@@ -45,14 +56,14 @@ jobs:
           node scripts/content-audit.mjs \
             --site "${{ vars.GSC_SITE }}" \
             --dir "${{ vars.CONTENT_DIR || './content' }}" \
-            --output content-audit.json
+            --output reports/content-audit.json
 
       # Commit reports
       - name: Commit reports
         run: |
           git config user.name "SEO Bot"
           git config user.email "seo@users.noreply.github.com"
-          git add weekly-seo-report.json cannibal-clusters.json content-audit.json
+          git add -f reports/weekly-seo-report.json reports/cannibal-clusters.json reports/content-audit.json
           git diff --cached --quiet || git commit -m "Weekly SEO report — $(date +%Y-%m-%d)"
           git push
 
@@ -63,7 +74,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const report = JSON.parse(fs.readFileSync('weekly-seo-report.json', 'utf-8'));
+            const report = JSON.parse(fs.readFileSync('reports/weekly-seo-report.json', 'utf-8'));
             const s = report.summary;
 
             const body = [
