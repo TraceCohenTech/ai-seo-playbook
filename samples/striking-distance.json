@@ -1,0 +1,259 @@
+{
+  "generated": "2026-09-21T12:00:00.000Z",
+  "site": "sc-domain:example.com",
+  "period": {
+    "startDate": "2026-08-22",
+    "endDate": "2026-09-18"
+  },
+  "config": {
+    "minPos": 5,
+    "maxPos": 20,
+    "minImpressions": 200,
+    "includeMachine": false,
+    "days": 28
+  },
+  "curve": {
+    "source": "fitted",
+    "label": "fitted from this site: median CTR by rounded position (heuristic)",
+    "note": "fitted 20 positions from 143 query rows",
+    "positions": {
+      "1": 0.20089,
+      "2": 0.10268,
+      "3": 0.0625,
+      "4": 0.04167,
+      "5": 0.03571,
+      "6": 0.01674,
+      "7": 0.01674,
+      "8": 0.01658,
+      "9": 0.01429,
+      "10": 0.00852,
+      "11": 0.00852,
+      "12": 0.0051,
+      "13": 0.00298,
+      "14": 0.00239,
+      "15": 0.00239,
+      "16": 0,
+      "17": 0,
+      "18": 0,
+      "19": 0,
+      "20": 0
+    }
+  },
+  "totalOpportunities": 13,
+  "estimatedTotalClickGain": 719,
+  "opportunities": [
+    {
+      "page": "/blog/example-capital-fund-iii",
+      "topQuery": "example capital fund iii",
+      "position": 6,
+      "impressions": 17080,
+      "clicks": 84,
+      "ctr": 0.49,
+      "queryCount": 3,
+      "targetPosition": 4,
+      "projectedClicks": 671,
+      "clickGain": 587,
+      "actions": [
+        "Answer related questions on the page (a short Q&A section)",
+        "Update facts that are out of date; change lastmod only when the content materially changes",
+        "CTR is below the curve for this position: review whether the title matches this query's intent"
+      ]
+    },
+    {
+      "page": "/blog/acme-pricing",
+      "topQuery": "acme pricing",
+      "position": 7.2,
+      "impressions": 4620,
+      "clicks": 87,
+      "ctr": 1.88,
+      "queryCount": 2,
+      "targetPosition": 5,
+      "projectedClicks": 157,
+      "clickGain": 70,
+      "actions": [
+        "Answer related questions on the page (a short Q&A section)",
+        "Update facts that are out of date; change lastmod only when the content materially changes"
+      ]
+    },
+    {
+      "page": "/blog/topic-3",
+      "topQuery": "widget topic 15",
+      "position": 16,
+      "impressions": 1568,
+      "clicks": 10,
+      "ctr": 0.64,
+      "queryCount": 7,
+      "targetPosition": 8,
+      "projectedClicks": 26,
+      "clickGain": 16,
+      "actions": [
+        "Expand the section that answers this query; add specifics a searcher would look for",
+        "Link to this page from related pages with descriptive anchor text",
+        "CTR is below the curve for this position: review whether the title matches this query's intent"
+      ]
+    },
+    {
+      "page": "/news/acme-funding",
+      "topQuery": "acme series b",
+      "position": 9,
+      "impressions": 2240,
+      "clicks": 28,
+      "ctr": 1.25,
+      "queryCount": 1,
+      "targetPosition": 7,
+      "projectedClicks": 38,
+      "clickGain": 10,
+      "actions": [
+        "Answer related questions on the page (a short Q&A section)",
+        "Update facts that are out of date; change lastmod only when the content materially changes",
+        "CTR is below the curve for this position: review whether the title matches this query's intent"
+      ]
+    },
+    {
+      "page": "/blog/topic-2",
+      "topQuery": "widget topic 38",
+      "position": 18.8,
+      "impressions": 448,
+      "clicks": 5,
+      "ctr": 1.12,
+      "queryCount": 2,
+      "targetPosition": 8,
+      "projectedClicks": 12,
+      "clickGain": 7,
+      "actions": [
+        "Expand the section that answers this query; add specifics a searcher would look for",
+        "Link to this page from related pages with descriptive anchor text"
+      ]
+    },
+    {
+      "page": "/blog/topic-1",
+      "topQuery": "widget topic 31",
+      "position": 11.7,
+      "impressions": 448,
+      "clicks": 1,
+      "ctr": 0.22,
+      "queryCount": 2,
+      "targetPosition": 8,
+      "projectedClicks": 7,
+      "clickGain": 6,
+      "actions": [
+        "Expand the section that answers this query; add specifics a searcher would look for",
+        "Link to this page from related pages with descriptive anchor text",
+        "CTR is below the curve for this position: review whether the title matches this query's intent"
+      ]
+    },
+    {
+      "page": "/blog/stable-post",
+      "topQuery": "widget facts list",
+      "position": 11,
+      "impressions": 840,
+      "clicks": 9,
+      "ctr": 1.07,
+      "queryCount": 1,
+      "targetPosition": 8,
+      "projectedClicks": 14,
+      "clickGain": 5,
+      "actions": [
+        "Expand the section that answers this query; add specifics a searcher would look for",
+        "Link to this page from related pages with descriptive anchor text"
+      ]
+    },
+    {
+      "page": "/blog/topic-0",
+      "topQuery": "widget topic 24",
+      "position": 5.1,
+      "impressions": 224,
+      "clicks": 9,
+      "ctr": 4.02,
+      "queryCount": 1,
+      "targetPosition": 3,
+      "projectedClicks": 14,
+      "clickGain": 5,
+      "actions": [
+        "Answer related questions on the page (a short Q&A section)",
+        "Update facts that are out of date; change lastmod only when the content materially changes"
+      ]
+    },
+    {
+      "page": "/blog/topic-5",
+      "topQuery": "widget topic 11",
+      "position": 12.3,
+      "impressions": 448,
+      "clicks": 2,
+      "ctr": 0.45,
+      "queryCount": 2,
+      "targetPosition": 8,
+      "projectedClicks": 7,
+      "clickGain": 5,
+      "actions": [
+        "Expand the section that answers this query; add specifics a searcher would look for",
+        "Link to this page from related pages with descriptive anchor text",
+        "CTR is below the curve for this position: review whether the title matches this query's intent"
+      ]
+    },
+    {
+      "page": "/blog/retired-post",
+      "topQuery": "retired widget guide",
+      "position": 5,
+      "impressions": 1400,
+      "clicks": 84,
+      "ctr": 6,
+      "queryCount": 1,
+      "targetPosition": 3,
+      "projectedClicks": 88,
+      "clickGain": 4,
+      "actions": [
+        "Answer related questions on the page (a short Q&A section)",
+        "Update facts that are out of date; change lastmod only when the content materially changes"
+      ]
+    },
+    {
+      "page": "/blog/widget-pricing",
+      "topQuery": "widget pricing guide",
+      "position": 12,
+      "impressions": 1960,
+      "clicks": 45,
+      "ctr": 2.3,
+      "queryCount": 2,
+      "targetPosition": 8,
+      "projectedClicks": 49,
+      "clickGain": 4,
+      "actions": [
+        "Expand the section that answers this query; add specifics a searcher would look for",
+        "Link to this page from related pages with descriptive anchor text"
+      ]
+    },
+    {
+      "page": "/blog/vc-funding-guide",
+      "topQuery": "vc funding guide",
+      "position": 8,
+      "impressions": 560,
+      "clicks": 28,
+      "ctr": 5,
+      "queryCount": 1,
+      "targetPosition": 6,
+      "projectedClicks": 9,
+      "clickGain": 0,
+      "actions": [
+        "Answer related questions on the page (a short Q&A section)",
+        "Update facts that are out of date; change lastmod only when the content materially changes"
+      ]
+    },
+    {
+      "page": "/tools/acme-pricing-calculator",
+      "topQuery": "acme pricing",
+      "position": 8.1,
+      "impressions": 3920,
+      "clicks": 70,
+      "ctr": 1.79,
+      "queryCount": 1,
+      "targetPosition": 6,
+      "projectedClicks": 66,
+      "clickGain": 0,
+      "actions": [
+        "Answer related questions on the page (a short Q&A section)",
+        "Update facts that are out of date; change lastmod only when the content materially changes"
+      ]
+    }
+  ]
+}

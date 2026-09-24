@@ -1,231 +1,149 @@
 #!/usr/bin/env node
-
 /**
  * Refresh Tracker
  *
- * Identifies pages that are still getting search impressions but haven't
- * been updated recently. These are refresh candidates — updating them
- * with fresh data triggers a lastmod signal that tells Google the page
- * is still relevant.
+ * Lists pages that still earn search impressions but whose content has not been updated for a
+ * while: candidates to review for outdated facts. Whether a refresh helps rankings depends on
+ * the page and query; this script only finds the stale ones with demand.
  *
- * The "refresh drip" strategy: instead of publishing new content daily,
- * update your best-performing existing pages with current data. A refreshed
- * page with authority beats a new page every time.
+ * Matching files to URLs is by EXACT PATH:
+ *   - App Router `app/blog/foo/page.tsx` -> `/blog/foo` (the slug is the parent directory;
+ *     route groups are dropped; dynamic `[slug]` routes cannot be matched and are skipped)
+ *   - Markdown/MDX -> path relative to --dir, prefixed with --url-prefix
+ *     (e.g. --dir content/blog --url-prefix /blog maps content/blog/foo.md to /blog/foo)
+ *   - URL variants (trailing slash, www, #fragments) are normalised and their metrics summed.
+ * When no --url-prefix is given and a URL has no exact match, a file is accepted only if its
+ * slug equals the URL's LAST path segment exactly and no other file has that slug (match
+ * "slug-unique"). Substring matching is never used.
+ *
+ * Last-updated date: frontmatter/metadata lastUpdated, updated, dateModified, modified, then
+ * date/datePublished; otherwise the file mtime (unreliable after a git clone; reported as
+ * dateSource "mtime").
  *
  * Usage:
- *   node scripts/refresh-tracker.mjs --site sc-domain:example.com --dir ./content
- *   node scripts/refresh-tracker.mjs --site sc-domain:example.com --dir ./content --stale-days 30
+ *   node scripts/refresh-tracker.mjs --site sc-domain:example.com --dir ./app
+ *   node scripts/refresh-tracker.mjs --site sc-domain:example.com --dir ./content/blog --url-prefix /blog --stale-days 60
+ *
+ * Options:
+ *   --site              Search Console property (required)
+ *   --dir               Content directory to scan (required)
+ *   --url-prefix        URL path prefix for Markdown files under --dir (default none)
+ *   --stale-days        Days since update to count as stale (default 30)
+ *   --min-impressions   Minimum page impressions over the window (default 100)
+ *   --days              Window, ending on the last final-data date (default 28)
+ *   --output            Optional output JSON path
+ *
+ * Output (JSON): { generated, config, period, refreshCandidates: [{ url, file, match, impressions,
+ *   clicks, ctr, position, lastUpdated, dateSource, daysSinceUpdate, urgency, reason }],
+ *   healthyCount, unmatched: [paths], skippedDynamicRoutes }
+ *
+ * Exit codes: 0 finished, 1 error.
  */
+import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { cli, fail } from '../lib/cli.mjs';
+import { gscClient, queryAll } from '../lib/gsc.mjs';
+import { lastDataDate, windowEnding, sumByPage, normPath, toDay, round, pct } from '../lib/gsc-rows.mjs';
+import { scanContent } from '../lib/content-routes.mjs';
 
-import { google } from 'googleapis';
-import { parseArgs } from 'node:util';
-import { readdir, readFile, stat } from 'node:fs/promises';
-import { join, extname } from 'node:path';
-
-const { values: args } = parseArgs({
-  options: {
-    site: { type: 'string' },
-    dir: { type: 'string' },
-    'stale-days': { type: 'string', default: '30' },
-    'min-impressions': { type: 'string', default: '100' },
-    output: { type: 'string' },
-  },
-});
-
-if (!args.site || !args.dir) {
-  console.error('Usage: node scripts/refresh-tracker.mjs --site sc-domain:example.com --dir ./content');
-  process.exit(1);
-}
-
-const STALE_DAYS = parseInt(args['stale-days']);
-const MIN_IMPRESSIONS = parseInt(args['min-impressions']);
-
-async function getAuth() {
-  const auth = new google.auth.GoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
-  });
-  return auth.getClient();
-}
-
-async function getGscData(auth, site) {
-  const searchconsole = google.searchconsole({ version: 'v1', auth });
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() - 1);
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 28);
-
-  const res = await searchconsole.searchanalytics.query({
-    siteUrl: site,
-    requestBody: {
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0],
-      dimensions: ['page'],
-      rowLimit: 5000,
-    },
-  });
-
-  return (res.data.rows || []).map(row => ({
-    page: row.keys[0],
-    clicks: row.clicks,
-    impressions: row.impressions,
-    ctr: Math.round(row.ctr * 10000) / 100,
-    position: Math.round(row.position * 10) / 10,
-  }));
-}
-
-async function getContentFiles(dir) {
-  const files = [];
-
-  async function walk(currentDir) {
-    const entries = await readdir(currentDir, { withFileTypes: true });
-    for (const entry of entries) {
-      const fullPath = join(currentDir, entry.name);
-      if (entry.isDirectory() && !entry.name.startsWith('.')) {
-        await walk(fullPath);
-      } else if (['.mdx', '.md', '.tsx', '.jsx'].includes(extname(entry.name))) {
-        const fileStat = await stat(fullPath);
-        const content = await readFile(fullPath, 'utf-8');
-
-        let lastUpdated = null;
-        const lastUpdatedMatch = content.match(/lastUpdated:\s*['"]?(\d{4}-\d{2}-\d{2})['"]?/);
-        const dateMatch = content.match(/date:\s*['"]?(\d{4}-\d{2}-\d{2})['"]?/);
-
-        if (lastUpdatedMatch) {
-          lastUpdated = new Date(lastUpdatedMatch[1]);
-        } else if (dateMatch) {
-          lastUpdated = new Date(dateMatch[1]);
-        } else {
-          lastUpdated = fileStat.mtime;
-        }
-
-        const slug = entry.name.replace(/\.(mdx|md|tsx|jsx)$/, '');
-
-        files.push({
-          path: fullPath,
-          slug,
-          lastUpdated,
-          daysSinceUpdate: Math.floor((Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24)),
-        });
-      }
-    }
+/** files: scanContent output. Returns a matcher(urlOrPath) -> { file, match } | null. */
+export function makeMatcher(files, { allowSlugFallback = true } = {}) {
+  const byRoute = new Map(), bySlug = new Map();
+  for (const f of files) {
+    if (!f.route) continue;
+    byRoute.set(f.route, f);
+    if (f.slug) bySlug.set(f.slug, bySlug.has(f.slug) ? null : f); // null marks an ambiguous slug
   }
-
-  await walk(dir);
-  return files;
+  return (url) => {
+    const path = normPath(url).replace(/\?.*$/, '');
+    if (byRoute.has(path)) return { file: byRoute.get(path), match: 'exact' };
+    if (!allowSlugFallback) return null;
+    const last = path.split('/').pop();
+    const f = last ? bySlug.get(last) : null;
+    return f ? { file: f, match: 'slug-unique' } : null;
+  };
 }
 
-function matchPageToFile(pageUrl, files) {
-  const urlSlug = pageUrl.split('/').pop().replace(/\/$/, '');
-  return files.find(f => f.slug === urlSlug || pageUrl.includes(f.slug));
+export function fileDate(f) {
+  if (f.updated) return { date: f.updated.date, source: f.updated.field };
+  return { date: toDay(f.mtime), source: 'mtime' };
+}
+
+export function refreshReason(e) {
+  const r = [];
+  if (e.impressions > 5000 && e.ctr < 0.5) r.push('High impressions with CTR under 0.5%: review the title alongside the content');
+  if (e.position >= 4 && e.position <= 10) r.push('On page one: check facts, dates and examples are current');
+  if (e.position > 10 && e.position <= 20) r.push('Page two: check whether the content still fully answers its main queries');
+  if (!r.length) r.push('Stale and still getting impressions: review for outdated information');
+  return r.join('. ');
+}
+
+/** pages: Map from sumByPage. files: scanContent output. now: Date. */
+export function classify(pages, files, { staleDays = 30, minImpressions = 100, urlPrefix = '', now = new Date() } = {}) {
+  const match = makeMatcher(files, { allowSlugFallback: !urlPrefix });
+  const refreshCandidates = [], unmatched = [];
+  let healthy = 0;
+  for (const p of pages.values()) {
+    if (p.impressions < minImpressions) continue;
+    const m = match(p.page);
+    if (!m) { unmatched.push(p.page); continue; }
+    const d = fileDate(m.file);
+    const daysSinceUpdate = Math.floor((now.getTime() - Date.parse(`${d.date}T00:00:00Z`)) / 864e5);
+    const e = {
+      url: p.page, file: m.file.rel, match: m.match, impressions: p.impressions, clicks: p.clicks,
+      ctr: pct(p.ctr), position: round(p.position, 1), lastUpdated: d.date, dateSource: d.source, daysSinceUpdate,
+    };
+    if (daysSinceUpdate < staleDays) { healthy++; continue; }
+    e.urgency = daysSinceUpdate >= staleDays * 2 ? 'CRITICAL' : 'HIGH';
+    e.reason = refreshReason(e);
+    refreshCandidates.push(e);
+  }
+  const order = { CRITICAL: 0, HIGH: 1 };
+  refreshCandidates.sort((a, b) => order[a.urgency] - order[b.urgency] || b.impressions - a.impressions);
+  return { refreshCandidates, healthyCount: healthy, unmatched: unmatched.sort() };
+}
+
+export async function buildReport(sc, { site, dir, urlPrefix = '', staleDays = 30, minImpressions = 100, days = 28, today = new Date(), now = new Date() }) {
+  const end = await lastDataDate(sc, site, { dataState: 'final', today });
+  const period = windowEnding(end, days);
+  const pages = sumByPage(await queryAll(sc, site, { ...period, dimensions: ['page'], dataState: 'final' }));
+  const files = await scanContent(dir, { urlPrefix });
+  const res = classify(pages, files, { staleDays, minImpressions, urlPrefix, now });
+  return {
+    generated: now.toISOString(),
+    config: { staleDays, minImpressions, urlPrefix, days },
+    period,
+    ...res,
+    skippedDynamicRoutes: files.filter((f) => !f.route).map((f) => f.rel),
+  };
 }
 
 async function main() {
-  const auth = await getAuth();
-  console.log('Fetching GSC data...');
-  const gscData = await getGscData(auth, args.site);
-  console.log(`Got performance data for ${gscData.length} pages`);
-
-  console.log(`\nScanning content directory: ${args.dir}`);
-  const files = await getContentFiles(args.dir);
-  console.log(`Found ${files.length} content files`);
-
-  const refreshCandidates = [];
-  const healthyPages = [];
-  const unknownPages = [];
-
-  for (const page of gscData) {
-    if (page.impressions < MIN_IMPRESSIONS) continue;
-
-    const file = matchPageToFile(page.page, files);
-
-    if (!file) {
-      unknownPages.push(page);
-      continue;
-    }
-
-    const entry = {
-      url: page.page,
-      file: file.path,
-      impressions: page.impressions,
-      clicks: page.clicks,
-      ctr: page.ctr,
-      position: page.position,
-      lastUpdated: file.lastUpdated.toISOString().split('T')[0],
-      daysSinceUpdate: file.daysSinceUpdate,
-    };
-
-    if (file.daysSinceUpdate >= STALE_DAYS) {
-      entry.urgency = file.daysSinceUpdate >= STALE_DAYS * 2 ? 'CRITICAL' : 'HIGH';
-      entry.reason = getRefreshReason(entry);
-      refreshCandidates.push(entry);
-    } else {
-      healthyPages.push(entry);
-    }
-  }
-
-  refreshCandidates.sort((a, b) => {
-    const urgencyOrder = { CRITICAL: 0, HIGH: 1 };
-    if (urgencyOrder[a.urgency] !== urgencyOrder[b.urgency]) {
-      return urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
-    }
-    return b.impressions - a.impressions;
+  const a = cli(import.meta.url, {
+    site: { type: 'string', required: true },
+    dir: { type: 'string', required: true },
+    'url-prefix': { type: 'string', default: '' },
+    'stale-days': { type: 'string', default: '30' },
+    'min-impressions': { type: 'string', default: '100' },
+    days: { type: 'string', default: '28' },
+    output: { type: 'string' },
   });
-
-  console.log('\n=== REFRESH TRACKER ===\n');
-  console.log(`Stale threshold: ${STALE_DAYS} days`);
-  console.log(`Min impressions: ${MIN_IMPRESSIONS}\n`);
-  console.log(`Refresh candidates:  ${refreshCandidates.length}`);
-  console.log(`Healthy pages:       ${healthyPages.length}`);
-  console.log(`Unmatched GSC pages: ${unknownPages.length}`);
-
-  if (refreshCandidates.length > 0) {
-    console.log('\n--- REFRESH CANDIDATES ---\n');
-    for (const c of refreshCandidates) {
-      console.log(`  [${c.urgency}] ${c.url}`);
-      console.log(`    ${c.impressions.toLocaleString()} impr | ${c.clicks} clicks | pos ${c.position}`);
-      console.log(`    Last updated: ${c.lastUpdated} (${c.daysSinceUpdate} days ago)`);
-      console.log(`    ${c.reason}\n`);
-    }
+  const sc = await gscClient();
+  const r = await buildReport(sc, {
+    site: a.site, dir: a.dir, urlPrefix: a['url-prefix'], staleDays: Number(a['stale-days']),
+    minImpressions: Number(a['min-impressions']), days: Number(a.days),
+  });
+  console.log(`\nRefresh tracker: ${a.site}, ${r.period.startDate} -> ${r.period.endDate}; stale = ${r.config.staleDays}+ days`);
+  console.log(`Refresh candidates: ${r.refreshCandidates.length}   Healthy: ${r.healthyCount}   Unmatched URLs: ${r.unmatched.length}`);
+  for (const c of r.refreshCandidates) {
+    console.log(`\n  [${c.urgency}] ${c.url}  (${c.file}, match ${c.match})`);
+    console.log(`    ${c.impressions.toLocaleString()} impr | ${c.clicks} clicks | pos ${c.position}`);
+    console.log(`    Last updated ${c.lastUpdated} via ${c.dateSource} (${c.daysSinceUpdate} days ago)`);
+    console.log(`    ${c.reason}`);
   }
-
-  if (args.output) {
-    const { writeFile } = await import('node:fs/promises');
-    const report = {
-      generated: new Date().toISOString(),
-      config: { staleDays: STALE_DAYS, minImpressions: MIN_IMPRESSIONS },
-      refreshCandidates,
-      healthyCount: healthyPages.length,
-      unmatchedCount: unknownPages.length,
-    };
-    await writeFile(args.output, JSON.stringify(report, null, 2));
-    console.log(`\nReport saved to ${args.output}`);
-  }
+  if (r.skippedDynamicRoutes.length) console.log(`\nSkipped ${r.skippedDynamicRoutes.length} dynamic route file(s) that cannot map to one URL.`);
+  if (a.output) { writeFileSync(a.output, JSON.stringify(r, null, 2)); console.log(`\nReport saved to ${a.output}`); }
 }
 
-function getRefreshReason(entry) {
-  const reasons = [];
-
-  if (entry.daysSinceUpdate >= 60) {
-    reasons.push('Content is significantly outdated — Google may be deprioritizing for freshness');
-  }
-
-  if (entry.impressions > 5000 && entry.ctr < 0.5) {
-    reasons.push('High impressions but very low CTR — title may need refreshing alongside content');
-  }
-
-  if (entry.position >= 4 && entry.position <= 10) {
-    reasons.push('Ranking on page 1 — a refresh could push to top 3');
-  }
-
-  if (entry.position > 10 && entry.position <= 20) {
-    reasons.push('Page 2 — a content refresh with updated data could break back to page 1');
-  }
-
-  if (reasons.length === 0) {
-    reasons.push('Page is stale and still getting traffic — refresh to maintain ranking');
-  }
-
-  return reasons.join('. ');
-}
-
-main().catch(console.error);
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(fail);

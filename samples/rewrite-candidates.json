@@ -1,74 +1,450 @@
 {
-  "generated": "2026-08-10T13:30:00Z",
+  "generated": "2026-09-21T12:00:00.000Z",
   "site": "sc-domain:example.com",
-  "totalPagesAnalyzed": 487,
-  "candidatesFound": 14,
+  "period": {
+    "startDate": "2026-08-22",
+    "endDate": "2026-09-18"
+  },
+  "config": {
+    "minImpressions": 1000,
+    "maxCtr": 0.02,
+    "minPosition": 4,
+    "maxPosition": 20,
+    "machineThreshold": 0.5,
+    "topQueries": 10,
+    "humanOnly": false,
+    "days": 28
+  },
+  "totalPagesAnalyzed": 21,
+  "candidatesFound": 7,
   "candidates": [
     {
-      "page": "/blog/openai-revenue-2026",
-      "currentTitle": "OpenAI Revenue Growth and Financial Performance in 2026",
-      "impressions": 42100,
-      "clicks": 198,
-      "ctr": 0.47,
-      "position": 6.3,
-      "rewriteScore": 94,
+      "page": "/blog/example-capital-fund-iii",
+      "clicks": 84,
+      "impressions": 59080,
+      "ctr": 0.14,
+      "position": 5.4,
+      "rewriteScore": 105,
+      "machineShare": 0.71,
       "topQueries": [
-        { "query": "openai revenue 2026", "impressions": 8200, "clicks": 41, "position": 5.1 },
-        { "query": "how much money does openai make", "impressions": 6100, "clicks": 28, "position": 7.2 },
-        { "query": "openai vs anthropic revenue", "impressions": 4800, "clicks": 12, "position": 8.4 },
-        { "query": "openai annual revenue", "impressions": 3900, "clicks": 18, "position": 6.8 }
+        {
+          "query": "evaluate the venture capital firms that closed a third fund in 2026",
+          "clicks": 0,
+          "impressions": 42000,
+          "ctr": 0,
+          "position": 5,
+          "machine": true
+        },
+        {
+          "query": "example capital fund iii",
+          "clicks": 56,
+          "impressions": 11200,
+          "ctr": 0.5,
+          "position": 6,
+          "machine": false
+        },
+        {
+          "query": "example capital fund size",
+          "clicks": 28,
+          "impressions": 5600,
+          "ctr": 0.5,
+          "position": 7,
+          "machine": false
+        },
+        {
+          "query": "example capital fund iii returns",
+          "clicks": 0,
+          "impressions": 280,
+          "ctr": 0,
+          "position": 16,
+          "machine": false
+        }
       ],
-      "diagnosis": "Title is generic and informational. Top query is comparison-seeking ('openai vs anthropic'). Rewrite to include the comparison angle and a specific number.",
-      "aiGroundingQueries": {
-        "count": 28,
-        "percentage": 12.4,
-        "examples": [
-          "what is openai's current annual revenue run rate",
-          "compare openai and anthropic financials 2026"
-        ]
-      }
+      "queryIntents": {
+        "counts": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 0,
+          "navigational": 3,
+          "machine": 1
+        },
+        "impressions": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 0,
+          "navigational": 17080,
+          "machine": 42000
+        }
+      },
+      "diagnosis": "71% of query impressions look machine-generated (AI agents, scrapers); a title rewrite is unlikely to change clicks."
     },
     {
-      "page": "/blog/ai-chip-market-nvidia-amd",
-      "currentTitle": "The AI Chip Market: Nvidia, AMD, and the Race for AI Hardware",
-      "impressions": 35600,
-      "clicks": 89,
-      "ctr": 0.25,
-      "position": 8.9,
-      "rewriteScore": 87,
+      "page": "/blog/globex-profile",
+      "clicks": 14,
+      "impressions": 1680,
+      "ctr": 0.83,
+      "position": 4,
+      "rewriteScore": 105,
+      "machineShare": 0,
       "topQueries": [
-        { "query": "nvidia vs amd ai chips", "impressions": 5400, "clicks": 22, "position": 7.1 },
-        { "query": "best ai chips 2026", "impressions": 4200, "clicks": 15, "position": 9.8 },
-        { "query": "ai chip market size", "impressions": 3800, "clicks": 8, "position": 11.2 }
+        {
+          "query": "globex profile",
+          "clicks": 14,
+          "impressions": 1680,
+          "ctr": 0.83,
+          "position": 4,
+          "machine": false
+        }
       ],
-      "diagnosis": "Position 8.9 is borderline page 1/2. Title is descriptive but not click-worthy. The 'race' framing is overused. Lead with the data point or ranking angle.",
-      "aiGroundingQueries": {
-        "count": 142,
-        "percentage": 38.1,
-        "examples": [
-          "which company makes the best ai training chips",
-          "nvidia ai chip market share percentage"
-        ]
-      }
+      "queryIntents": {
+        "counts": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 0,
+          "navigational": 1,
+          "machine": 0
+        },
+        "impressions": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 0,
+          "navigational": 1680,
+          "machine": 0
+        }
+      },
+      "diagnosis": "Top-5 position with under 1% CTR: check whether the title or snippet already answers the query in full (heuristic)."
     },
     {
-      "page": "/blog/venture-debt-vs-equity",
-      "currentTitle": "Venture Debt vs Equity: A Comprehensive Guide for Startups",
-      "impressions": 18200,
-      "clicks": 54,
-      "ctr": 0.3,
-      "position": 12.4,
-      "rewriteScore": 72,
+      "page": "/blog/acme-pricing",
+      "clicks": 87,
+      "impressions": 4620,
+      "ctr": 1.88,
+      "position": 8.2,
+      "rewriteScore": 103,
+      "machineShare": 0,
       "topQueries": [
-        { "query": "venture debt vs equity", "impressions": 3200, "clicks": 18, "position": 8.1 },
-        { "query": "should startups take venture debt", "impressions": 2100, "clicks": 8, "position": 14.2 }
+        {
+          "query": "acme pricing",
+          "clicks": 84,
+          "impressions": 4200,
+          "ctr": 2,
+          "position": 7.2,
+          "machine": false
+        },
+        {
+          "query": "acme vs globex comparison",
+          "clicks": 3,
+          "impressions": 420,
+          "ctr": 0.71,
+          "position": 18,
+          "machine": false
+        }
       ],
-      "diagnosis": "Title includes 'Comprehensive Guide' — a template phrase that signals AI content. Remove it. The question-led query ('should startups take') suggests a contrarian angle would perform better.",
-      "aiGroundingQueries": {
-        "count": 3,
-        "percentage": 1.8,
-        "examples": []
-      }
+      "queryIntents": {
+        "counts": {
+          "informational": 0,
+          "comparison": 1,
+          "transactional": 1,
+          "navigational": 0,
+          "machine": 0
+        },
+        "impressions": {
+          "informational": 0,
+          "comparison": 420,
+          "transactional": 4200,
+          "navigational": 0,
+          "machine": 0
+        }
+      },
+      "diagnosis": null
+    },
+    {
+      "page": "/tools/acme-pricing-calculator",
+      "clicks": 70,
+      "impressions": 3920,
+      "ctr": 1.79,
+      "position": 8.1,
+      "rewriteScore": 102,
+      "machineShare": 0,
+      "topQueries": [
+        {
+          "query": "acme pricing",
+          "clicks": 70,
+          "impressions": 3920,
+          "ctr": 1.79,
+          "position": 8.1,
+          "machine": false
+        }
+      ],
+      "queryIntents": {
+        "counts": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 1,
+          "navigational": 0,
+          "machine": 0
+        },
+        "impressions": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 3920,
+          "navigational": 0,
+          "machine": 0
+        }
+      },
+      "diagnosis": null
+    },
+    {
+      "page": "/news/acme-funding",
+      "clicks": 28,
+      "impressions": 2240,
+      "ctr": 1.25,
+      "position": 9,
+      "rewriteScore": 97,
+      "machineShare": 0,
+      "topQueries": [
+        {
+          "query": "acme series b",
+          "clicks": 28,
+          "impressions": 2240,
+          "ctr": 1.25,
+          "position": 9,
+          "machine": false
+        }
+      ],
+      "queryIntents": {
+        "counts": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 0,
+          "navigational": 1,
+          "machine": 0
+        },
+        "impressions": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 0,
+          "navigational": 2240,
+          "machine": 0
+        }
+      },
+      "diagnosis": null
+    },
+    {
+      "page": "/blog/topic-5",
+      "clicks": 61,
+      "impressions": 3248,
+      "ctr": 1.88,
+      "position": 11.1,
+      "rewriteScore": 85,
+      "machineShare": 0,
+      "topQueries": [
+        {
+          "query": "widget topic 11",
+          "clicks": 1,
+          "impressions": 224,
+          "ctr": 0.45,
+          "position": 12.3,
+          "machine": false
+        },
+        {
+          "query": "widget topic 23",
+          "clicks": 13,
+          "impressions": 224,
+          "ctr": 5.8,
+          "position": 4.2,
+          "machine": false
+        },
+        {
+          "query": "widget topic 59",
+          "clicks": 0,
+          "impressions": 224,
+          "ctr": 0,
+          "position": 20,
+          "machine": false
+        },
+        {
+          "query": "widget topic 95",
+          "clicks": 1,
+          "impressions": 224,
+          "ctr": 0.45,
+          "position": 15.8,
+          "machine": false
+        },
+        {
+          "query": "widget topic 107",
+          "clicks": 3,
+          "impressions": 196,
+          "ctr": 1.53,
+          "position": 7.9,
+          "machine": false
+        },
+        {
+          "query": "widget topic 113",
+          "clicks": 1,
+          "impressions": 196,
+          "ctr": 0.51,
+          "position": 14.1,
+          "machine": false
+        },
+        {
+          "query": "widget topic 35",
+          "clicks": 0,
+          "impressions": 196,
+          "ctr": 0,
+          "position": 16.2,
+          "machine": false
+        },
+        {
+          "query": "widget topic 65",
+          "clicks": 3,
+          "impressions": 196,
+          "ctr": 1.53,
+          "position": 5.9,
+          "machine": false
+        },
+        {
+          "query": "widget topic 29",
+          "clicks": 1,
+          "impressions": 168,
+          "ctr": 0.6,
+          "position": 10.1,
+          "machine": false
+        },
+        {
+          "query": "widget topic 41",
+          "clicks": 12,
+          "impressions": 168,
+          "ctr": 7.14,
+          "position": 2,
+          "machine": false
+        }
+      ],
+      "queryIntents": {
+        "counts": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 0,
+          "navigational": 20,
+          "machine": 0
+        },
+        "impressions": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 0,
+          "navigational": 3248,
+          "machine": 0
+        }
+      },
+      "diagnosis": null
+    },
+    {
+      "page": "/blog/topic-1",
+      "clicks": 60,
+      "impressions": 3108,
+      "ctr": 1.93,
+      "position": 10.7,
+      "rewriteScore": 85,
+      "machineShare": 0,
+      "topQueries": [
+        {
+          "query": "widget topic 31",
+          "clicks": 1,
+          "impressions": 224,
+          "ctr": 0.45,
+          "position": 11.7,
+          "machine": false
+        },
+        {
+          "query": "widget topic 55",
+          "clicks": 0,
+          "impressions": 224,
+          "ctr": 0,
+          "position": 16,
+          "machine": false
+        },
+        {
+          "query": "widget topic 115",
+          "clicks": 1,
+          "impressions": 196,
+          "ctr": 0.51,
+          "position": 16,
+          "machine": false
+        },
+        {
+          "query": "widget topic 61",
+          "clicks": 17,
+          "impressions": 196,
+          "ctr": 8.67,
+          "position": 2,
+          "machine": false
+        },
+        {
+          "query": "widget topic 67",
+          "clicks": 2,
+          "impressions": 196,
+          "ctr": 1.02,
+          "position": 7.9,
+          "machine": false
+        },
+        {
+          "query": "widget topic 85",
+          "clicks": 5,
+          "impressions": 196,
+          "ctr": 2.55,
+          "position": 5.9,
+          "machine": false
+        },
+        {
+          "query": "widget topic 91",
+          "clicks": 1,
+          "impressions": 196,
+          "ctr": 0.51,
+          "position": 12.2,
+          "machine": false
+        },
+        {
+          "query": "widget topic 103",
+          "clicks": 5,
+          "impressions": 168,
+          "ctr": 2.98,
+          "position": 4,
+          "machine": false
+        },
+        {
+          "query": "widget topic 109",
+          "clicks": 2,
+          "impressions": 168,
+          "ctr": 1.19,
+          "position": 10.1,
+          "machine": false
+        },
+        {
+          "query": "widget topic 43",
+          "clicks": 7,
+          "impressions": 168,
+          "ctr": 4.17,
+          "position": 4,
+          "machine": false
+        }
+      ],
+      "queryIntents": {
+        "counts": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 0,
+          "navigational": 20,
+          "machine": 0
+        },
+        "impressions": {
+          "informational": 0,
+          "comparison": 0,
+          "transactional": 0,
+          "navigational": 3108,
+          "machine": 0
+        }
+      },
+      "diagnosis": null
     }
   ]
 }
