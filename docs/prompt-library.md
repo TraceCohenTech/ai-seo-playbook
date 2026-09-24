@@ -228,7 +228,7 @@ Use `cannibalization-detector.mjs` to find the clusters first.
 
 ## CTR Rescue Batch Rewriter
 
-The highest-ROI SEO intervention: no new content needed, just better packaging. Use `ctr-audit.mjs` to identify the 20-50 pages with the most wasted impressions, then batch-rewrite them in a single day.
+The highest-ROI SEO intervention: no new content needed, just better packaging. Use `ctr-audit.mjs` to identify the 20-50 pages with the largest click gap (expected minus actual clicks, against a CTR curve fitted to your own site), then batch-rewrite them in a single day.
 
 ```
 I'll give you a list of pages with their current title, meta description,
@@ -255,7 +255,7 @@ For each page output:
 Sort by impressions descending (highest-impact rewrites first).
 ```
 
-Run on your HIGH-tier pages from `ctr-audit.mjs` first. Measure impact after 2-4 weeks with `rewrite-measurer.mjs`.
+Run on your HIGH-tier pages from `ctr-audit.mjs` first. Measure impact with `rewrite-measurer.mjs --change-date YYYY-MM-DD` once the post window has complete data (about 3–4 weeks); it compares against a matched control.
 
 ---
 

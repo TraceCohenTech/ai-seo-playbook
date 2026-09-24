@@ -31,6 +31,7 @@
  *   --winner-share       If one page has at least this share of the query's clicks it wins, and the
  *                        query is not flagged (default 0.6)
  *   --brand              Comma-separated brand terms; queries containing any are excluded
+ *   --include-machine    Keep machine-shaped / zero-click agent queries (default: skip them)
  *   --query              Comma-separated terms; only check queries containing one of them
  *   --page               Comma-separated paths or URLs; only report clusters that include one of them
  *   --output             Output JSON path (default cannibal-clusters.json)
@@ -42,6 +43,7 @@
  *
  * Exit codes: 0 finished (with or without clusters), 1 error.
  */
+import { isHumanQuery, isZeroClickAgent } from '../lib/query-classifier.mjs';
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -57,12 +59,12 @@ const list = (s) => String(s || '').split(',').map((x) => x.trim()).filter(Boole
  */
 export function findClusters(rows, {
   minImpressions = 50, maxPositionGap = 3, winnerShare = 0.6,
-  brand = [], queries = [], pages = [], root = '/',
+  brand = [], queries = [], pages = [], root = '/', includeMachine = false,
 } = {}) {
   const brandTerms = brand.map((b) => b.toLowerCase());
   const queryTerms = queries.map((q) => q.toLowerCase());
   const pageFilter = new Set(pages.map(normPath));
-  const stats = { queriesSeen: 0, excludedBrand: 0, excludedHomepage: 0, singlePage: 0, notClose: 0, clearWinner: 0, flagged: 0 };
+  const stats = { queriesSeen: 0, excludedMachine: 0, excludedBrand: 0, excludedHomepage: 0, singlePage: 0, notClose: 0, clearWinner: 0, flagged: 0 };
 
   const byQuery = new Map();
   for (const e of sumByPageQuery(rows, { queryIdx: 0, pageIdx: 1 }).values()) {
@@ -74,6 +76,12 @@ export function findClusters(rows, {
     const q = query.toLowerCase();
     if (queryTerms.length && !queryTerms.some((t) => q.includes(t))) continue;
     stats.queriesSeen++;
+    // AI-agent / scraper queries (lib/query-classifier.mjs) don't reflect a human choosing between your
+    // pages; one 0-click agent query was the top "cannibalization" hit on a real site.
+    if (!includeMachine) {
+      const tot = all.reduce((m, p) => ({ impressions: m.impressions + p.impressions, clicks: m.clicks + p.clicks, pw: m.pw + p.position * p.impressions }), { impressions: 0, clicks: 0, pw: 0 });
+      if (!isHumanQuery(query) || isZeroClickAgent({ impressions: tot.impressions, clicks: tot.clicks, position: tot.impressions ? tot.pw / tot.impressions : 99 })) { stats.excludedMachine++; continue; }
+    }
     if (brandTerms.some((b) => q.includes(b))) { stats.excludedBrand++; continue; }
     if (all.some((p) => p.page === root)) { stats.excludedHomepage++; continue; }
 
@@ -119,7 +127,7 @@ export async function buildReport(sc, opts) {
   const config = {
     minImpressions: opts.minImpressions ?? 50, maxPositionGap: opts.maxPositionGap ?? 3, winnerShare: opts.winnerShare ?? 0.6,
     brand: opts.brand || [], queries: opts.queries || [], pages: opts.pages || [],
-    root: propertyPathPrefix(site) || '/',
+    root: propertyPathPrefix(site) || '/', includeMachine: !!opts.includeMachine,
   };
   const { clusters, stats } = findClusters(rows, config);
   return { generated: now.toISOString(), site, period, config, stats: { rowsFetched: rows.length, ...stats }, clusters };
@@ -137,18 +145,19 @@ async function main() {
     page: { type: 'string' },
     output: { type: 'string', default: 'cannibal-clusters.json' },
     top: { type: 'string', default: '20' },
+    'include-machine': { type: 'boolean', default: false },
   });
   const sc = await gscClient();
   const report = await buildReport(sc, {
     site: a.site, days: Number(a.days), minImpressions: Number(a['min-impressions']),
     maxPositionGap: Number(a['max-position-gap']), winnerShare: Number(a['winner-share']),
-    brand: list(a.brand), queries: list(a.query), pages: list(a.page),
+    brand: list(a.brand), queries: list(a.query), pages: list(a.page), includeMachine: a['include-machine'],
   });
   writeFileSync(a.output, JSON.stringify(report, null, 2));
 
   const { stats, clusters } = report;
   console.log(`\nCannibalization scan for ${a.site}, ${report.period.startDate} -> ${report.period.endDate}`);
-  console.log(`${stats.rowsFetched} query/page rows; ${stats.queriesSeen} queries checked; skipped ${stats.excludedBrand} brand, ${stats.excludedHomepage} homepage, ${stats.clearWinner} with a clear winner.`);
+  console.log(`${stats.rowsFetched} query/page rows; ${stats.queriesSeen} queries checked; skipped ${stats.excludedMachine} machine-shaped, ${stats.excludedBrand} brand, ${stats.excludedHomepage} homepage, ${stats.clearWinner} with a clear winner.`);
   console.log(`${clusters.length} queries to REVIEW (close positions, no page winning most clicks):\n`);
   for (const c of clusters.slice(0, Number(a.top))) {
     console.log(`  REVIEW  "${c.query}"  ${c.totalImpressions.toLocaleString()} impr, ${c.totalClicks} clicks`);

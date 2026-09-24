@@ -14,14 +14,16 @@
     ],
     "queries": [],
     "pages": [],
-    "root": "/"
+    "root": "/",
+    "includeMachine": false
   },
   "stats": {
     "rowsFetched": 145,
     "queriesSeen": 140,
+    "excludedMachine": 1,
     "excludedBrand": 5,
     "excludedHomepage": 0,
-    "singlePage": 133,
+    "singlePage": 132,
     "notClose": 1,
     "clearWinner": 0,
     "flagged": 1

@@ -40,11 +40,12 @@ Blog pages, visible queries only, 28 days to 2026-09-21
 
 Matched control: untouched pages with ≥300 impressions in the *before* window, same windows
 ([`matched-control-readout.mjs`](scripts/matched-control-readout.mjs)). Ranges reflect different window
-centers. See [Measurement](docs/playbook/02-measurement.md) for method and caveats.
+centers and whether the days around the change are excluded (the tool's default excludes ±3 days).
+The effect is robust in sign; its size is ~19–48 points of lift over the control. See [Measurement](docs/playbook/02-measurement.md) for method and caveats.
 
 | Change | n | Treated | Control |
 |---|---|---|---|
-| Title rewrites, Aug 19–21, 2026 | 35 | +27% to +36% clicks | −2% to +8% |
+| Title rewrites, Aug 19–21, 2026 | 35 | +27% to +53% clicks | −2% to +8% |
 | Snippet rewrites, Sep 3, 2026 | 68 | +2% | +14% |
 | Freshness refreshes, Sep 2026 | 10 | −38% | +14% (selection bias: pages picked at their news peak) |
 

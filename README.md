@@ -22,7 +22,7 @@ impressions. So:
 - **Those agent impressions still matter.** They are AI engines reading you. Winning **GEO/AEO** (being the source
   ChatGPT, Perplexity, Claude and Google AI Overviews cite) takes extractable, dated, *verified* facts.
   [Chapter 1](docs/playbook/01-geo-aeo.md) covers how.
-- **Most "wins" aren't.** Measured against untouched pages, our title rewrites outgrew the control by about 20–38 points.
+- **Most "wins" aren't.** Measured against untouched pages, our title rewrites outgrew the control by roughly 19–48 points (depending on the window).
   Our snippet rewrites did nothing, and our "freshness refreshes" only looked like losses because they picked
   fading news. [Chapter 2](docs/playbook/02-measurement.md) shows how to tell the difference.
 
@@ -83,6 +83,7 @@ Plus a [prompt library](docs/prompt-library.md) with sourcing rules built in, an
 | Script | What it tells you |
 |---|---|
 | [`matched-control-readout`](scripts/matched-control-readout.mjs) | Did the change work, compared with pages you didn't touch? |
+| [`rewrite-measurer`](scripts/rewrite-measurer.mjs) | One change date vs a control band of similar-traffic pages; skips the change week and waits for complete data |
 
 ### Protect what you've built
 | Script | What it catches |

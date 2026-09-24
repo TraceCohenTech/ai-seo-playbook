@@ -15,7 +15,7 @@ What it showed on valueaddvc.com (blog, ±21 days around each change):
 
 | Change | Treated | Matched control | Verdict |
 |---|---|---|---|
-| Title rewrites on high-impression, low-CTR pages (35 pages) | **+27% to +36% clicks** | −2% to +8% | Worked: roughly 20–38 points of lift, depending on the window |
+| Title rewrites on high-impression, low-CTR pages (35 pages) | **+27% to +53% clicks** | −2% to +8% | Worked: roughly 19–48 points of lift, depending on the window |
 | Snippet rewrites, title + description + quick answer (68 pages) | +2% | +14% | Not worth the tokens |
 | "Freshness" refreshes of top-clicked posts (10 pages) | −38% | +14% | Misleading: the pages were chosen at their news peak and regressed |
 
@@ -27,8 +27,10 @@ What it showed on valueaddvc.com (blog, ±21 days around each change):
 2. **URL variants overwrite each other.** GSC reports `/post` and `/post/` (and typo'd inbound links)
    as separate rows. Normalize, then **sum**. A map that overwrote instead of adding let a 0-click
    trailing-slash variant erase a 518-click page and flipped a +36% result to −39%.
-3. **Window sensitivity.** Shifting the window by 4 days moved one result from +44% to +27%. Always
-   report a range across two or three window centers, never a single headline number.
+3. **Window sensitivity.** Shifting the window center by 4 days moved one result from +36% to +27%, and excluding
+   the rollout days around the change moved it to +53%. Always report a range across a few window choices,
+   never a single headline number. Exclude the days around the change (default ±3), and wait until the
+   post window has complete data.
 4. **Selection bias.** "Refresh the top 20 posts by clicks" picks pages at their peak. News-driven posts
    decay whatever you do. Exclude fading pages (recent 14-day impressions < 50% of the prior 14) before
    choosing what to refresh.
