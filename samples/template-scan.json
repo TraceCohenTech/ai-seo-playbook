@@ -1,52 +1,107 @@
 {
-  "generated": "2026-08-10T13:30:00Z",
-  "directory": "./content",
-  "filesScanned": 487,
-  "filesWithFingerprints": 8,
-  "totalPhrasesFound": 34,
+  "generated": "2026-09-24T13:26:16.019Z",
+  "directory": "tests/fixtures/content",
+  "config": "config/anti-ai-rules.json",
+  "filesScanned": 10,
+  "filesWithHits": 3,
+  "pctAffected": 30,
   "byCategoryCount": {
-    "hedging": 12,
-    "templateOpeners": 8,
-    "templateClosers": 6,
-    "filler": 5,
-    "metaCommentary": 3
+    "hedging": 2,
+    "templateOpeners": 3,
+    "templateClosers": 2
   },
-  "flaggedFiles": [
+  "knownPatterns": [
     {
-      "file": "content/venture-debt-vs-equity.mdx",
-      "phraseCount": 14,
-      "phrases": [
-        { "phrase": "It's worth noting that", "category": "hedging", "line": 23 },
-        { "phrase": "In today's rapidly evolving landscape", "category": "templateOpeners", "line": 1 },
-        { "phrase": "As we look ahead to the future", "category": "templateClosers", "line": 142 },
-        { "phrase": "This comprehensive guide", "category": "filler", "line": 5 },
-        { "phrase": "Let's dive in", "category": "metaCommentary", "line": 8 }
+      "phrase": "it's worth noting",
+      "category": "hedging",
+      "matches": 2,
+      "files": [
+        "tests/fixtures/content/posts/crlf-post.md",
+        "tests/fixtures/content/posts/old-thin.md"
       ],
-      "severity": "CRITICAL"
+      "example": "It's worth noting"
     },
     {
-      "file": "content/startup-funding-rounds.mdx",
-      "phraseCount": 9,
-      "phrases": [
-        { "phrase": "It's important to note", "category": "hedging", "line": 45 },
-        { "phrase": "In the ever-changing world of", "category": "templateOpeners", "line": 1 },
-        { "phrase": "Only time will tell", "category": "templateClosers", "line": 89 }
+      "phrase": "let's dive in",
+      "category": "templateOpeners",
+      "matches": 2,
+      "files": [
+        "tests/fixtures/content/posts/crlf-post.md",
+        "tests/fixtures/content/posts/linking-post.mdx"
       ],
-      "severity": "HIGH"
+      "example": "Let's dive in"
+    },
+    {
+      "phrase": "the bottom line:",
+      "category": "templateClosers",
+      "matches": 2,
+      "files": [
+        "tests/fixtures/content/posts/crlf-post.md",
+        "tests/fixtures/content/posts/linking-post.mdx"
+      ],
+      "example": "The bottom line:"
     }
   ],
-  "ngramAnalysis": {
-    "suspiciousRepeats": [
-      { "ngram": "it's worth noting that", "occurrences": 12, "files": 8 },
-      { "ngram": "in today's rapidly", "occurrences": 8, "files": 7 },
-      { "ngram": "as we look ahead", "occurrences": 6, "files": 5 }
-    ]
-  },
-  "sharedClosers": [
+  "flaggedFiles": [
     {
-      "pattern": "As the [industry] continues to evolve, one thing is clear:",
-      "occurrences": 4,
-      "files": ["ai-tools.mdx", "venture-debt.mdx", "startup-funding.mdx", "vc-trends.mdx"]
+      "file": "tests/fixtures/content/posts/crlf-post.md",
+      "phraseCount": 3,
+      "phrases": [
+        {
+          "phrase": "it's worth noting",
+          "category": "hedging",
+          "count": 1
+        },
+        {
+          "phrase": "let's dive in",
+          "category": "templateOpeners",
+          "count": 1
+        },
+        {
+          "phrase": "the bottom line:",
+          "category": "templateClosers",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/content/posts/linking-post.mdx",
+      "phraseCount": 3,
+      "phrases": [
+        {
+          "phrase": "in this article, we'll explore",
+          "category": "templateOpeners",
+          "count": 1
+        },
+        {
+          "phrase": "let's dive in",
+          "category": "templateOpeners",
+          "count": 1
+        },
+        {
+          "phrase": "the bottom line:",
+          "category": "templateClosers",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/content/posts/old-thin.md",
+      "phraseCount": 1,
+      "phrases": [
+        {
+          "phrase": "it's worth noting",
+          "category": "hedging",
+          "count": 1
+        }
+      ]
     }
-  ]
+  ],
+  "repeatedPhrases": [
+    {
+      "ngram": "why vcs don't return calls",
+      "count": 3
+    }
+  ],
+  "sharedClosers": []
 }

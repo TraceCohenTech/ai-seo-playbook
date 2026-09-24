@@ -1,71 +1,302 @@
 {
-  "generated": "2026-08-10T13:30:00Z",
+  "generated": "2026-09-24T13:26:15.422Z",
   "site": "sc-domain:example.com",
-  "totalPages": 487,
+  "window": {
+    "source": "rows-file"
+  },
+  "joinStats": {
+    "files": 10,
+    "mapped": 9,
+    "matched": 4,
+    "gscRows": 6,
+    "healthy": true
+  },
   "buckets": {
-    "KILL": 23,
-    "MERGE": 18,
-    "UPDATE": 45,
-    "PROMOTE": 31,
-    "KEEP": 370
+    "KILL": 3,
+    "REVIEW": 4,
+    "UPDATE": 1,
+    "PROMOTE": 1,
+    "KEEP": 1
   },
-  "summary": {
-    "pagesWithZeroClicks": 142,
-    "pagesWithTemplateFingerprints": 8,
-    "pagesWithNoSchema": 67,
-    "orphanPages": 12,
-    "averageContentScore": 6.8
-  },
-  "killList": [
+  "pages": [
     {
-      "page": "/blog/what-is-venture-capital-explained",
-      "reason": "Zero clicks in 90 days, high template phrase density (14 phrases), no unique data or perspective. Cannibalizes '/blog/venture-capital-101' which ranks better.",
-      "impressions": 320,
-      "clicks": 0,
-      "templatePhraseCount": 14,
-      "contentScore": 2.1
+      "path": "/blog/pricing",
+      "file": "tests/fixtures/content/app/blog/pricing/page.tsx",
+      "bucket": "KILL",
+      "reasons": [
+        "Thin content: 31 visible words",
+        "Guards passed: 1057 days old (min 90), 0 clicks / 0 impressions. Review before removing; prefer improving or merging",
+        "No external links",
+        "No structured data found in source",
+        "No GSC rows in window (0 impressions)"
+      ],
+      "gscStatus": "no-rows",
+      "gsc": {
+        "clicks": 0,
+        "impressions": 0,
+        "ctrPct": null,
+        "position": null
+      },
+      "ageDays": 1057,
+      "ageSource": "content-date",
+      "content": {
+        "wordCount": 31,
+        "isThin": true,
+        "templateCount": 0,
+        "externalLinks": 0,
+        "hasSchema": false,
+        "imageCount": 0
+      }
     },
     {
-      "page": "/blog/startup-funding-rounds-guide",
-      "reason": "Duplicate topic covered better by '/blog/series-a-vs-series-b'. Template opener detected. No internal links pointing to it.",
-      "impressions": 180,
-      "clicks": 0,
-      "templatePhraseCount": 9,
-      "contentScore": 2.8
-    }
-  ],
-  "mergeList": [
-    {
-      "pages": [
-        "/blog/spacex-valuation-2026",
-        "/blog/spacex-ipo-analysis",
-        "/blog/spacex-ipo-valuation-2026"
+      "path": "/posts/density-report",
+      "file": "tests/fixtures/content/posts/density-report.md",
+      "bucket": "KILL",
+      "reasons": [
+        "Thin content: 126 visible words",
+        "Guards passed: 591 days old (min 90), 0 clicks / 0 impressions. Review before removing; prefer improving or merging",
+        "No external links",
+        "No structured data found in source",
+        "No GSC rows in window (0 impressions)"
       ],
-      "reason": "Three pages competing for 'spacex ipo valuation' queries. Combined impressions: 48,200. Consolidate into the strongest URL (/blog/spacex-ipo-valuation-2026) and 301 the others.",
-      "combinedImpressions": 48200,
-      "combinedClicks": 412,
-      "recommendedSurvivor": "/blog/spacex-ipo-valuation-2026"
-    }
-  ],
-  "updateList": [
+      "gscStatus": "no-rows",
+      "gsc": {
+        "clicks": 0,
+        "impressions": 0,
+        "ctrPct": null,
+        "position": null
+      },
+      "ageDays": 591,
+      "ageSource": "content-date",
+      "content": {
+        "wordCount": 126,
+        "isThin": true,
+        "templateCount": 0,
+        "externalLinks": 0,
+        "hasSchema": false,
+        "imageCount": 0
+      }
+    },
     {
-      "page": "/blog/anthropic-series-e-valuation",
-      "reason": "Strong performer (287 clicks/wk) but lastmod is 45 days old. Valuation data is stale — update with latest round details to trigger freshness signal.",
-      "impressions": 31200,
-      "clicks": 287,
-      "daysSinceUpdate": 45,
-      "contentScore": 7.4,
-      "updatePriority": "HIGH"
-    }
-  ],
-  "promoteList": [
+      "path": "/posts/old-thin",
+      "file": "tests/fixtures/content/posts/old-thin.md",
+      "bucket": "KILL",
+      "reasons": [
+        "Thin content: 25 visible words",
+        "Guards passed: 1211 days old (min 90), 0 clicks / 0 impressions. Review before removing; prefer improving or merging",
+        "No external links",
+        "No structured data found in source",
+        "No GSC rows in window (0 impressions)"
+      ],
+      "gscStatus": "no-rows",
+      "gsc": {
+        "clicks": 0,
+        "impressions": 0,
+        "ctrPct": null,
+        "position": null
+      },
+      "ageDays": 1211,
+      "ageSource": "content-date",
+      "content": {
+        "wordCount": 25,
+        "isThin": true,
+        "templateCount": 1,
+        "externalLinks": 0,
+        "hasSchema": false,
+        "imageCount": 0
+      }
+    },
     {
-      "page": "/blog/best-ai-tools-for-startups",
-      "reason": "Position 3.8 with 1.3% CTR — this page is winning. Add more internal links pointing to it, update the FAQ section, add ItemList schema for rich results.",
-      "impressions": 18900,
-      "clicks": 245,
-      "position": 3.8,
-      "missingOptimizations": ["ItemList schema", "FAQ expansion", "Internal link equity"]
+      "path": "/posts/crlf-post",
+      "file": "tests/fixtures/content/posts/crlf-post.md",
+      "bucket": "REVIEW",
+      "reasons": [
+        "Thin content: 65 visible words",
+        "3 configured template phrases",
+        "No external links",
+        "No structured data found in source",
+        "300 impressions, 0 clicks",
+        "Low CTR at 100-500 impressions: check for cannibalization (cannibalization-detector.mjs)"
+      ],
+      "gscStatus": "matched",
+      "gsc": {
+        "clicks": 0,
+        "impressions": 300,
+        "ctrPct": 0,
+        "position": 14
+      },
+      "ageDays": 937,
+      "ageSource": "content-date",
+      "content": {
+        "wordCount": 65,
+        "isThin": true,
+        "templateCount": 3,
+        "externalLinks": 0,
+        "hasSchema": false,
+        "imageCount": 0
+      }
+    },
+    {
+      "path": "/posts/landing",
+      "file": "tests/fixtures/content/posts/landing.html",
+      "bucket": "REVIEW",
+      "reasons": [
+        "Thin content: 27 visible words",
+        "Only 0 days old (min 90); too new to judge",
+        "No external links",
+        "No structured data found in source",
+        "No GSC rows in window (0 impressions)"
+      ],
+      "gscStatus": "no-rows",
+      "gsc": {
+        "clicks": 0,
+        "impressions": 0,
+        "ctrPct": null,
+        "position": null
+      },
+      "ageDays": 0,
+      "ageSource": "file-mtime",
+      "content": {
+        "wordCount": 27,
+        "isThin": true,
+        "templateCount": 0,
+        "externalLinks": 0,
+        "hasSchema": false,
+        "imageCount": 0
+      }
+    },
+    {
+      "path": "/posts/linking-post",
+      "file": "tests/fixtures/content/posts/linking-post.mdx",
+      "bucket": "REVIEW",
+      "reasons": [
+        "Thin content: 70 visible words",
+        "Only 23 days old (min 90); too new to judge",
+        "3 configured template phrases",
+        "No external links",
+        "No structured data found in source",
+        "No GSC rows in window (0 impressions)"
+      ],
+      "gscStatus": "no-rows",
+      "gsc": {
+        "clicks": 0,
+        "impressions": 0,
+        "ctrPct": null,
+        "position": null
+      },
+      "ageDays": 23,
+      "ageSource": "content-date",
+      "content": {
+        "wordCount": 70,
+        "isThin": true,
+        "templateCount": 3,
+        "externalLinks": 0,
+        "hasSchema": false,
+        "imageCount": 0
+      }
+    },
+    {
+      "path": null,
+      "file": "tests/fixtures/content/app/blog/[slug]/page.tsx",
+      "bucket": "REVIEW",
+      "reasons": [
+        "Thin content: 0 visible words",
+        "Dynamic route: URL unknown, so traffic unknown",
+        "No external links",
+        "No structured data found in source"
+      ],
+      "gscStatus": "unmapped",
+      "gsc": null,
+      "ageDays": 0,
+      "ageSource": "file-mtime",
+      "content": {
+        "wordCount": 0,
+        "isThin": true,
+        "templateCount": 0,
+        "externalLinks": 0,
+        "hasSchema": false,
+        "imageCount": 0
+      }
+    },
+    {
+      "path": "/tools/pricing",
+      "file": "tests/fixtures/content/app/tools/pricing/page.tsx",
+      "bucket": "UPDATE",
+      "reasons": [
+        "Thin content: 37 visible words",
+        "No external links",
+        "No structured data found in source",
+        "Title/snippet rewrite candidate: pos 7.2, 0.79% CTR"
+      ],
+      "gscStatus": "matched",
+      "gsc": {
+        "clicks": 42,
+        "impressions": 5300,
+        "ctrPct": 0.79,
+        "position": 7.2
+      },
+      "ageDays": 0,
+      "ageSource": "file-mtime",
+      "content": {
+        "wordCount": 37,
+        "isThin": true,
+        "templateCount": 0,
+        "externalLinks": 0,
+        "hasSchema": false,
+        "imageCount": 0
+      }
+    },
+    {
+      "path": "/blog/why-vcs-dont-return-calls",
+      "file": "tests/fixtures/content/app/blog/why-vcs-dont-return-calls/page.tsx",
+      "bucket": "PROMOTE",
+      "reasons": [
+        "55 clicks: consider more internal links to it"
+      ],
+      "gscStatus": "matched",
+      "gsc": {
+        "clicks": 55,
+        "impressions": 2100,
+        "ctrPct": 2.62,
+        "position": 3.1
+      },
+      "ageDays": 617,
+      "ageSource": "content-date",
+      "content": {
+        "wordCount": 440,
+        "isThin": false,
+        "templateCount": 0,
+        "externalLinks": 1,
+        "hasSchema": true,
+        "imageCount": 0
+      }
+    },
+    {
+      "path": "/about",
+      "file": "tests/fixtures/content/app/(marketing)/about/page.tsx",
+      "bucket": "KEEP",
+      "reasons": [
+        "Thin content: 35 visible words",
+        "No external links",
+        "No structured data found in source"
+      ],
+      "gscStatus": "matched",
+      "gsc": {
+        "clicks": 3,
+        "impressions": 80,
+        "ctrPct": 3.75,
+        "position": 11.4
+      },
+      "ageDays": 0,
+      "ageSource": "file-mtime",
+      "content": {
+        "wordCount": 35,
+        "isThin": true,
+        "templateCount": 0,
+        "externalLinks": 0,
+        "hasSchema": false,
+        "imageCount": 0
+      }
     }
   ]
 }
