@@ -40,7 +40,7 @@ cd ai-seo-playbook
 npm install
 
 # Run any script
-node scripts/template-detector.mjs --dir ./your-content
+node scripts/template-detector.mjs --dir ../your-site/content
 ```
 
 The scripts are standalone `.mjs` files with no build step. Edit and run.
