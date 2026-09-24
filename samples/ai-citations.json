@@ -1,0 +1,58 @@
+{
+  "generated": "2026-09-24T13:23:57.114Z",
+  "measurement": "Sampled measurement: each prompt sent once per provider via the official API on the date shown. Answers vary between runs, users and locations, and API answers can differ from consumer apps. Errors are excluded from the citation rate.",
+  "domain": "example.com",
+  "matchRule": "host equals domain (www-insensitive)",
+  "summary": {
+    "perplexity": {
+      "model": "sonar",
+      "queries": 3,
+      "completed": 2,
+      "cited": 1,
+      "notCited": 1,
+      "errors": 1,
+      "citationRate": 50
+    }
+  },
+  "results": [
+    {
+      "provider": "perplexity",
+      "model": "sonar",
+      "date": "2026-09-24T13:23:57.112Z",
+      "prompt": "what does acme build",
+      "modelReturned": "sonar",
+      "status": "cited",
+      "matchedCitations": [
+        "https://www.example.com/blog/foo-bar-post"
+      ],
+      "citationCount": 2,
+      "citations": [
+        "https://www.example.com/blog/foo-bar-post",
+        "https://widgets.example.org/acme"
+      ]
+    },
+    {
+      "provider": "perplexity",
+      "model": "sonar",
+      "date": "2026-09-24T13:23:57.114Z",
+      "prompt": "best widget vendors for startups",
+      "modelReturned": "sonar",
+      "status": "not_cited",
+      "matchedCitations": [],
+      "citationCount": 2,
+      "citations": [
+        "https://widgets.example.org/top-10",
+        "https://notexample.com/widgets"
+      ]
+    },
+    {
+      "provider": "perplexity",
+      "model": "sonar",
+      "date": "2026-09-24T13:23:57.114Z",
+      "prompt": "example capital portfolio companies",
+      "status": "error",
+      "error": "HTTP 429: rate limit exceeded",
+      "httpStatus": 429
+    }
+  ]
+}

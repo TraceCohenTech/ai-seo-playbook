@@ -1,0 +1,55 @@
+{
+  "generated": "2026-09-24T13:23:55.979Z",
+  "dir": "./site-src/content",
+  "baseUrl": "https://example.com",
+  "throttle": {
+    "requestsPerSecondPerHost": 50,
+    "concurrency": 4
+  },
+  "filesScanned": 4,
+  "totalChecked": 5,
+  "broken": [
+    {
+      "url": "https://example.com/gone",
+      "status": 404,
+      "method": "HEAD",
+      "sources": [
+        "blog/crlf-post.md:9"
+      ]
+    },
+    {
+      "url": "https://example.com/removed",
+      "status": 410,
+      "method": "HEAD",
+      "sources": [
+        "blog/crlf-post.md:15"
+      ]
+    },
+    {
+      "url": "https://example.com/error",
+      "status": 500,
+      "method": "HEAD",
+      "sources": [
+        "blog/other-post.md:4"
+      ]
+    }
+  ],
+  "missingLocalFiles": [
+    {
+      "link": "../guides/missing.md",
+      "target": "guides/missing.md",
+      "source": "blog/crlf-post.md:7"
+    }
+  ],
+  "malformed": [],
+  "unverified": [
+    {
+      "url": "https://example.com/bot-wall",
+      "status": 403,
+      "sources": [
+        "blog/crlf-post.md:9"
+      ]
+    }
+  ],
+  "redirected": []
+}
