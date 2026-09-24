@@ -55,7 +55,7 @@ jobs:
         run: |
           node scripts/content-audit.mjs \
             --site "${{ vars.GSC_SITE }}" \
-            --dir "${{ vars.CONTENT_DIR || './content' }}" \
+            --dir "${{ vars.CONTENT_DIR }}" \
             --output reports/content-audit.json
 
       # Commit reports
