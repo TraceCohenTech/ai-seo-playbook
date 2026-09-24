@@ -1,224 +1,193 @@
 #!/usr/bin/env node
-
 /**
- * Rewrite Measurer
+ * Rewrite Measurer: did a title/content change work, relative to a matched control?
  *
- * Tracks the before/after impact of title rewrites. Takes a baseline
- * snapshot, then compares against current performance to measure whether
- * your rewrites actually worked.
+ * Compares a set of changed pages over two EXPLICIT windows around the change date, and
+ * compares that change with a control group of untouched pages over the same windows:
  *
- * Two modes:
- *   1. BASELINE: Save a snapshot of current performance for specific pages
- *   2. MEASURE: Compare current performance against a saved baseline
+ *   pre   = the --window days before --change-date
+ *   gap   = --change-date and the following --exclude-days days (default 7: the change week,
+ *           while Google recrawls) are EXCLUDED from both windows
+ *   post  = the --window days after the gap
+ *   control = untouched pages with at least --min-impressions in the pre window, whose
+ *           pre-window impressions fall within the treated pages' range widened by
+ *           --control-band (default 2x each way), optionally restricted by --path-contains
+ *
+ *   relativeLiftPct = ((treated post / treated pre) / (control post / control pre) - 1) x 100
+ *
+ * The control absorbs site-wide movement (seasonality, algorithm updates, growth). The verdict
+ * uses a HEURISTIC +-10% band on relativeLiftPct and is marked insufficient below 10 treated
+ * pages; there is no significance test, so treat small cohorts as hints.
+ *
+ * This replaces the old baseline/measure modes, which compared two overlapping trailing
+ * windows, so "after" included pre-change days, and had no control. It uses the same
+ * changes-file format as scripts/matched-control-readout.mjs.
  *
  * Usage:
- *   # Step 1: Take a baseline BEFORE making rewrites
- *   node scripts/rewrite-measurer.mjs baseline --site sc-domain:example.com --pages /blog/post-1,/blog/post-2
+ *   node scripts/rewrite-measurer.mjs --site sc-domain:example.com --change-date 2026-08-20 --pages /blog/a,/blog/b
+ *   node scripts/rewrite-measurer.mjs --site sc-domain:example.com --changes changes.json --output readout.json
+ *   changes.json: [{ "page": "/blog/x" | "https://www.example.com/blog/x", "changedAt": "2026-08-20", "cohort": "retitle" }, ...]
  *
- *   # Step 2: Wait 2-4 weeks for GSC data to accumulate
+ * Options:
+ *   --site              Search Console property (required)
+ *   --change-date       YYYY-MM-DD the change shipped (with --pages)
+ *   --pages             Comma-separated paths or URLs that changed (with --change-date)
+ *   --changes           JSON file of changes; one cohort per (cohort, changedAt)
+ *   --window            Days in each of the pre and post windows (default 28)
+ *   --exclude-days      Days from the change date excluded before the post window (default 7)
+ *   --min-impressions   Minimum pre-window impressions for a page to be measured (default 100)
+ *   --control-band      Control pages' pre impressions must be within [min/band, max*band] of the treated pages (default 2)
+ *   --path-contains     Only use control pages whose path contains this string (e.g. /blog/)
+ *   --output            Optional output JSON path
  *
- *   # Step 3: Measure the impact
- *   node scripts/rewrite-measurer.mjs measure --site sc-domain:example.com --baseline rewrite-baseline.json
+ * Exit codes: 0 readout produced, 1 error (including: post window not complete yet).
  */
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { cli, fail } from '../lib/cli.mjs';
+import { gscClient, queryAll } from '../lib/gsc.mjs';
+import { lastDataDate, shiftDay, normPath, sumByPage, round, pct } from '../lib/gsc-rows.mjs';
 
-import { google } from 'googleapis';
-import { parseArgs } from 'node:util';
-import { readFile, writeFile } from 'node:fs/promises';
-
-const mode = process.argv[2];
-
-if (!['baseline', 'measure'].includes(mode)) {
-  console.error('Usage:');
-  console.error('  node scripts/rewrite-measurer.mjs baseline --site SITE --pages /path1,/path2');
-  console.error('  node scripts/rewrite-measurer.mjs measure --site SITE --baseline file.json');
-  process.exit(1);
-}
-
-const { values: args } = parseArgs({
-  args: process.argv.slice(3),
-  options: {
-    site: { type: 'string' },
-    pages: { type: 'string' },
-    baseline: { type: 'string' },
-    days: { type: 'string', default: '28' },
-    output: { type: 'string' },
-  },
-});
-
-if (!args.site) {
-  console.error('--site is required');
-  process.exit(1);
-}
-
-const DAYS = parseInt(args.days);
-
-async function getAuth() {
-  const auth = new google.auth.GoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
-  });
-  return auth.getClient();
-}
-
-async function getPageStats(auth, site, pages) {
-  const searchconsole = google.searchconsole({ version: 'v1', auth });
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() - 1);
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - DAYS);
-
-  const results = [];
-
-  for (const pagePath of pages) {
-    const url = pagePath.startsWith('http') ? pagePath : `https://${site.replace('sc-domain:', '')}${pagePath}`;
-
-    const res = await searchconsole.searchanalytics.query({
-      siteUrl: site,
-      requestBody: {
-        startDate: startDate.toISOString().split('T')[0],
-        endDate: endDate.toISOString().split('T')[0],
-        dimensions: ['page'],
-        dimensionFilterGroups: [{
-          filters: [{ dimension: 'page', operator: 'equals', expression: url }],
-        }],
-        rowLimit: 1,
-      },
-    });
-
-    const row = (res.data.rows || [])[0];
-    results.push({
-      page: pagePath,
-      url,
-      clicks: row?.clicks || 0,
-      impressions: row?.impressions || 0,
-      ctr: row ? Math.round(row.ctr * 10000) / 100 : 0,
-      position: row ? Math.round(row.position * 10) / 10 : 0,
-    });
-  }
-
-  return results;
-}
-
-async function runBaseline() {
-  if (!args.pages) {
-    console.error('--pages is required for baseline mode (comma-separated paths)');
-    process.exit(1);
-  }
-
-  const pages = args.pages.split(',').map(p => p.trim());
-  const auth = await getAuth();
-
-  console.log(`Taking baseline for ${pages.length} pages (last ${DAYS} days)...\n`);
-  const stats = await getPageStats(auth, args.site, pages);
-
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() - 1);
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - DAYS);
-
-  const baseline = {
-    created: new Date().toISOString(),
-    site: args.site,
-    window: {
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0],
-      days: DAYS,
-    },
-    pages: stats,
+export function measureWindows(changeDate, { window = 28, excludeDays = 7 } = {}) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(changeDate)) throw new Error(`Invalid change date "${changeDate}" (use YYYY-MM-DD)`);
+  const postStart = shiftDay(changeDate, excludeDays);
+  return {
+    pre: { startDate: shiftDay(changeDate, -window), endDate: shiftDay(changeDate, -1) },
+    excluded: { startDate: changeDate, endDate: shiftDay(postStart, -1) },
+    post: { startDate: postStart, endDate: shiftDay(postStart, window - 1) },
   };
-
-  const outputFile = args.output || 'rewrite-baseline.json';
-  await writeFile(outputFile, JSON.stringify(baseline, null, 2));
-
-  console.log('--- BASELINE SNAPSHOT ---\n');
-  console.log(`${'Page'.padEnd(55)} ${'Impr'.padStart(8)} ${'Clicks'.padStart(8)} ${'CTR%'.padStart(7)} ${'Pos'.padStart(6)}`);
-  for (const s of stats) {
-    console.log(`${s.page.slice(0, 53).padEnd(55)} ${String(s.impressions).padStart(8)} ${String(s.clicks).padStart(8)} ${String(s.ctr).padStart(7)} ${String(s.position).padStart(6)}`);
-  }
-
-  const totals = stats.reduce((a, s) => ({ i: a.i + s.impressions, c: a.c + s.clicks }), { i: 0, c: 0 });
-  console.log(`\nTotal: ${totals.i.toLocaleString()} impressions, ${totals.c.toLocaleString()} clicks, ${totals.i > 0 ? (100 * totals.c / totals.i).toFixed(2) : 0}% CTR`);
-  console.log(`\nBaseline saved to ${outputFile}`);
-  console.log('Now make your title rewrites, wait 2-4 weeks, then run:');
-  console.log(`  node scripts/rewrite-measurer.mjs measure --site ${args.site} --baseline ${outputFile}`);
 }
 
-async function runMeasure() {
-  if (!args.baseline) {
-    console.error('--baseline is required for measure mode');
-    process.exit(1);
+/** An error whose message is enough for the user (no stack trace). */
+const userError = (msg) => Object.assign(new Error(msg), { user: true });
+
+const chg = (a, b) => (a > 0 ? round((b / a - 1) * 100, 1) : null);
+const view = (e) => ({ clicks: e?.clicks || 0, impressions: e?.impressions || 0, ctr: pct(e?.ctr), position: round(e?.position, 1) });
+
+/**
+ * pre/post: Map<path, agg> (sumByPage, variants summed). treated: array of paths.
+ * touched: Set of every changed path (excluded from the control).
+ */
+export function measureCohort(pre, post, treated, touched, { minImpressions = 100, controlBand = 2, pathContains } = {}) {
+  const pages = treated.map((p) => {
+    const b = pre.get(p), a = post.get(p);
+    const included = (b?.impressions || 0) >= minImpressions;
+    return { page: p, included, pre: view(b), post: view(a), clickChangePct: chg(b?.clicks || 0, a?.clicks || 0) };
+  });
+  const inc = pages.filter((p) => p.included);
+  const sum = (list, w, k) => list.reduce((s, p) => s + p[w][k], 0);
+  const agg = (list) => {
+    const c0 = sum(list, 'pre', 'clicks'), c1 = sum(list, 'post', 'clicks'), i0 = sum(list, 'pre', 'impressions'), i1 = sum(list, 'post', 'impressions');
+    return { n: list.length, clicksPre: c0, clicksPost: c1, impressionsPre: i0, impressionsPost: i1, clickChangePct: chg(c0, c1), ctrPre: pct(i0 ? c0 / i0 : 0), ctrPost: pct(i1 ? c1 / i1 : 0) };
+  };
+  const t = agg(inc);
+  let control = { n: 0 }, band = null;
+  if (inc.length) {
+    const imprs = inc.map((p) => p.pre.impressions);
+    band = { min: Math.max(minImpressions, Math.floor(Math.min(...imprs) / controlBand)), max: Math.ceil(Math.max(...imprs) * controlBand) };
+    const ctl = [];
+    for (const [p, b] of pre) {
+      if (touched.has(p) || b.impressions < band.min || b.impressions > band.max) continue;
+      if (pathContains && !p.includes(pathContains)) continue;
+      ctl.push({ pre: view(b), post: view(post.get(p)) });
+    }
+    control = agg(ctl);
   }
-
-  const baselineData = JSON.parse(await readFile(args.baseline, 'utf-8'));
-  const pages = baselineData.pages.map(p => p.page);
-  const auth = await getAuth();
-
-  console.log(`Measuring ${pages.length} pages against baseline from ${baselineData.window.startDate}...\n`);
-  const current = await getPageStats(auth, args.site, pages);
-
-  const comparisons = [];
-
-  console.log('--- REWRITE IMPACT ---\n');
-  console.log(`${'Page'.padEnd(45)} ${'Impr'.padStart(10)} ${'Clicks'.padStart(10)} ${'CTR'.padStart(10)} ${'Pos'.padStart(8)} ${'Verdict'.padStart(10)}`);
-
-  for (const curr of current) {
-    const base = baselineData.pages.find(p => p.page === curr.page);
-    if (!base) continue;
-
-    const ctrChange = curr.ctr - base.ctr;
-    const clickChange = curr.clicks - base.clicks;
-    const posChange = base.position - curr.position;
-
-    let verdict = 'NEUTRAL';
-    if (ctrChange > 0.5 && clickChange > 0) verdict = 'WIN';
-    else if (ctrChange > 0.2) verdict = 'SLIGHT WIN';
-    else if (ctrChange < -0.5) verdict = 'REGRESSED';
-
-    const comp = {
-      page: curr.page,
-      before: base,
-      after: curr,
-      changes: {
-        impressions: base.impressions > 0 ? Math.round((curr.impressions - base.impressions) / base.impressions * 100) : 0,
-        clicks: clickChange,
-        ctr: Math.round(ctrChange * 100) / 100,
-        position: Math.round(posChange * 10) / 10,
-      },
-      verdict,
-    };
-    comparisons.push(comp);
-
-    const imprStr = `${curr.impressions} (${comp.changes.impressions >= 0 ? '+' : ''}${comp.changes.impressions}%)`;
-    const clickStr = `${curr.clicks} (${clickChange >= 0 ? '+' : ''}${clickChange})`;
-    const ctrStr = `${curr.ctr}% (${ctrChange >= 0 ? '+' : ''}${ctrChange.toFixed(2)})`;
-    const posStr = `${curr.position} (${posChange >= 0 ? '+' : ''}${posChange.toFixed(1)})`;
-
-    console.log(`${curr.page.slice(0, 43).padEnd(45)} ${imprStr.padStart(10)} ${clickStr.padStart(10)} ${ctrStr.padStart(10)} ${posStr.padStart(8)} ${verdict.padStart(10)}`);
+  let relativeLiftPct = null;
+  if (t.clicksPre > 0 && control.clicksPre > 0 && control.clicksPost > 0) {
+    relativeLiftPct = round(((t.clicksPost / t.clicksPre) / (control.clicksPost / control.clicksPre) - 1) * 100, 1);
   }
-
-  const wins = comparisons.filter(c => c.verdict === 'WIN' || c.verdict === 'SLIGHT WIN').length;
-  const regressed = comparisons.filter(c => c.verdict === 'REGRESSED').length;
-
-  console.log(`\n--- SUMMARY ---`);
-  console.log(`  Wins:       ${wins}/${comparisons.length}`);
-  console.log(`  Neutral:    ${comparisons.length - wins - regressed}/${comparisons.length}`);
-  console.log(`  Regressed:  ${regressed}/${comparisons.length}`);
-
-  const totalClickChange = comparisons.reduce((s, c) => s + c.changes.clicks, 0);
-  console.log(`  Net clicks: ${totalClickChange >= 0 ? '+' : ''}${totalClickChange}`);
-
-  if (args.output) {
-    await writeFile(args.output, JSON.stringify({
-      generated: new Date().toISOString(),
-      baseline: baselineData.window,
-      comparisons,
-      summary: { total: comparisons.length, wins, regressed, netClicks: totalClickChange },
-    }, null, 2));
-    console.log(`\nReport saved to ${args.output}`);
-  }
+  const warnings = [];
+  if (inc.length < 10) warnings.push(`only ${inc.length} treated page(s) with >= ${minImpressions} pre-window impressions: treat this as a hint, not a result`);
+  if (control.n < 10) warnings.push(`only ${control.n} control page(s): widen --control-band or drop --path-contains`);
+  if (pages.length > inc.length) warnings.push(`${pages.length - inc.length} changed page(s) had too little pre-window data and were not measured`);
+  let verdict;
+  if (relativeLiftPct == null) verdict = 'NO READOUT';
+  else if (inc.length < 10 || control.n < 10) verdict = 'INSUFFICIENT DATA';
+  else if (relativeLiftPct >= 10) verdict = 'LIKELY POSITIVE';
+  else if (relativeLiftPct <= -10) verdict = 'LIKELY NEGATIVE';
+  else verdict = 'NO CLEAR EFFECT';
+  return { treated: { ...t, pages }, control: { ...control, band, pathContains: pathContains || null }, relativeLiftPct, verdict, warnings };
 }
 
-if (mode === 'baseline') {
-  runBaseline().catch(console.error);
-} else {
-  runMeasure().catch(console.error);
+/** changes: [{ page, changedAt, cohort }] -> Map<"cohort|date", paths[]> */
+export function groupChanges(changes) {
+  const m = new Map();
+  for (const c of changes) {
+    if (!c.page || !c.changedAt) throw new Error(`Each change needs "page" and "changedAt": ${JSON.stringify(c)}`);
+    const k = `${c.cohort || 'change'}|${c.changedAt}`;
+    const list = m.get(k) || m.set(k, []).get(k);
+    const p = normPath(c.page);
+    if (!list.includes(p)) list.push(p);
+  }
+  return m;
 }
+
+export async function buildReport(sc, { site, changes, window = 28, excludeDays = 7, minImpressions = 100, controlBand = 2, pathContains, today = new Date(), now = new Date() }) {
+  const last = await lastDataDate(sc, site, { dataState: 'final', today });
+  const cohorts = groupChanges(changes);
+  const touched = new Set([...cohorts.values()].flat());
+  const cache = new Map();
+  const pages = async (w) => {
+    const k = `${w.startDate}|${w.endDate}`;
+    if (!cache.has(k)) cache.set(k, sumByPage(await queryAll(sc, site, { ...w, dimensions: ['page'], dataState: 'final' })));
+    return cache.get(k);
+  };
+  const results = [];
+  for (const [k, list] of cohorts) {
+    const [cohort, changeDate] = k.split('|');
+    const w = measureWindows(changeDate, { window, excludeDays });
+    if (w.post.endDate > last) {
+      throw userError(`Cohort "${cohort}" (${changeDate}): the post window ends ${w.post.endDate} but final data runs only to ${last}. ` +
+        `Re-run on or after ${shiftDay(w.post.endDate, 4)}, or shorten --window.`);
+    }
+    results.push({ cohort, changeDate, windows: w, ...measureCohort(await pages(w.pre), await pages(w.post), list, touched, { minImpressions, controlBand, pathContains }) });
+  }
+  return { generated: now.toISOString(), site, lastFinalDataDate: last, config: { window, excludeDays, minImpressions, controlBand, pathContains: pathContains || null }, cohorts: results };
+}
+
+async function main() {
+  const a = cli(import.meta.url, {
+    site: { type: 'string', required: true },
+    'change-date': { type: 'string' },
+    pages: { type: 'string' },
+    changes: { type: 'string' },
+    window: { type: 'string', default: '28' },
+    'exclude-days': { type: 'string', default: '7' },
+    'min-impressions': { type: 'string', default: '100' },
+    'control-band': { type: 'string', default: '2' },
+    'path-contains': { type: 'string' },
+    output: { type: 'string' },
+  }, { allowPositionals: true });
+  if (a._.length) {
+    throw userError(`The "${a._[0]}" mode was removed: baseline/measure compared overlapping windows with no control. ` +
+      'Run once after the change with --change-date YYYY-MM-DD --pages /a,/b (or --changes changes.json). See --help.');
+  }
+  let changes;
+  if (a.changes) changes = JSON.parse(readFileSync(a.changes, 'utf8'));
+  else if (a.pages && a['change-date']) changes = a.pages.split(',').map((p) => p.trim()).filter(Boolean).map((page) => ({ page, changedAt: a['change-date'], cohort: 'change' }));
+  else throw userError('Pass --change-date and --pages, or --changes changes.json. See --help.');
+
+  const sc = await gscClient();
+  const r = await buildReport(sc, {
+    site: a.site, changes, window: Number(a.window), excludeDays: Number(a['exclude-days']),
+    minImpressions: Number(a['min-impressions']), controlBand: Number(a['control-band']), pathContains: a['path-contains'],
+  });
+  const f = (x) => (x == null ? 'n/a' : `${x >= 0 ? '+' : ''}${x}%`);
+  for (const c of r.cohorts) {
+    console.log(`\n## ${c.cohort}, changed ${c.changeDate}`);
+    console.log(`  pre ${c.windows.pre.startDate}..${c.windows.pre.endDate} | excluded ${c.windows.excluded.startDate}..${c.windows.excluded.endDate} | post ${c.windows.post.startDate}..${c.windows.post.endDate}`);
+    console.log(`  treated ${c.treated.n} pages: clicks ${c.treated.clicksPre} -> ${c.treated.clicksPost} (${f(c.treated.clickChangePct)}), CTR ${c.treated.ctrPre}% -> ${c.treated.ctrPost}%`);
+    console.log(`  control ${c.control.n} pages: clicks ${c.control.clicksPre ?? 0} -> ${c.control.clicksPost ?? 0} (${f(c.control.clickChangePct)}), CTR ${c.control.ctrPre ?? 0}% -> ${c.control.ctrPost ?? 0}%`);
+    console.log(`  relative lift vs control: ${f(c.relativeLiftPct)}  => ${c.verdict} (heuristic +-10% band, no significance test)`);
+    for (const w of c.warnings) console.log(`  ! ${w}`);
+  }
+  if (a.output) { writeFileSync(a.output, JSON.stringify(r, null, 2)); console.log(`\nReport saved to ${a.output}`); }
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch((e) => {
+  if (!e.user) fail(e);
+  console.error(`Error: ${e.message}`);
+  process.exit(1);
+});

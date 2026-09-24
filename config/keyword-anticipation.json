@@ -6,9 +6,7 @@
       "queryPatterns": [
         "{company} IPO",
         "{company} IPO valuation",
-        "{company} IPO date {year}",
-        "{company} stock price prediction",
-        "should I invest in {company} IPO"
+        "{company} IPO date {year}"
       ],
       "contentFormat": "Deep Explainer",
       "refreshTrigger": "Any new filing, pricing, or date update"
@@ -25,7 +23,7 @@
       "refreshTrigger": "Earnings release"
     },
     "fundingRounds": {
-      "description": "Anticipated funding rounds for hot startups. Publish valuation estimates before the round closes.",
+      "description": "Anticipated funding rounds for hot startups. Publish only what is reported, labelled as reported/in talks with the source and date. Never your own estimate presented as fact.",
       "queryPatterns": [
         "{company} valuation {year}",
         "{company} series {letter} funding",
@@ -69,5 +67,6 @@
     "Refresh again 1 week later with actual results and what they mean",
     "Each update triggers a lastmod signal that tells Google the page is current",
     "Link to your prediction from your news wire / real-time content to build authority fast"
-  ]
+  ],
+  "_note_ymyl": "Financial topics are YMYL (Your Money or Your Life). No price predictions or investment advice; every figure is sourced and dated, and rumors are labelled."
 }

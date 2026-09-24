@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>FIXTURE_ORIGIN/blog/foo-bar-post</loc></url>
+  <url><loc>FIXTURE_ORIGIN/dup-faq</loc></url>
+  <url><loc>FIXTURE_ORIGIN/jobs/acme-engineer</loc></url>
+  <url><loc>FIXTURE_ORIGIN/live/acme-launch</loc></url>
+  <url><loc>FIXTURE_ORIGIN/blog/plain</loc></url>
+</urlset>

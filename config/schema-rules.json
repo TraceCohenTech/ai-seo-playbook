@@ -11,9 +11,9 @@
         "Questions must match real Google autocomplete suggestions",
         "Every answer must start with a number",
         "Answers: 50-90 words with at least one concrete data point",
-        "One FAQPage schema per page — duplicates trigger suppression of ALL rich results"
+        "One FAQPage schema per page; a duplicate is reported by Google as an invalid-item error"
       ],
-      "critical": "Never stack CMS-injected FAQPage on top of manual one. Duplicate FAQPage schemas trigger Google penalty."
+      "critical": "Never stack a CMS-injected FAQPage on top of a manual one; keep exactly one, and make sure its Q&A is visible on the page."
     },
     {
       "type": "Dataset",
@@ -53,7 +53,7 @@
       "type": "WebSite",
       "priority": "P1",
       "where": "Root layout (site-wide, once)",
-      "benefit": "Sitelinks search box in SERPs",
+      "benefit": "Site name and entity understanding (Google retired the sitelinks search box in Nov 2024; SearchAction no longer produces one)",
       "rules": [
         "Include name, url, potentialAction (SearchAction)",
         "Only one per site — place in root layout"
@@ -83,15 +83,33 @@
   "validation": {
     "duplicateDetection": {
       "enabled": true,
-      "critical": ["FAQPage"],
-      "note": "FAQPage duplicates = penalty. Other type duplicates = warning."
+      "critical": [
+        "FAQPage"
+      ],
+      "note": "Duplicate FAQPage = invalid-item error in Search Console. Other type duplicates = warning."
     },
     "requiredFields": {
-      "Article": ["headline", "author", "datePublished"],
-      "FAQPage": ["mainEntity"],
-      "Dataset": ["name", "description", "temporalCoverage"],
-      "Organization": ["name", "url"],
-      "BreadcrumbList": ["itemListElement"]
+      "Article": [
+        "headline",
+        "author",
+        "datePublished"
+      ],
+      "FAQPage": [
+        "mainEntity"
+      ],
+      "Dataset": [
+        "name",
+        "description",
+        "temporalCoverage"
+      ],
+      "Organization": [
+        "name",
+        "url"
+      ],
+      "BreadcrumbList": [
+        "itemListElement"
+      ]
     }
-  }
+  },
+  "_note_faq": "Since Aug 2023 Google shows FAQ rich results only for well-known, authoritative government and health sites. Treat FAQ content as on-page Q&A that AI answer engines can extract; FAQPage markup is optional and must mirror visible content."
 }

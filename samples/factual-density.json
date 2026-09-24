@@ -1,0 +1,64 @@
+{
+  "generated": "2026-09-24T13:26:16.154Z",
+  "threshold": 3,
+  "unit": "per 1,000 words",
+  "vcPatterns": false,
+  "summary": {
+    "filesScored": 4,
+    "avgFactsPer1K": 44.3,
+    "belowThreshold": 0,
+    "grades": {
+      "A": 4,
+      "B": 0,
+      "C": 0,
+      "D": 0,
+      "F": 0
+    }
+  },
+  "files": [
+    {
+      "file": "tests/fixtures/content/app/blog/why-vcs-dont-return-calls/page.tsx",
+      "wordCount": 440,
+      "factCount": 3,
+      "factsPer1K": 6.8,
+      "entityCount": 3,
+      "entitiesPer1K": 6.8,
+      "grade": "A",
+      "totalParagraphs": 9,
+      "paragraphsWithoutFacts": 6
+    },
+    {
+      "file": "tests/fixtures/content/posts/linking-post.mdx",
+      "wordCount": 70,
+      "factCount": 2,
+      "factsPer1K": 28.6,
+      "entityCount": 0,
+      "entitiesPer1K": 0,
+      "grade": "A",
+      "totalParagraphs": 4,
+      "paragraphsWithoutFacts": 3
+    },
+    {
+      "file": "tests/fixtures/content/posts/crlf-post.md",
+      "wordCount": 65,
+      "factCount": 2,
+      "factsPer1K": 30.8,
+      "entityCount": 0,
+      "entitiesPer1K": 0,
+      "grade": "A",
+      "totalParagraphs": 3,
+      "paragraphsWithoutFacts": 2
+    },
+    {
+      "file": "tests/fixtures/content/posts/density-report.md",
+      "wordCount": 126,
+      "factCount": 14,
+      "factsPer1K": 111.1,
+      "entityCount": 0,
+      "entitiesPer1K": 0,
+      "grade": "A",
+      "totalParagraphs": 3,
+      "paragraphsWithoutFacts": 1
+    }
+  ]
+}

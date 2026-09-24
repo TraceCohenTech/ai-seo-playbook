@@ -1,41 +1,77 @@
 {
-  "generated": "2026-08-10T13:30:00Z",
-  "directory": "./content",
-  "totalPages": 487,
-  "orphanPages": 12,
-  "lowLinkPages": 34,
-  "deadEndPages": 8,
+  "generated": "2026-09-24T13:26:15.868Z",
+  "directory": "tests/fixtures/content",
+  "totalPages": 9,
+  "orphanPages": 2,
+  "lowLinkPages": 5,
+  "deadEndPages": 3,
   "orphans": [
     {
-      "page": "content/niche-ai-tools-comparison.mdx",
+      "file": "tests/fixtures/content/posts/density-report.md",
+      "path": "/posts/density-report",
       "inboundLinks": 0,
-      "outboundLinks": 3,
-      "impressions": 4200,
-      "note": "Getting impressions from Google but invisible in internal link graph — Google found it via sitemap only"
+      "outboundLinks": 0
     },
     {
-      "page": "content/seed-stage-metrics.mdx",
+      "file": "tests/fixtures/content/posts/landing.html",
+      "path": "/posts/landing",
       "inboundLinks": 0,
-      "outboundLinks": 1,
-      "impressions": 1800,
-      "note": "Related to 5 other funding-stage pages that should link to it"
+      "outboundLinks": 2
     }
   ],
   "lowLink": [
     {
-      "page": "content/spacex-ipo-valuation-2026.mdx",
+      "file": "tests/fixtures/content/app/(marketing)/about/page.tsx",
+      "path": "/about",
       "inboundLinks": 1,
-      "outboundLinks": 4,
-      "impressions": 28450,
-      "note": "Top-performing page with only 1 inbound link — deserves 10+ links from related posts"
+      "outboundLinks": 1
+    },
+    {
+      "file": "tests/fixtures/content/posts/crlf-post.md",
+      "path": "/posts/crlf-post",
+      "inboundLinks": 1,
+      "outboundLinks": 1
+    },
+    {
+      "file": "tests/fixtures/content/posts/linking-post.mdx",
+      "path": "/posts/linking-post",
+      "inboundLinks": 1,
+      "outboundLinks": 2
+    },
+    {
+      "file": "tests/fixtures/content/posts/old-thin.md",
+      "path": "/posts/old-thin",
+      "inboundLinks": 1,
+      "outboundLinks": 0
+    },
+    {
+      "file": "tests/fixtures/content/app/tools/pricing/page.tsx",
+      "path": "/tools/pricing",
+      "inboundLinks": 1,
+      "outboundLinks": 1
     }
   ],
   "deadEnds": [
     {
-      "page": "content/what-is-convertible-note.mdx",
-      "inboundLinks": 6,
-      "outboundLinks": 0,
-      "note": "Gets link equity but doesn't pass it anywhere — add links to related funding content"
+      "file": "tests/fixtures/content/app/blog/pricing/page.tsx",
+      "path": "/blog/pricing",
+      "inboundLinks": 2,
+      "outboundLinks": 0
+    },
+    {
+      "file": "tests/fixtures/content/posts/density-report.md",
+      "path": "/posts/density-report",
+      "inboundLinks": 0,
+      "outboundLinks": 0
+    },
+    {
+      "file": "tests/fixtures/content/posts/old-thin.md",
+      "path": "/posts/old-thin",
+      "inboundLinks": 1,
+      "outboundLinks": 0
     }
+  ],
+  "dynamicRoutes": [
+    "tests/fixtures/content/app/blog/[slug]/page.tsx"
   ]
 }

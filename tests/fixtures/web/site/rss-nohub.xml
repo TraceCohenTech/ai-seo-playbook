@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel>
+  <title>Acme (no hub)</title><link>FIXTURE_ORIGIN/</link>
+  <item><title>Post</title><link>FIXTURE_ORIGIN/blog/other-post</link></item>
+</channel></rss>

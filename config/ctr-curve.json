@@ -1,0 +1,11 @@
+{
+  "_comment": "HEURISTIC. Expected organic CTR by rounded average position (1-20), as a fraction. These are illustrative defaults, not measurements: they are not taken from a published study, they do not account for AI Overviews, ads, or other SERP features, and real curves vary a lot by site, query type and brand share. Fit your own: ctr-audit.mjs and striking-distance.mjs fit this curve from your site's query-level Search Console rows (median CTR by rounded position) whenever there is enough data, and fall back to this file otherwise. Pass --curve default to force this file.",
+  "label": "illustrative defaults; fit your own",
+  "source": "none (hand-picked placeholder values, 2026-09)",
+  "positions": {
+    "1": 0.28, "2": 0.15, "3": 0.1, "4": 0.07, "5": 0.05,
+    "6": 0.04, "7": 0.03, "8": 0.025, "9": 0.02, "10": 0.015,
+    "11": 0.01, "12": 0.008, "13": 0.007, "14": 0.006, "15": 0.005,
+    "16": 0.004, "17": 0.003, "18": 0.003, "19": 0.002, "20": 0.002
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "generated": "2026-09-24T13:23:56.991Z",
+  "policy": "Indexing API is limited to JobPosting and BroadcastEvent-in-VideoObject pages; quota 200 publish requests/day per GCP project.",
+  "type": "URL_UPDATED",
+  "dryRun": true,
+  "checks": [
+    {
+      "url": "https://example.com/jobs/acme-engineer",
+      "eligible": true,
+      "reason": "JobPosting"
+    },
+    {
+      "url": "https://example.com/live/acme-launch",
+      "eligible": true,
+      "reason": "BroadcastEvent"
+    },
+    {
+      "url": "https://example.com/blog/plain",
+      "eligible": false,
+      "refused": "no JobPosting or VideoObject+BroadcastEvent structured data found"
+    }
+  ],
+  "submissions": [],
+  "summary": {
+    "checked": 3,
+    "eligible": 2,
+    "refused": 1,
+    "submitted": 0,
+    "errors": 0
+  }
+}

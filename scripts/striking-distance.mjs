@@ -1,193 +1,142 @@
 #!/usr/bin/env node
-
 /**
  * Striking Distance Finder
  *
- * Finds pages ranking position 5-20 with real impressions — the "almost
- * on page 1" pages where a small nudge (deeper content, better headers,
- * an FAQ section, more internal links) can produce outsized click gains.
+ * Finds page+query pairs ranking just off the top (default positions 5-20) with real
+ * impressions: pages where improving the content that answers a query you already rank for
+ * is a candidate for more clicks. Results are grouped by page.
  *
- * Clicks jump non-linearly when you cross from position 11 to 10 (page 2
- * to page 1), and again from position 4 to 3 (below to above the fold).
- * These are the cheapest wins in SEO.
+ * The "if improved" estimate is a HEURISTIC what-if: impressions x expected CTR at a target
+ * position (8 for positions beyond 10, otherwise two positions higher, never above 3), minus the
+ * page's ACTUAL clicks for those queries. Rankings are not guaranteed to move, impressions change
+ * with position, and the curve is itself a heuristic, so treat gains as a ranking signal.
+ *
+ * Machine-shaped queries (lib/query-classifier.mjs: AI agents, scrapers, zero-click agent
+ * patterns) are skipped by default because better content will not earn their clicks; pass
+ * --include-machine to keep them.
+ *
+ * The curve (lib/ctr.mjs): --curve auto (default) fits a CTR-by-position curve from this site's
+ * own query rows when there is enough data, else uses config/ctr-curve.json; also fit | default | <file>.
  *
  * Usage:
  *   node scripts/striking-distance.mjs --site sc-domain:example.com
- *   node scripts/striking-distance.mjs --site sc-domain:example.com --min-pos 5 --max-pos 20
+ *   node scripts/striking-distance.mjs --site sc-domain:example.com --min-pos 5 --max-pos 20 --output striking.json
+ *
+ * Options:
+ *   --site              Search Console property (required)
+ *   --min-pos           Lowest average position to include (default 5)
+ *   --max-pos           Highest average position to include (default 20)
+ *   --min-impressions   Minimum impressions per page+query pair (default 200)
+ *   --days              Window, ending on the last final-data date (default 28)
+ *   --curve             auto | fit | default | path (default auto)
+ *   --include-machine   Keep machine-shaped queries (default: skip them)
+ *   --top               Pages to print (default 20)
+ *   --output            Optional output JSON path
+ *
+ * Output (JSON): { generated, site, period, config, curve, totalOpportunities,
+ *   estimatedTotalClickGain, opportunities: [{ page, topQuery, position, impressions, clicks, ctr,
+ *   queryCount, targetPosition, projectedClicks, clickGain, actions }] }
+ *
+ * Exit codes: 0 finished, 1 error.
  */
+import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { cli, fail } from '../lib/cli.mjs';
+import { gscClient, queryAll } from '../lib/gsc.mjs';
+import { lastDataDate, windowEnding, sumByPageQuery, round, pct } from '../lib/gsc-rows.mjs';
+import { resolveCurve, expectedCtr, describeCurve } from '../lib/ctr.mjs';
+import { isHumanQuery, isZeroClickAgent } from '../lib/query-classifier.mjs';
 
-import { google } from 'googleapis';
-import { parseArgs } from 'node:util';
+export const targetPosition = (pos) => (pos > 10 ? 8 : Math.max(3, Math.round(pos) - 2));
 
-const { values: args } = parseArgs({
-  options: {
-    site: { type: 'string' },
+export function suggestActions(q, curve) {
+  const actions = [];
+  if (q.position > 10) {
+    actions.push('Expand the section that answers this query; add specifics a searcher would look for');
+    actions.push('Link to this page from related pages with descriptive anchor text');
+  } else {
+    actions.push('Answer related questions on the page (a short Q&A section)');
+    actions.push('Update facts that are out of date; change lastmod only when the content materially changes');
+  }
+  if (q.ctr < expectedCtr(curve, q.position)) actions.push("CTR is below the curve for this position: review whether the title matches this query's intent");
+  return actions;
+}
+
+/** pageQueries: Map from sumByPageQuery (variants already summed). */
+export function findOpportunities(pageQueries, curve, { minPos = 5, maxPos = 20, minImpressions = 200, includeMachine = false } = {}) {
+  const byPage = new Map();
+  for (const q of pageQueries.values()) {
+    if (q.position < minPos || q.position > maxPos || q.impressions < minImpressions) continue;
+    if (!includeMachine && (!isHumanQuery(q.query) || isZeroClickAgent(q))) continue;
+    (byPage.get(q.page) || byPage.set(q.page, []).get(q.page)).push(q);
+  }
+  const out = [];
+  for (const [page, qs] of byPage) {
+    qs.sort((a, b) => b.impressions - a.impressions || a.query.localeCompare(b.query));
+    const impressions = qs.reduce((s, q) => s + q.impressions, 0);
+    const clicks = qs.reduce((s, q) => s + q.clicks, 0);
+    // Per query: projected clicks at its own target position vs the ACTUAL clicks it got.
+    let projected = 0;
+    for (const q of qs) projected += q.impressions * expectedCtr(curve, targetPosition(q.position));
+    const top = qs[0];
+    out.push({
+      page, topQuery: top.query, position: round(top.position, 1), impressions, clicks,
+      ctr: pct(impressions ? clicks / impressions : 0), queryCount: qs.length,
+      targetPosition: targetPosition(top.position),
+      projectedClicks: Math.round(projected),
+      clickGain: Math.max(0, Math.round(projected - clicks)),
+      actions: suggestActions(top, curve),
+    });
+  }
+  return out.sort((a, b) => b.clickGain - a.clickGain || a.page.localeCompare(b.page));
+}
+
+export async function buildReport(sc, { site, days = 28, minPos = 5, maxPos = 20, minImpressions = 200, includeMachine = false, curve: curveMode = 'auto', today = new Date(), now = new Date() }) {
+  const end = await lastDataDate(sc, site, { dataState: 'final', today });
+  const period = windowEnding(end, days);
+  const pageQueries = sumByPageQuery(await queryAll(sc, site, { ...period, dimensions: ['page', 'query'], dataState: 'final' }));
+  const curve = resolveCurve(curveMode, [...pageQueries.values()]);
+  const opportunities = findOpportunities(pageQueries, curve, { minPos, maxPos, minImpressions, includeMachine });
+  return {
+    generated: now.toISOString(), site, period,
+    config: { minPos, maxPos, minImpressions, includeMachine, days },
+    curve: describeCurve(curve),
+    totalOpportunities: opportunities.length,
+    estimatedTotalClickGain: opportunities.reduce((s, r) => s + r.clickGain, 0),
+    opportunities,
+  };
+}
+
+async function main() {
+  const a = cli(import.meta.url, {
+    site: { type: 'string', required: true },
     'min-pos': { type: 'string', default: '5' },
     'max-pos': { type: 'string', default: '20' },
     'min-impressions': { type: 'string', default: '200' },
     days: { type: 'string', default: '28' },
+    curve: { type: 'string', default: 'auto' },
+    'include-machine': { type: 'boolean', default: false },
+    top: { type: 'string', default: '20' },
     output: { type: 'string' },
-  },
-});
-
-if (!args.site) {
-  console.error('Usage: node scripts/striking-distance.mjs --site sc-domain:example.com');
-  process.exit(1);
-}
-
-const MIN_POS = parseFloat(args['min-pos']);
-const MAX_POS = parseFloat(args['max-pos']);
-const MIN_IMPR = parseInt(args['min-impressions']);
-const DAYS = parseInt(args.days);
-
-const EXPECTED_CTR = {
-  3: 8.0, 4: 5.0, 5: 3.5, 6: 2.5, 7: 2.0, 8: 1.5, 9: 1.2, 10: 1.0,
-  11: 0.8, 12: 0.6, 13: 0.5, 14: 0.4, 15: 0.3, 16: 0.25, 17: 0.2, 18: 0.18, 19: 0.15, 20: 0.12,
-};
-
-async function getAuth() {
-  const auth = new google.auth.GoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
   });
-  return auth.getClient();
-}
-
-async function getPageQueryData(auth, site) {
-  const searchconsole = google.searchconsole({ version: 'v1', auth });
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() - 1);
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - DAYS);
-
-  const res = await searchconsole.searchanalytics.query({
-    siteUrl: site,
-    requestBody: {
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0],
-      dimensions: ['page', 'query'],
-      rowLimit: 10000,
-      dataState: 'all',
-    },
+  const sc = await gscClient();
+  const r = await buildReport(sc, {
+    site: a.site, days: Number(a.days), minPos: Number(a['min-pos']), maxPos: Number(a['max-pos']),
+    minImpressions: Number(a['min-impressions']), includeMachine: a['include-machine'], curve: a.curve,
   });
-
-  return (res.data.rows || []).map(row => ({
-    page: row.keys[0],
-    query: row.keys[1],
-    clicks: row.clicks,
-    impressions: row.impressions,
-    ctr: Math.round(row.ctr * 10000) / 100,
-    position: Math.round(row.position * 10) / 10,
-  }));
+  console.log(`\nStriking distance for ${a.site}, ${r.period.startDate} -> ${r.period.endDate}`);
+  console.log(`Curve: ${r.curve.source} (${r.curve.label}). ${r.curve.note}`);
+  console.log(`${r.totalOpportunities} pages with queries at position ${r.config.minPos}-${r.config.maxPos} and >= ${r.config.minImpressions} impressions`);
+  console.log(`Heuristic what-if total if every query reached its target position: +${r.estimatedTotalClickGain.toLocaleString()} clicks\n`);
+  for (const o of r.opportunities.slice(0, Number(a.top))) {
+    console.log(`  ${o.page}`);
+    console.log(`    Top query: "${o.topQuery}" (pos ${o.position}); ${o.impressions.toLocaleString()} impr, ${o.clicks} clicks, ${o.queryCount} queries`);
+    console.log(`    What-if (heuristic): +${o.clickGain} clicks per ${r.config.days} days`);
+    for (const x of o.actions) console.log(`    - ${x}`);
+    console.log();
+  }
+  if (a.output) { writeFileSync(a.output, JSON.stringify(r, null, 2)); console.log(`Report saved to ${a.output}`); }
 }
 
-function estimateClickGain(currentPos, impressions) {
-  const targetPos = currentPos > 10 ? 8 : Math.max(3, currentPos - 2);
-  const currentExpectedCtr = EXPECTED_CTR[Math.round(currentPos)] || 0.5;
-  const targetExpectedCtr = EXPECTED_CTR[targetPos] || 5.0;
-  const currentClicks = impressions * (currentExpectedCtr / 100);
-  const projectedClicks = impressions * (targetExpectedCtr / 100);
-  return {
-    targetPosition: targetPos,
-    currentEstClicks: Math.round(currentClicks),
-    projectedClicks: Math.round(projectedClicks),
-    clickGain: Math.round(projectedClicks - currentClicks),
-  };
-}
-
-function suggestAction(entry) {
-  const actions = [];
-
-  if (entry.position > 10) {
-    actions.push('Add depth: expand the section that matches this query, add data/examples');
-    actions.push('Build internal links: point 3-5 related pages to this one');
-  }
-
-  if (entry.position >= 5 && entry.position <= 10) {
-    actions.push('Add an FAQ section answering related questions');
-    actions.push('Update with fresh data — trigger lastmod freshness signal');
-  }
-
-  if (entry.ctr < (EXPECTED_CTR[Math.round(entry.position)] || 1)) {
-    actions.push('Rewrite title to better match this query\'s intent');
-  }
-
-  return actions;
-}
-
-async function main() {
-  const auth = await getAuth();
-
-  console.log(`Fetching page+query data for ${args.site} (last ${DAYS} days)...`);
-  const data = await getPageQueryData(auth, args.site);
-  console.log(`Got ${data.length} page+query combinations`);
-
-  const pageMap = new Map();
-  for (const row of data) {
-    if (row.position < MIN_POS || row.position > MAX_POS) continue;
-    if (row.impressions < MIN_IMPR) continue;
-
-    const key = row.page;
-    if (!pageMap.has(key)) {
-      pageMap.set(key, { page: row.page, queries: [], totalImpressions: 0, totalClicks: 0 });
-    }
-    const entry = pageMap.get(key);
-    entry.queries.push(row);
-    entry.totalImpressions += row.impressions;
-    entry.totalClicks += row.clicks;
-  }
-
-  const results = [];
-  for (const [, entry] of pageMap) {
-    const bestQuery = entry.queries.sort((a, b) => b.impressions - a.impressions)[0];
-    const gain = estimateClickGain(bestQuery.position, entry.totalImpressions);
-
-    results.push({
-      page: entry.page,
-      topQuery: bestQuery.query,
-      position: bestQuery.position,
-      impressions: entry.totalImpressions,
-      clicks: entry.totalClicks,
-      ctr: entry.totalImpressions > 0 ? Math.round((entry.totalClicks / entry.totalImpressions) * 10000) / 100 : 0,
-      queryCount: entry.queries.length,
-      ...gain,
-      actions: suggestAction(bestQuery),
-    });
-  }
-
-  results.sort((a, b) => b.clickGain - a.clickGain);
-
-  console.log('\n=== STRIKING DISTANCE OPPORTUNITIES ===\n');
-  console.log(`Pages ranking position ${MIN_POS}-${MAX_POS} with ≥${MIN_IMPR} impressions:`);
-  console.log(`Found ${results.length} opportunities\n`);
-
-  if (results.length > 0) {
-    const totalGain = results.reduce((s, r) => s + r.clickGain, 0);
-    console.log(`Estimated total click gain if all improved: +${totalGain.toLocaleString()} clicks\n`);
-
-    console.log('--- TOP OPPORTUNITIES ---\n');
-    for (const r of results.slice(0, 20)) {
-      console.log(`  ${r.page}`);
-      console.log(`    Top query: "${r.topQuery}" (pos ${r.position})`);
-      console.log(`    ${r.impressions.toLocaleString()} impr | ${r.clicks} clicks | ${r.queryCount} queries`);
-      console.log(`    If improved to pos ${r.targetPosition}: +${r.clickGain} clicks/period`);
-      for (const a of r.actions) {
-        console.log(`    → ${a}`);
-      }
-      console.log();
-    }
-  }
-
-  if (args.output) {
-    const { writeFile } = await import('node:fs/promises');
-    await writeFile(args.output, JSON.stringify({
-      generated: new Date().toISOString(),
-      config: { minPos: MIN_POS, maxPos: MAX_POS, minImpressions: MIN_IMPR, days: DAYS },
-      totalOpportunities: results.length,
-      estimatedTotalClickGain: results.reduce((s, r) => s + r.clickGain, 0),
-      opportunities: results,
-    }, null, 2));
-    console.log(`Report saved to ${args.output}`);
-  }
-}
-
-main().catch(console.error);
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(fail);

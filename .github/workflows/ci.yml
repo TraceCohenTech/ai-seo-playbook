@@ -1,0 +1,20 @@
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request: {}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: { node: [20, 22, 24] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ matrix.node }}", cache: npm }
+      - run: npm ci
+      - name: Syntax-check every script and lib
+        run: for f in scripts/*.mjs lib/*.mjs; do node --check "$f"; done
+      - name: Tests (offline, no credentials)
+        run: node --test tests/*.test.mjs

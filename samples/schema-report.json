@@ -1,0 +1,123 @@
+{
+  "generated": "2026-09-24T13:23:56.338Z",
+  "mode": "rendered",
+  "totalScanned": 5,
+  "withSchemas": 5,
+  "errors": 2,
+  "warnings": 8,
+  "info": 3,
+  "schemaTypes": [
+    "Article",
+    "BlogPosting",
+    "BreadcrumbList",
+    "FAQPage",
+    "JobPosting",
+    "NewsArticle",
+    "VideoObject"
+  ],
+  "unresolvedSourceBlocks": 0,
+  "fetchErrors": [],
+  "pages": [
+    {
+      "target": "https://example.com/blog/foo-bar-post",
+      "types": [
+        "Article",
+        "FAQPage",
+        "BreadcrumbList"
+      ],
+      "issues": [
+        {
+          "severity": "info",
+          "message": "Article: author \"Sam Example\" has no url (Google recommends author.url to identify the author)"
+        },
+        {
+          "severity": "info",
+          "message": "FAQ rich results have been limited to well-known, authoritative government and health sites since Aug 2023; FAQPage markup is optional elsewhere."
+        }
+      ]
+    },
+    {
+      "target": "https://example.com/dup-faq",
+      "types": [
+        "FAQPage",
+        "NewsArticle"
+      ],
+      "issues": [
+        {
+          "severity": "error",
+          "message": "Invalid JSON in ld+json block: Expected double-quoted property name in JSON at position 57 (line 1 column 58)"
+        },
+        {
+          "severity": "warn",
+          "message": "NewsArticle: missing recommended property \"dateModified\"",
+          "doc": "https://developers.google.com/search/docs/appearance/structured-data/article"
+        },
+        {
+          "severity": "warn",
+          "message": "NewsArticle: missing recommended property \"image\"",
+          "doc": "https://developers.google.com/search/docs/appearance/structured-data/article"
+        },
+        {
+          "severity": "warn",
+          "message": "NewsArticle: datePublished \"last Tuesday\" is not an ISO 8601 date"
+        },
+        {
+          "severity": "warn",
+          "message": "NewsArticle: author \"Acme Staff\" is a string; use a Person or Organization object with a name"
+        },
+        {
+          "severity": "error",
+          "message": "Duplicate FAQPage (found 2). Search Console reports this as an invalid item (\"Duplicate field FAQPage\"); merge the questions into one FAQPage.",
+          "doc": "https://developers.google.com/search/docs/appearance/structured-data/faqpage"
+        },
+        {
+          "severity": "info",
+          "message": "FAQ rich results have been limited to well-known, authoritative government and health sites since Aug 2023; FAQPage markup is optional elsewhere."
+        }
+      ]
+    },
+    {
+      "target": "https://example.com/jobs/acme-engineer",
+      "types": [
+        "JobPosting"
+      ],
+      "issues": [
+        {
+          "severity": "warn",
+          "message": "JobPosting: missing recommended property \"baseSalary\"",
+          "doc": "https://developers.google.com/search/docs/appearance/structured-data/job-posting"
+        }
+      ]
+    },
+    {
+      "target": "https://example.com/live/acme-launch",
+      "types": [
+        "VideoObject"
+      ],
+      "issues": [
+        {
+          "severity": "warn",
+          "message": "VideoObject: missing recommended property \"contentUrl\"",
+          "doc": "https://developers.google.com/search/docs/appearance/structured-data/video"
+        },
+        {
+          "severity": "warn",
+          "message": "VideoObject: missing recommended property \"embedUrl\"",
+          "doc": "https://developers.google.com/search/docs/appearance/structured-data/video"
+        },
+        {
+          "severity": "warn",
+          "message": "VideoObject: missing recommended property \"duration\"",
+          "doc": "https://developers.google.com/search/docs/appearance/structured-data/video"
+        }
+      ]
+    },
+    {
+      "target": "https://example.com/blog/plain",
+      "types": [
+        "BlogPosting"
+      ],
+      "issues": []
+    }
+  ]
+}

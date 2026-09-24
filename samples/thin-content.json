@@ -1,51 +1,139 @@
 [
   {
-    "file": "src/app/pulse/stories/tech-news-roundup-aug-15/page.tsx",
-    "wordCount": 78,
+    "file": "tests/fixtures/content/posts/old-thin.md",
+    "wordCount": 25,
+    "linkCount": 0,
+    "ageDays": 1211,
+    "ageSource": "content-date",
+    "issues": [
+      {
+        "type": "thin",
+        "detail": "25 visible words (minimum: 300)",
+        "severity": "critical"
+      }
+    ],
+    "recommendation": "NOINDEX_CANDIDATE"
+  },
+  {
+    "file": "tests/fixtures/content/posts/landing.html",
+    "wordCount": 27,
+    "linkCount": 4,
+    "ageDays": 0,
+    "ageSource": "file-mtime",
+    "issues": [
+      {
+        "type": "thin",
+        "detail": "27 visible words (minimum: 300)",
+        "severity": "critical"
+      },
+      {
+        "type": "too_new",
+        "detail": "only 0 days old (min-age-days: 90); give it time before judging",
+        "severity": "info"
+      }
+    ],
+    "recommendation": "REVIEW"
+  },
+  {
+    "file": "tests/fixtures/content/app/blog/pricing/page.tsx",
+    "wordCount": 31,
+    "linkCount": 0,
+    "ageDays": 1057,
+    "ageSource": "content-date",
+    "issues": [
+      {
+        "type": "thin",
+        "detail": "31 visible words (minimum: 300)",
+        "severity": "critical"
+      }
+    ],
+    "recommendation": "NOINDEX_CANDIDATE"
+  },
+  {
+    "file": "tests/fixtures/content/app/(marketing)/about/page.tsx",
+    "wordCount": 35,
+    "linkCount": 1,
+    "ageDays": 0,
+    "ageSource": "file-mtime",
+    "issues": [
+      {
+        "type": "thin",
+        "detail": "35 visible words (minimum: 300)",
+        "severity": "critical"
+      },
+      {
+        "type": "too_new",
+        "detail": "only 0 days old (min-age-days: 90); give it time before judging",
+        "severity": "info"
+      }
+    ],
+    "recommendation": "REVIEW"
+  },
+  {
+    "file": "tests/fixtures/content/app/tools/pricing/page.tsx",
+    "wordCount": 37,
+    "linkCount": 1,
+    "ageDays": 0,
+    "ageSource": "file-mtime",
+    "issues": [
+      {
+        "type": "thin",
+        "detail": "37 visible words (minimum: 300)",
+        "severity": "critical"
+      },
+      {
+        "type": "too_new",
+        "detail": "only 0 days old (min-age-days: 90); give it time before judging",
+        "severity": "info"
+      }
+    ],
+    "recommendation": "REVIEW"
+  },
+  {
+    "file": "tests/fixtures/content/posts/crlf-post.md",
+    "wordCount": 65,
+    "linkCount": 1,
+    "ageDays": 937,
+    "ageSource": "content-date",
+    "issues": [
+      {
+        "type": "thin",
+        "detail": "65 visible words (minimum: 300)",
+        "severity": "critical"
+      }
+    ],
+    "recommendation": "NOINDEX_CANDIDATE"
+  },
+  {
+    "file": "tests/fixtures/content/posts/linking-post.mdx",
+    "wordCount": 70,
     "linkCount": 2,
-    "boilerplateRatio": 0.72,
+    "ageDays": 23,
+    "ageSource": "content-date",
     "issues": [
       {
         "type": "thin",
-        "detail": "78 words (minimum: 300)",
+        "detail": "70 visible words (minimum: 300)",
         "severity": "critical"
       },
       {
-        "type": "boilerplate",
-        "detail": "72% boilerplate code, 78 words of content",
-        "severity": "warning"
+        "type": "too_new",
+        "detail": "only 23 days old (min-age-days: 90); give it time before judging",
+        "severity": "info"
       }
     ],
-    "recommendation": "NOINDEX"
+    "recommendation": "REVIEW"
   },
   {
-    "file": "src/app/companies/acme-corp/page.tsx",
-    "wordCount": 142,
-    "linkCount": 14,
-    "boilerplateRatio": 0.55,
+    "file": "tests/fixtures/content/posts/density-report.md",
+    "wordCount": 126,
+    "linkCount": 0,
+    "ageDays": 591,
+    "ageSource": "content-date",
     "issues": [
       {
         "type": "thin",
-        "detail": "142 words (minimum: 300)",
-        "severity": "critical"
-      },
-      {
-        "type": "hub_thin",
-        "detail": "Hub page with 14 links but only 142 words of prose",
-        "severity": "warning"
-      }
-    ],
-    "recommendation": "NOINDEX"
-  },
-  {
-    "file": "src/app/tools/roi-calculator/page.tsx",
-    "wordCount": 210,
-    "linkCount": 3,
-    "boilerplateRatio": 0.48,
-    "issues": [
-      {
-        "type": "thin",
-        "detail": "210 words (minimum: 300)",
+        "detail": "126 visible words (minimum: 300)",
         "severity": "warning"
       }
     ],

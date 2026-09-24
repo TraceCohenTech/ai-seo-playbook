@@ -1,57 +1,31 @@
 #!/bin/bash
+# Vercel "Ignored Build Step": skip builds for data/content-only commits and build for everything else.
+# Set Project Settings → Git → Ignored Build Step to:  bash examples/vercel-ignore.sh
+# Exit 0 = SKIP the build, exit 1 = BUILD.
+#
+# Lessons baked in (both cost us real deploys):
+#   1. Diff against the LAST DEPLOYED commit ($VERCEL_GIT_PREVIOUS_SHA), not HEAD~1. A push that holds
+#      a code commit followed by a [nobuild] data commit otherwise skips the code.
+#   2. Build-time generators are code even if they live in scripts/. Our blanket "scripts/ is not site code"
+#      rule silently skipped a merged data-quality fix. List your prebuild generators in BUILD_PATHS.
+#   3. package.json / tsconfig.json / vercel.json are code, not "content JSON".
+#   4. With ISR, content that is BUNDLED in the repo is only picked up by a new build. "Skip, ISR will
+#      handle it" is only true for content fetched at request time.
 
-# Vercel Ignore Build Step
-#
-# Controls when Vercel actually runs a build vs. skipping it.
-# Without this, every git push triggers a full build — and if you
-# have automated content pipelines pushing multiple times a day,
-# your Vercel bill explodes.
-#
-# Place this file at the root of your project and set it as the
-# "Ignored Build Step" in Vercel Project Settings → Git.
-#
-# How it works:
-#   - Commits with [nobuild] in the message → skip the build
-#   - Content-only changes (markdown, JSON) → skip (handled by ISR)
-#   - Code changes (tsx, ts, css, config) → build
-#   - Scheduled deploy-tick commits → build (catches accumulated content)
-#
-# Combined with a deploy-tick cron (e.g., 4x/day), this pattern lets
-# you push content continuously without paying for continuous builds.
-#
-# WARNING: Vercel's ignoreCommand has a 256-char limit. This script
-# stays under that by keeping the logic simple.
+PREV="${VERCEL_GIT_PREVIOUS_SHA:-}"
+MSG=$(git log -1 --format=%s)
 
-COMMIT_MSG=$(git log -1 --format='%s')
+# Always build when we can't diff against the last deploy (first deploy, shallow clone, force push).
+if [ -z "$PREV" ] || ! git cat-file -e "$PREV" 2>/dev/null; then echo "build: no previous deploy to diff"; exit 1; fi
 
-# [nobuild] tag = explicit skip
-if echo "$COMMIT_MSG" | grep -q '\[nobuild\]'; then
-  echo "🔕 Skipping build ([nobuild] tag)"
-  exit 0  # 0 = don't build
+# Paths whose change always requires a build (edit for your repo).
+BUILD_PATHS="src app pages components lib public next.config.* package.json package-lock.json tsconfig.json vercel.json scripts/build scripts/generate-*"
+
+if git diff --quiet "$PREV" HEAD -- $BUILD_PATHS 2>/dev/null; then
+  echo "skip: no code/build-input changes since $PREV ($MSG)"; exit 0
 fi
-
-# deploy-tick = always build (this is the scheduled catchup)
-if echo "$COMMIT_MSG" | grep -q '\[deploy-tick\]'; then
-  echo "🔨 Building (deploy-tick)"
-  exit 1  # 1 = build
-fi
-
-# Check if only content files changed
-CHANGED=$(git diff HEAD~1 --name-only 2>/dev/null || echo "FORCE_BUILD")
-
-# If we can't diff (shallow clone, first commit), always build
-if [ "$CHANGED" = "FORCE_BUILD" ]; then
-  echo "🔨 Building (can't determine changes)"
-  exit 1
-fi
-
-# Content-only changes don't need a rebuild (ISR handles them)
-NEEDS_BUILD=$(echo "$CHANGED" | grep -v -E '\.(md|mdx|json|txt|csv)$' | grep -v -E '^_posts/' | head -1)
-
-if [ -z "$NEEDS_BUILD" ]; then
-  echo "🔕 Skipping build (content-only changes, ISR will handle)"
-  exit 0
-fi
-
-echo "🔨 Building (code changes detected)"
-exit 1
+case "$MSG" in *"[nobuild]"*)
+  # A [nobuild] tag only skips when nothing in BUILD_PATHS changed since the last deploy (checked above).
+  ;;
+esac
+echo "build: code or build inputs changed since $PREV"; exit 1

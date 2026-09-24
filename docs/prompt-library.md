@@ -62,8 +62,10 @@ to maximize the probability of being cited by Perplexity, ChatGPT, and Claude.
 
 Apply these transformations:
 1. ADD a 2-3 sentence "quick answer" block at the very top with the core finding + key number
-2. INCREASE factual density — add specific numbers, dates, $ amounts, or percentages
-   to every paragraph that currently lacks them
+2. INCREASE factual density, ONLY from the SOURCES provided below: add specific numbers,
+   dates and amounts where a source supports them, with the source URL next to each. If a
+   paragraph has no sourced figure, leave it without one and mark it [NEEDS SOURCE].
+   Never invent, estimate or round up a number.
 3. RESTRUCTURE for extractability — break into clear H2/H3 sections where each
    section answers one specific question
 4. ADD entity clarity — name the who/what behind every claim
@@ -71,8 +73,8 @@ Apply these transformations:
 6. ADD a "Key Takeaways" bullet list (3-5 items, each starting with a number)
 
 Output the optimized content with [CHANGED] markers on every modified paragraph.
-Also output a "Factual Density Score" — count of specific numbers per 500 words,
-before and after.
+Also output a "Factual Density Score" (count of specific, sourced numbers per 1,000 words)
+before and after, and a list of every figure you added with its source URL.
 ```
 
 Use `factual-density-scorer.mjs` to validate the before/after scores programmatically.
@@ -142,8 +144,11 @@ Write SEO meta descriptions for these pages. Rules:
 Read this content and generate FAQPage JSON-LD schema. Rules:
 - Extract 3-5 questions that real users would search for on Google
 - Validate questions against Google autocomplete
-- Every answer MUST start with a specific number
-- Answers: 50-90 words each, at least 1 data point per answer
+- Lead with a specific number when the page states one; never invent a figure the page doesn't contain
+- Answers: 50-90 words each, using only facts that appear on the page
+- The Q&A must also be VISIBLE on the page. FAQ markup must mirror on-page content, and since
+  Aug 2023 Google shows FAQ rich results only for authoritative government/health sites, so
+  treat this as on-page Q&A for answer engines, with the markup optional
 - Output valid JSON-LD ready to paste into a script tag
 ```
 
@@ -165,7 +170,7 @@ SEO Layer:
 
 AEO Layer:
 6. Add quick-answer block at top (2-3 sentences, lead with number)
-7. Increase factual density to 3+ stats per 500 words
+7. Increase factual density to 6+ sourced stats per 1,000 words (only figures you can cite)
 8. Add "Key Takeaways" section (3-5 bullets, each starts with a number)
 9. Ensure every claim is attributable to a named source
 
@@ -223,7 +228,7 @@ Use `cannibalization-detector.mjs` to find the clusters first.
 
 ## CTR Rescue Batch Rewriter
 
-The highest-ROI SEO intervention: no new content needed, just better packaging. Use `ctr-audit.mjs` to identify the 20-50 pages with the most wasted impressions, then batch-rewrite them in a single day.
+The highest-ROI SEO intervention: no new content needed, just better packaging. Use `ctr-audit.mjs` to identify the 20-50 pages with the largest click gap (expected minus actual clicks, against a CTR curve fitted to your own site), then batch-rewrite them in a single day.
 
 ```
 I'll give you a list of pages with their current title, meta description,
@@ -250,7 +255,7 @@ For each page output:
 Sort by impressions descending (highest-impact rewrites first).
 ```
 
-Run on your HIGH-tier pages from `ctr-audit.mjs` first. Measure impact after 2-4 weeks with `rewrite-measurer.mjs`.
+Run on your HIGH-tier pages from `ctr-audit.mjs` first. Measure impact with `rewrite-measurer.mjs --change-date YYYY-MM-DD` once the post window has complete data (about 3–4 weeks); it compares against a matched control.
 
 ---
 

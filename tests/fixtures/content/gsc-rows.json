@@ -1,0 +1,8 @@
+[
+  { "keys": ["https://example.com/tools/pricing"], "clicks": 40, "impressions": 5200, "ctr": 0.0077, "position": 7.2 },
+  { "keys": ["https://www.example.com/tools/pricing/"], "clicks": 2, "impressions": 100, "ctr": 0.02, "position": 9.0 },
+  { "keys": ["https://example.com/blog/why-vcs-dont-return-calls"], "clicks": 55, "impressions": 2100, "ctr": 0.0262, "position": 3.1 },
+  { "keys": ["https://example.com/posts/crlf-post"], "clicks": 0, "impressions": 300, "ctr": 0, "position": 14.0 },
+  { "keys": ["https://example.com/about"], "clicks": 3, "impressions": 80, "ctr": 0.0375, "position": 11.4 },
+  { "keys": ["https://blog.example.com/blog/pricing"], "clicks": 500, "impressions": 9000, "ctr": 0.0556, "position": 2.0 }
+]

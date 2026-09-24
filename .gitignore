@@ -7,3 +7,4 @@ node_modules/
 !samples/*.json
 .env
 .DS_Store
+node_modules

@@ -1,0 +1,40 @@
+{
+  "generated": "2026-09-24T13:23:56.666Z",
+  "dryRun": false,
+  "results": [
+    {
+      "feed": "https://example.com/feed.xml",
+      "status": "pinged",
+      "kind": "atom",
+      "hubs": [
+        "https://example.com/hub"
+      ],
+      "topic": "https://example.com/feed.xml",
+      "pings": [
+        {
+          "hub": "https://example.com/hub",
+          "httpStatus": 204,
+          "ok": true
+        }
+      ]
+    },
+    {
+      "feed": "https://example.com/rss-nohub.xml",
+      "status": "refused",
+      "kind": "rss",
+      "hubs": [],
+      "topic": "https://example.com/rss-nohub.xml",
+      "pings": [],
+      "reason": "feed does not declare <link rel=\"hub\">; add one (and publish to that hub) before pinging"
+    },
+    {
+      "feed": "https://example.com/sitemap.xml",
+      "status": "refused",
+      "kind": "sitemap",
+      "hubs": [],
+      "topic": "https://example.com/sitemap.xml",
+      "pings": [],
+      "reason": "this is a sitemap, not a feed. WebSub does not apply to sitemaps; use robots.txt + Search Console submission with accurate <lastmod>."
+    }
+  ]
+}

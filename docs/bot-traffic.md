@@ -4,7 +4,7 @@ Your analytics numbers are lying to you. Here's how to figure out by how much.
 
 ## The Problem
 
-Most content sites have 50-80% bot traffic. Bots, scrapers, AI crawlers, and headless browsers all trigger GA4 page loads and Vercel Analytics hits — but they never convert, rarely engage, and completely distort your understanding of what's working.
+In our own analytics, most "visitors" were automated. Industry figures vary widely and we have not verified a universal number. Bots, scrapers, AI crawlers, and headless browsers all trigger GA4 page loads and Vercel Analytics hits — but they never convert, rarely engage, and completely distort your understanding of what's working.
 
 If you're making content decisions based on raw pageview or session counts, you're optimizing for bot behavior.
 

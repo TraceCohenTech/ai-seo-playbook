@@ -33,7 +33,7 @@
       "name": "dead-page",
       "description": "Page in sitemap returns 404 or 5xx",
       "severity": "FAIL",
-      "notes": "Run against every URL in your sitemap. Dead pages in the sitemap cause GSC validation failures and waste crawl budget."
+      "notes": "Run against every URL in your sitemap. A sitemap should list only 200, indexable, canonical URLs; dead or redirected entries show up as Search Console sitemap errors."
     },
     {
       "name": "empty-paragraph",

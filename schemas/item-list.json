@@ -10,21 +10,21 @@
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "Carta",
+        "name": "Acme Cap Table",
         "url": "https://example.com/tools/carta",
         "description": "The industry standard for cap table management. Best for Series A+ companies."
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "Pulley",
+        "name": "Example Equity",
         "url": "https://example.com/tools/pulley",
         "description": "Modern alternative with a generous free tier. Best for pre-seed to seed stage."
       },
       {
         "@type": "ListItem",
         "position": 3,
-        "name": "AngelList Stack",
+        "name": "Sample Ledger Stack",
         "url": "https://example.com/tools/angellist",
         "description": "Full-stack fund and cap table management. Best for fund managers."
       }

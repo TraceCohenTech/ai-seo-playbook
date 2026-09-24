@@ -12,7 +12,12 @@
     },
     "preCommitHook": {
       "description": "Block the content writer from committing directly. All commits go through a pipeline script that validates first.",
-      "checks": ["typecheck passes", "no template phrases in new content", "no purple/pink/magenta colors", "structured data is valid JSON-LD"]
+      "checks": [
+        "typecheck passes",
+        "no template phrases in new content",
+        "no purple/pink/magenta colors",
+        "structured data is valid JSON-LD"
+      ]
     }
   },
   "contentSafety": {
@@ -23,10 +28,6 @@
     "categoryRegistry": {
       "description": "For ranking/comparison pages, maintain a registry mapping category → canonical URL. Only one 'best data rooms' page should exist.",
       "implementation": "JSON map of category → slug. Check before creating any ranking-type content."
-    },
-    "timestampJitter": {
-      "description": "Batch-published content gets timestamps on exact 15-minute marks (09:30:00, 10:00:00) which reads as machine-generated. Hash the slug to shift timestamps backward by 1-14 minutes.",
-      "implementation": "SHA1(slug) mod 14 + 1 = minutes to subtract. Deterministic (same result on re-runs), always backward (never future), organic-looking seconds."
     }
   },
   "buildCostSafety": {

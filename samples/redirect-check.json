@@ -1,0 +1,44 @@
+{
+  "generated": "2026-09-24T13:23:55.611Z",
+  "source": {
+    "sitemap": "https://example.com/sitemap.xml"
+  },
+  "totalChecked": 9,
+  "ok": 4,
+  "redirects": [
+    {
+      "url": "https://example.com/old-post",
+      "status": 301,
+      "location": "https://example.com/blog/foo-bar-post",
+      "finalUrl": "https://example.com/blog/foo-bar-post",
+      "finalStatus": 200,
+      "hops": 1
+    },
+    {
+      "url": "https://example.com/chain",
+      "status": 302,
+      "location": "https://example.com/old-post",
+      "finalUrl": "https://example.com/blog/foo-bar-post",
+      "finalStatus": 200,
+      "hops": 2
+    }
+  ],
+  "notFound": [
+    {
+      "url": "https://example.com/removed",
+      "status": 410
+    },
+    {
+      "url": "https://example.com/gone",
+      "status": 404
+    }
+  ],
+  "httpErrors": [
+    {
+      "url": "https://example.com/error",
+      "status": 500
+    }
+  ],
+  "fetchErrors": [],
+  "skippedRoutes": []
+}

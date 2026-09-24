@@ -1,15 +1,31 @@
 {
-  "_comment": "Title engineering rules. Numbers-first titles achieve 2-3x higher CTR at the same search position. Run the rewrite cycle on a 2-week cadence.",
+  "_comment": "Title engineering rules. On valueaddvc.com, rewriting titles on pages that rank for HUMAN queries but under-earn clicks outgrew a matched control by ~20-38 points (docs/playbook/02-measurement.md). The CTR benchmarks below are illustrative heuristics, not measurements; fit your own curve from GSC (lib/ctr.mjs). Retitle only pages that scripts/human-query-split.mjs flags.",
   "format": {
     "pattern": "[Number Hook] — [Topic]",
     "separator": " — ",
     "maxLength": 60,
     "numberPosition": "first",
     "hookTypes": [
-      { "type": "dollar", "example": "$347B in Q1", "symbol": "$" },
-      { "type": "percentage", "example": "42% AI Citation Rate", "symbol": "%" },
-      { "type": "multiplier", "example": "302,667x Return", "symbol": "x" },
-      { "type": "count", "example": "14 Tools", "symbol": "#" }
+      {
+        "type": "dollar",
+        "example": "$347B in Q1",
+        "symbol": "$"
+      },
+      {
+        "type": "percentage",
+        "example": "42% AI Citation Rate",
+        "symbol": "%"
+      },
+      {
+        "type": "multiplier",
+        "example": "302,667x Return",
+        "symbol": "x"
+      },
+      {
+        "type": "count",
+        "example": "14 Tools",
+        "symbol": "#"
+      }
     ]
   },
   "rules": [
@@ -37,16 +53,28 @@
       "Pull candidates: position 4-20, 1,000+ impressions, CTR <2%",
       "Find the most compelling number in each page's content body",
       "Rewrite: move number to position 1, update meta description to match",
-      "Deploy + submit via Google Indexing API",
+      "Deploy; the sitemap's accurate lastmod plus internal links from crawled hubs get it recrawled. For a handful of urgent URLs, use Search Console URL Inspection > Request indexing (the Indexing API is only for JobPosting/livestream pages).",
       "Wait 14 days for re-crawl",
       "Measure: compare CTR at same position band (use rewrite-measurer.mjs)"
     ]
   },
   "benchmarks": {
-    "generic": { "avgCtr": 1.2, "description": "No number, no hook" },
-    "topicFirst": { "avgCtr": 2.1, "description": "Topic leads, number buried" },
-    "numbersFirst": { "avgCtr": 3.8, "description": "Number leads the title" },
-    "numbersWithEmoji": { "avgCtr": 4.2, "description": "Number + contextual emoji" }
+    "generic": {
+      "avgCtr": 1.2,
+      "description": "No number, no hook"
+    },
+    "topicFirst": {
+      "avgCtr": 2.1,
+      "description": "Topic leads, number buried"
+    },
+    "numbersFirst": {
+      "avgCtr": 3.8,
+      "description": "Number leads the title"
+    },
+    "numbersWithEmoji": {
+      "avgCtr": 4.2,
+      "description": "Number + contextual emoji"
+    }
   },
   "examples": [
     {
