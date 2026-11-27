@@ -8,6 +8,9 @@
 90 days.** That's 7.7× the impressions and 12× the clicks of the previous 90 days. Every number here is verifiable in
 [RESULTS.md](RESULTS.md).
 
+**Update:** that window ended Sep 22, 2026. On Oct 19, 2026 the site hit a sitewide Google filter and has kept about 2% of
+its impressions since; [chapter 7](docs/playbook/07-incident-sitewide-filter-oct-2026.md) is the full postmortem.
+
 This isn't a list of tips. It's the methodology, the scripts, and the guardrails we actually run: tested, measured
 against controls, and including the mistakes that cost us traffic so you don't repeat them.
 
@@ -82,6 +85,7 @@ where the script supports it.
 | A live URL or sitemap | sitemap-health, schema-validator (`--url`/`--sitemap`), redirect-checker, indexing-submitter |
 | Your source files (`--dir`) | thin-content-detector, template-detector, meta-length-checker, factual-density-scorer, orphan-finder, broken-link-checker |
 | Source files + Search Console | content-audit, refresh-tracker |
+| Search Console exports (offline files) | filter-detector |
 
 Setup details are in [docs/setup-gsc.md](docs/setup-gsc.md).
 
@@ -95,6 +99,7 @@ Setup details are in [docs/setup-gsc.md](docs/setup-gsc.md).
 | 4 | [Entity pages](docs/playbook/04-entity-pages.md) | One page per entity, indexing on substance, honest structured data |
 | 5 | [The content refresh system](docs/playbook/05-content-refresh-system.md) | Change fewer pages, and only the right ones |
 | 6 | [Automation and cost](docs/playbook/06-automation-and-cost.md) | Running cron + AI routines + CI safely and cheaply |
+| 7 | [Incident: the Oct 2026 sitewide filter](docs/playbook/07-incident-sitewide-filter-oct-2026.md) | Losing ~94% of impressions in one day, and how to tell a filter from a demotion |
 
 Plus a [prompt library](docs/prompt-library.md) with sourcing rules built in, and a [bot-traffic guide](docs/bot-traffic.md).
 
@@ -122,6 +127,7 @@ Plus a [prompt library](docs/prompt-library.md) with sourcing rules built in, an
 | Script | What it catches |
 |---|---|
 | [`traffic-guard`](scripts/traffic-guard.mjs) | Daily traffic cliffs and slow recoveries (3 baselines) |
+| [`filter-detector`](scripts/filter-detector.mjs) | After a cliff: sitewide filter, demotion or localized drop? Works offline on GSC exports |
 | [`sitemap-health`](scripts/sitemap-health.mjs) | Sitemap URLs that redirect, 404, are noindexed or canonicalize elsewhere |
 | [`redirect-checker`](scripts/redirect-checker.mjs) | Redirect chains and sitemap URLs that redirect |
 | [`broken-link-checker`](scripts/broken-link-checker.mjs) | Broken internal and external links |

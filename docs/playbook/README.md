@@ -8,5 +8,6 @@
 | 4 | [Entity pages](04-entity-pages.md) | One page per entity, indexing on substance, honest structured data, data rules |
 | 5 | [The content refresh system](05-content-refresh-system.md) | Change fewer pages, and only the right ones |
 | 6 | [Automation and cost](06-automation-and-cost.md) | Running cron + AI routines + CI safely and cheaply |
+| 7 | [Incident: the Oct 2026 sitewide filter](07-incident-sitewide-filter-oct-2026.md) | What a sitewide filter looks like, filter vs demotion vs indexing, what we changed |
 
 Every number is in [RESULTS.md](../../RESULTS.md), with windows and dates.
