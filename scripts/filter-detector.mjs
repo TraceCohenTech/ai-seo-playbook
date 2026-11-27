@@ -261,7 +261,7 @@ async function main() {
     'localized-high': { type: 'string' }, 'localized-low': { type: 'string' }, 'demotion-pos': { type: 'string' },
     'min-indexed': { type: 'string' }, output: { type: 'string' },
   });
-  const read = (f, dim) => { try { return parseRows(readFileSync(f, 'utf8'), dim); } catch (e) { if (e.user) throw userError(`${f}: ${e.message}`); throw e; } };
+  const read = (f, dim) => { try { return parseRows(readFileSync(f, 'utf8'), dim); } catch (e) { if (e.user) throw userError(`${f}: ${e.message}`); if (e.code === 'ENOENT') throw userError(`${f}: file not found`); throw e; } };
   const n = (k) => (a[k] === undefined ? undefined : Number(a[k]));
   for (const k of ['pre-days', 'exclude', 'min-page', 'min-cohort', 'indexed-share', 'no-cliff', 'filter-max', 'cohort-max', 'localized-high', 'localized-low', 'demotion-pos', 'min-indexed']) {
     if (a[k] !== undefined && !Number.isFinite(Number(a[k]))) throw userError(`--${k} must be a number`);

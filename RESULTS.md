@@ -74,7 +74,7 @@ no manual action, pages still indexed. Full write-up in
 | 2026-10-18 | 101,465 | |
 | 2026-10-19 | 6,489 | |
 | 2026-10-20 onward | ~2,000 to 6,000 | ~15 to 85 |
-| 2026-11-19 to 2026-11-25 (average) | ~2,700 | |
+| 2026-11-19 to 2026-11-25 (average) | ~2,900 | |
 
 Impressions per day by page type, pre 2026-10-01 to 10-17 vs post 2026-10-20 to 11-25:
 
@@ -90,7 +90,7 @@ Impressions per day by page type, pre 2026-10-01 to 10-17 vs post 2026-10-20 to 
 - **Retention by country:** US, UK, Canada, Germany ~1.7%; India, Brazil, France ~1.0 to 1.1%.
 - **Retention by device:** desktop 1.5%, mobile 2.1%.
 - **Pages with at least 30 impressions/day pre-cliff:** 1,089; median retention 0.3%; ~4% kept more than 5%.
-- **Indexing:** ~95% of blog URLs still indexed (URL Inspection sample).
+- **Indexing:** ~95% of blog URLs still indexed by our daily index-coverage estimate; 27/30 (90%) in a Nov 8-14 spot check.
 - **Logged-out check, 2026-11-27, 30 top lost queries:** on page one for 0 of 30; AI Overviews on 30 of 30,
   still citing us on 3.
 
