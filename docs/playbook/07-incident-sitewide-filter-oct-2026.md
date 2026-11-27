@@ -103,8 +103,11 @@ pages still indexed, no manual action, and who replaced us.
 before that we believe contributed. We cannot prove any single one was the cause.
 
 1. **A content burst.** About 49 new posts and about 218 rewritten posts went live between October 14 and 18.
-2. **We sold links and rankings.** A sponsor page offered paid article and link placement, and paid boosts in
-   our own rankings pages.
+   This is our leading explanation: it is the biggest change in the days before the cliff, and the sites
+   that publish the same kind of pages at a steady pace were not filtered.
+2. **Sponsorship that looked like paid placement.** A sponsor page offered paid article placement and
+   featured spots on our rankings pages. Labelled sponsorship is allowed; selling links or ranking
+   positions is not, and ours was not clearly on the right side of that line.
 3. **Unqualified paid links.** Some paid and affiliate links did not carry `rel="sponsored"`.
 4. **Review markup on affiliate tool pages.** Review structured data on pages that earned affiliate revenue.
 
@@ -129,16 +132,21 @@ nothing. We stopped.
   ten blue links no longer show us. Data no one else has is the part of the site the filter did not reach.
 - **YouTube and LinkedIn.** Google shows a video block on every one of the 30 lost queries and ranks LinkedIn
   often. We publish there as surfaces Google still trusts.
-- **Pre-registered predictions.** Before each test we wrote down what we expect to happen and how we will
-  measure it. We score them on December 11 and December 25, 2026, and will add the results to this chapter
-  and to [RESULTS.md](../../RESULTS.md), including the ones we get wrong.
+- **Pre-registered predictions.** Written down on November 27, 2026, before the work, and scored on
+  December 11 and December 25 from the same raw Search Console export:
+  1. With no new programmatic profile pages indexed and effort moved to deep dives, blog impressions reach
+     3,000 a day by December 25 (baseline 2,438). Killed if under 2,500.
+  2. Visits from AI assistants (ChatGPT, Claude, Perplexity) reach 200 per 14 days (baseline 133). Killed if under 140.
+  3. At least 3 of 10 YouTube Shorts titled as lost queries appear in Google's video block for that query
+     within 14 days of upload. Killed if none after 21 days.
+  We will add the results to this chapter and to [RESULTS.md](../../RESULTS.md), including the ones we get wrong.
 
 ## Lessons
 
-1. **Never sell links or rankings.** Not on a sponsor page, not in a "featured" slot, not as a ranking boost.
-   Disclose every paid link with `rel="sponsored"`, and enforce it with a test, not a policy doc.
-2. **No bursts.** Publishing or rewriting hundreds of pages in a few days is a pattern search engines have every
+1. **No bursts.** Publishing or rewriting hundreds of pages in a few days is a pattern search engines have every
    reason to distrust. Cap automated output per day and keep it capped.
+2. **Never sell links or rankings.** Not on a sponsor page, not in a "featured" slot, not as a ranking boost.
+   Disclose every paid link with `rel="sponsored"`, and enforce it with a test, not a policy doc.
 3. **No slug churn.** After a hit, renaming URLs only adds noise. Fix the cause, then wait.
 4. **Diagnose filter vs demotion before you act.** Rewrites can help a demoted page. On a filtered site they are
    unlikely to help, because pages that still rank 1 to 5 when shown are not losing on quality. Check retention by type, country and
