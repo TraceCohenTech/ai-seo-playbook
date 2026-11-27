@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased: the October 2026 incident
+
+- New chapter: [7. Incident: the October 2026 sitewide filter](docs/playbook/07-incident-sitewide-filter-oct-2026.md),
+  an honest postmortem of the Oct 19, 2026 cliff (about 98% of impressions lost, pages still indexed and ranking when shown)
+- New tool: `filter-detector.mjs` tells a sitewide filter from a demotion, an indexing problem or a localized drop,
+  offline from Search Console exports (page, country and device by date), with fixture tests
+- RESULTS.md: new dated "Since Oct 19, 2026" section; the original 90-day numbers are labelled with their window
+
 ## 2.0.0 (2026-09-24): SEO + GEO/AEO edition
 
 **New playbook** ([docs/playbook](docs/playbook)), six chapters from running the engine on a site that reached

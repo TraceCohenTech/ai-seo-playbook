@@ -2,10 +2,15 @@
 
 The single source of truth for every number this repo quotes. Every figure comes from the Google
 Search Console API for [valueaddvc.com](https://valueaddvc.com) (property `sc-domain:valueaddvc.com`),
-has a stated window, and was pulled on **2026-09-24**. If a number elsewhere in this repo disagrees with
-this file, this file wins.
+has a stated window, and was pulled on **2026-09-24** unless a section says otherwise. If a number
+elsewhere in this repo disagrees with this file, this file wins.
 
-## Search performance
+> **Since Oct 19, 2026 the site has been under a sitewide Google filter** and daily impressions are
+> down about 98% vs Oct 1 to 17. The 90-day numbers below are real but describe the window Jun 25 to Sep 22, 2026,
+> not today. See [Since Oct 19, 2026](#since-oct-19-2026) and
+> [chapter 7](docs/playbook/07-incident-sitewide-filter-oct-2026.md).
+
+## Search performance (90 days to 2026-09-22)
 
 | Window | Impressions | Clicks |
 |---|---|---|
@@ -56,10 +61,47 @@ impressions fell ~55% at the low point. Clicks recovered to pre-incident levels 
 week (~1,100/day on 2026-09-21/22 vs ~940/day in the week of 2026-09-07). See
 [Incidents and guardrails](docs/playbook/03-incidents-and-guardrails.md).
 
+## Since Oct 19, 2026
+
+Pulled late November 2026. On 2026-10-19 the site hit a sitewide Google filter: no confirmed update,
+no manual action, pages still indexed. Full write-up in
+[chapter 7](docs/playbook/07-incident-sitewide-filter-oct-2026.md).
+
+| Day or window | Impressions per day | Clicks per day |
+|---|---|---|
+| Mid-September 2026 | 150K to 300K | ~400 to 1,000 |
+| After the September 2026 spam update (from Sep 24) | ~100K to 200K | |
+| 2026-10-18 | 101,465 | |
+| 2026-10-19 | 6,489 | |
+| 2026-10-20 onward | ~2,000 to 6,000 | ~15 to 85 |
+| 2026-11-19 to 2026-11-25 (average) | ~2,900 | |
+
+Impressions per day by page type, pre 2026-10-01 to 10-17 vs post 2026-10-20 to 11-25:
+
+| Page type | Pre | Post | Change |
+|---|---|---|---|
+| Blog | 72,382 | 1,757 | -98% |
+| News stories | 48,697 | 368 | -99% |
+| VC profiles | 6,289 | 132 | -98% |
+| Tools | 4,618 | 55 | -99% |
+| Homepage | 1,194 | 66 | -94% |
+| A subdomain | 3,288 | 77 | -98% |
+
+- **Retention by country:** US, UK, Canada, Germany ~1.7%; India, Brazil, France ~1.0 to 1.1%.
+- **Retention by device:** desktop 1.5%, mobile 2.1%.
+- **Pages with at least 30 impressions/day pre-cliff:** 1,089; median retention 0.3%; ~4% kept more than 5%.
+- **Indexing:** ~95% of blog URLs still indexed by our daily index-coverage estimate; 27/30 (90%) in a Nov 8-14 spot check.
+- **Logged-out check, 2026-11-27, 30 top lost queries:** on page one for 0 of 30; AI Overviews on 30 of 30,
+  still citing us on 3.
+
+Reproduce the diagnosis on your own exports with
+[`filter-detector.mjs`](scripts/filter-detector.mjs).
+
 ## Reproduce
 
 ```bash
 node scripts/weekly-report.mjs --site sc-domain:yoursite.com
 node scripts/human-query-split.mjs --site sc-domain:yoursite.com
 node scripts/matched-control-readout.mjs --site sc-domain:yoursite.com --changes changes.json
+node scripts/filter-detector.mjs --pages pages.jsonl --countries countries.csv --devices devices.csv --cliff YYYY-MM-DD
 ```
